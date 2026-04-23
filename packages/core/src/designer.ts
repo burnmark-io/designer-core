@@ -25,7 +25,7 @@ export interface DesignerOptions {
   assetLoader?: AssetLoader;
 }
 
-type ReorderDirection = 'up' | 'down' | 'top' | 'bottom';
+export type ReorderDirection = 'up' | 'down' | 'top' | 'bottom';
 
 /**
  * Main entry point for the label designer. Manages document state,

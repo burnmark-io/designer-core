@@ -37,12 +37,13 @@ export {
 
 // Designer
 export { LabelDesigner } from './designer.js';
-export type { DesignerOptions } from './designer.js';
+export type { DesignerOptions, ReorderDirection } from './designer.js';
 export type { EventHandler } from './events.js';
 
 // Serialisation
 export { toJSON, fromJSON } from './serialisation.js';
 export { migrateDocument, registerMigration, DocumentMigrationError } from './migration.js';
+export type { Migration } from './migration.js';
 
 // History
 export { History } from './history.js';
@@ -57,7 +58,7 @@ export {
 
 // CSV
 export { parseCsv } from './csv.js';
-export type { CsvData } from './csv.js';
+export type { CsvData, CsvInput } from './csv.js';
 
 // Render pipeline
 export {

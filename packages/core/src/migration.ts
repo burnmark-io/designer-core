@@ -8,7 +8,7 @@ export class DocumentMigrationError extends Error {
   }
 }
 
-type Migration = (doc: unknown) => unknown;
+export type Migration = (doc: unknown) => unknown;
 
 /**
  * Version registry. Each entry migrates FROM that version TO version+1.

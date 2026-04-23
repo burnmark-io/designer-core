@@ -6,7 +6,7 @@ export interface CsvData {
   rowCount: number;
 }
 
-type CsvInput = string | Uint8Array | ArrayBuffer | Blob;
+export type CsvInput = string | Uint8Array | ArrayBuffer | Blob;
 
 /**
  * Parse CSV content into headers and rows. Accepts plain strings, byte
