@@ -127,6 +127,8 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 | 10   | ✓         | ✓    | 140✓ | ✓     | step 10    |
 | B1   | ✓         | ✓    | 158✓ | ✓     | bindings step 1 |
 | B2   | ✓         | ✓    | 178✓ | ✓     | bindings step 2 |
+| B3   | n/a       | n/a  | n/a  | n/a   | bindings step 3 |
+| B4   | n/a       | n/a  | n/a  | n/a   | bindings step 4 |
 
 ---
 
@@ -168,6 +170,9 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
 - [x] Quick-start snippets for Vue composable and React hook
 - [x] Removed the "planned as a follow-up" paragraph
 
-## Bindings Step 4: Changeset
+## Bindings Step 4: Changeset ✅
 
-- [ ] Add `.changeset/*.md` covering the two new packages
+- [x] `.changeset/initial-bindings.md` — minor bump for both new packages
+- [x] `pnpm changeset status` confirms vue + react queued at minor
+- [x] Bindings are intentionally NOT linked to core/cli in
+      `.changeset/config.json` so they can iterate independently
