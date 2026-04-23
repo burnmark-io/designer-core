@@ -15,6 +15,7 @@ import { renderFull, renderPlanes, toBitmap, type RenderOptions } from './render
 import { SINGLE_COLOR } from './render/colour.js';
 import { type AssetLoader, InMemoryAssetLoader } from './assets.js';
 import { applyVariables, extractPlaceholders } from './template.js';
+import { type BatchResult } from './batch.js';
 import { type LabelBitmap } from '@mbtech-nl/bitmap';
 
 export interface DesignerOptions {
@@ -266,6 +267,19 @@ export class LabelDesigner {
     options: { threshold?: number; dither?: boolean; invert?: boolean } = {},
   ): LabelBitmap {
     return toBitmap(rgba, options);
+  }
+
+  /**
+   * Render a batch of labels from CSV rows, one per row. Yields each
+   * `BatchResult` so the consumer can print it and let it be garbage
+   * collected before the next is produced.
+   */
+  async *renderBatch(
+    rows: Record<string, string>[],
+    capabilities?: PrinterCapabilities,
+  ): AsyncGenerator<BatchResult> {
+    const { renderBatch } = await import('./batch.js');
+    yield* renderBatch(this, rows, capabilities);
   }
 
   // --- internal ---

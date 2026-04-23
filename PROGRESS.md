@@ -76,12 +76,13 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 - [x] __tests__ — export dimensions, multi-page, sheet tiling, missing assets (13 tests)
 - [x] Gate: typecheck + lint + test + build + format
 
-## Step 7: @burnmark-io/designer-core — Printer Adapter + Batch
+## Step 7: @burnmark-io/designer-core — Printer Adapter + Batch ✅
 
-- [ ] src/printer.ts — PrinterAdapter interface, PrinterCapabilities, presets
-- [ ] src/batch.ts — renderBatch async generator
-- [ ] __tests__ — batch rendering memory stability, multi-plane output
-- [ ] Gate: typecheck + lint + test + build
+- [x] src/printer.ts — PrinterAdapter, PrinterStatus, PrintOptions, LabelStore, LabelSummary, AssetStore
+- [x] src/batch.ts — renderBatch async generator
+- [x] LabelDesigner.renderBatch method
+- [x] __tests__ — batch rendering, multi-plane output, empty rows (5 tests)
+- [x] Gate: typecheck + lint + test + build + format
 
 ## Step 8: burnmark-cli
 
@@ -116,3 +117,4 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 | 4    | ✓         | ✓    | 73✓  | ✓     | step 4     |
 | 5    | ✓         | ✓    | 78✓  | ✓     | step 5     |
 | 6    | ✓         | ✓    | 91✓  | ✓     | step 6     |
+| 7    | ✓         | ✓    | 96✓  | ✓     | step 7     |

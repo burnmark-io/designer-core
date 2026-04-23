@@ -95,5 +95,19 @@ export type { SheetTemplate } from './export/sheet.js';
 export { exportBundled } from './export/bundle.js';
 export { BUILTIN_SHEETS, findSheet, listSheets } from './export/sheet-registry.js';
 
+// Printer adapter / store interfaces
+export type {
+  PrinterAdapter,
+  PrinterStatus,
+  PrintOptions,
+  LabelStore,
+  LabelSummary,
+  AssetStore,
+} from './printer.js';
+
+// Batch
+export { renderBatch } from './batch.js';
+export type { BatchResult } from './batch.js';
+
 // Re-export LabelBitmap type for convenience
 export type { LabelBitmap, RawImageData as BitmapRawImageData } from '@mbtech-nl/bitmap';
