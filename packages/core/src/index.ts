@@ -77,5 +77,15 @@ export type { VCardContact } from './qr-content.js';
 export { InMemoryAssetLoader } from './assets.js';
 export type { AssetLoader } from './assets.js';
 
+// Fonts
+export {
+  BUNDLED_FONTS,
+  DefaultFontLoader,
+  registerFont,
+  isFontLoaded,
+  listFonts,
+} from './fonts.js';
+export type { FontLoader, FontDescriptor, BundledFontFamily, BundledFontEntry } from './fonts.js';
+
 // Re-export LabelBitmap type for convenience
 export type { LabelBitmap, RawImageData as BitmapRawImageData } from '@mbtech-nl/bitmap';

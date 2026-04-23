@@ -57,13 +57,14 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 - [x] __tests__ — render (14), colour pipeline (6), QR content (6), continuous label, opacity warning
 - [x] Gate: typecheck + lint + test + build + format
 
-## Step 5: @burnmark-io/designer-core — Fonts + Assets
+## Step 5: @burnmark-io/designer-core — Fonts + Assets ✅
 
-- [ ] src/fonts.ts — FontLoader interface + browser/Node implementations
-- [ ] src/fonts/bundled/ — Inter, JetBrains Mono, Bitter, Barlow Condensed
-- [ ] src/assets.ts — AssetLoader interface
-- [ ] __tests__ — font loading, fallback, system font warning
-- [ ] Gate: typecheck + lint + test + build
+- [x] src/fonts.ts — FontLoader interface, DefaultFontLoader (browser + Node)
+- [x] src/fonts/bundled/README.md — documents WOFF2 files to drop in (OFL)
+- [x] src/assets.ts — done in step 4 (AssetLoader + InMemoryAssetLoader)
+- [x] __tests__ — font registry, fallback behaviour, duplicate-load short-circuit (5 tests)
+- [x] Gate: typecheck + lint + test + build + format
+- Note: Actual WOFF2 subsets are not checked in — see DECISIONS.md D4
 
 ## Step 6: @burnmark-io/designer-core — Export
 
@@ -112,3 +113,4 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 | 2    | ✓         | ✓    | 25✓  | ✓     | step 2     |
 | 3    | ✓         | ✓    | 47✓  | ✓     | step 3     |
 | 4    | ✓         | ✓    | 73✓  | ✓     | step 4     |
+| 5    | ✓         | ✓    | 78✓  | ✓     | step 5     |
