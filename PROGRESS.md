@@ -17,20 +17,22 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 - [x] `pnpm install` completes without errors
 - [x] Gate: install succeeds; typecheck/lint/build no-op with no packages yet
 
-## Step 2: @burnmark-io/designer-core — Document Model
+## Step 2: @burnmark-io/designer-core — Document Model ✅
 
-- [ ] packages/core/package.json + README.md
-- [ ] packages/core/tsconfig.json
-- [ ] src/types.ts — all types including colour model, BarcodeFormat export
-- [ ] src/document.ts — LabelDocument, CanvasConfig
-- [ ] src/objects.ts — all object types
-- [ ] src/designer.ts — LabelDesigner class (NO selection)
-- [ ] src/serialisation.ts — toJSON/fromJSON
-- [ ] src/migration.ts — migrateDocument with version registry
-- [ ] src/history.ts — undo/redo stack
-- [ ] src/index.ts — public exports
-- [ ] __tests__ — CRUD, z-order, serialisation round-trip, migration
-- [ ] Gate: typecheck + lint + test + build
+- [x] packages/core/package.json + README.md
+- [x] packages/core/tsconfig.json (+ tsconfig.build.json for emit)
+- [x] src/types.ts — all types including colour model, BarcodeFormat export
+- [x] src/document.ts — LabelDocument, CanvasConfig
+- [x] src/objects.ts — all object types
+- [x] src/designer.ts — LabelDesigner class (NO selection)
+- [x] src/serialisation.ts — toJSON/fromJSON
+- [x] src/migration.ts — migrateDocument with version registry
+- [x] src/history.ts — undo/redo stack
+- [x] src/events.ts — EventEmitter
+- [x] src/id.ts — UUID
+- [x] src/index.ts — public exports
+- [x] __tests__ — CRUD, z-order, serialisation round-trip, migration, events (25 tests)
+- [x] Gate: typecheck + lint + test + build + format
 
 ## Step 3: @burnmark-io/designer-core — Template Engine
 
@@ -104,3 +106,4 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 | Step | Typecheck | Lint | Test | Build | Commit |
 |------|-----------|------|------|-------|--------|
 | 1    | n/a       | n/a  | n/a  | n/a   | (install ✓) |
+| 2    | ✓         | ✓    | 25✓  | ✓     | step 2     |

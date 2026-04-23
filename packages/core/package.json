@@ -1,0 +1,60 @@
+{
+  "name": "@burnmark-io/designer-core",
+  "version": "0.0.0",
+  "description": "Headless label design engine — document model, render pipeline, multi-colour flattening, templates, CSV batch",
+  "type": "module",
+  "author": "Mannes Brak",
+  "license": "MIT",
+  "homepage": "https://burnmark-io.github.io/designer-core/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/burnmark-io/designer-core.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/burnmark-io/designer-core/issues"
+  },
+  "funding": [
+    { "type": "github", "url": "https://github.com/sponsors/mannes" },
+    { "type": "ko-fi",  "url": "https://ko-fi.com/mannes" }
+  ],
+  "keywords": [
+    "label",
+    "thermal",
+    "printer",
+    "designer",
+    "barcode",
+    "qrcode",
+    "brother-ql",
+    "dymo",
+    "zebra",
+    "headless"
+  ],
+  "files": ["dist", "README.md"],
+  "engines": { "node": ">=24.0.0" },
+  "publishConfig": { "access": "public" },
+  "sideEffects": false,
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@mbtech-nl/bitmap": "^1.0.0"
+  },
+  "devDependencies": {
+    "@mbtech-nl/tsconfig": "^1.0.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "typescript": "~5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
