@@ -29,12 +29,13 @@ export async function parseCsv(input: CsvInput): Promise<CsvData> {
     dynamicTyping: false,
   });
 
-  if (parsed.errors.length > 0) {
-    const worst = parsed.errors[0];
-    // FieldMismatch errors are non-fatal (papaparse fills/trims missing columns).
-    // Anything else, surface to the caller.
-    if (worst?.type !== undefined && worst.type !== 'FieldMismatch') {
-      throw new Error(`CSV parse error: ${worst.message}`);
+  // Papaparse "errors" are mostly informational: delimiter auto-detection
+  // notices (benign — it defaults to ','), FieldMismatch on ragged rows
+  // (fills/trims). Only propagate Quotes errors, which usually indicate a
+  // malformed file.
+  for (const err of parsed.errors) {
+    if (err.type === 'Quotes') {
+      throw new Error(`CSV parse error: ${err.message}`);
     }
   }
 

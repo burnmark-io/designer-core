@@ -84,15 +84,16 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 - [x] __tests__ — batch rendering, multi-plane output, empty rows (5 tests)
 - [x] Gate: typecheck + lint + test + build + format
 
-## Step 8: burnmark-cli
+## Step 8: burnmark-cli ✅
 
-- [ ] packages/cli/package.json + README.md
-- [ ] Dynamic driver discovery via optional peerDependencies
-- [ ] Commands: print, render, validate, list-printers, list-sheets
-- [ ] bin/burnmark.js
-- [ ] Tests (mock drivers)
-- [ ] Gate: typecheck + lint + test + build
-- [ ] Publish dry-run verification (workspace & published consumers)
+- [x] packages/cli/package.json + README.md
+- [x] Dynamic driver discovery via optional peerDependencies (@thermal-label/*)
+- [x] Commands: print, render, validate, list-printers, list-sheets
+- [x] bin/burnmark.js
+- [x] io helpers (parseVarFlags, parseRowRange, filterRows, file IO)
+- [x] Tests — render → PNG/PDF/sheet, validate, list, io helpers (20 tests)
+- [x] Gate: typecheck + lint + test + build + format
+- [ ] Publish dry-run verification (deferred — runs at step 10)
 
 ## Step 9: Minimal docs
 
@@ -118,3 +119,4 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 | 5    | ✓         | ✓    | 78✓  | ✓     | step 5     |
 | 6    | ✓         | ✓    | 91✓  | ✓     | step 6     |
 | 7    | ✓         | ✓    | 96✓  | ✓     | step 7     |
+| 8    | ✓         | ✓    | 116✓ | ✓     | step 8     |

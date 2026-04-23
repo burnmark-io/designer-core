@@ -1,0 +1,72 @@
+{
+  "name": "burnmark-cli",
+  "version": "0.0.0",
+  "description": "Command-line interface for the burnmark label design engine — render, print, validate, CSV batch, sheet export",
+  "type": "module",
+  "author": "Mannes Brak",
+  "license": "MIT",
+  "homepage": "https://burnmark-io.github.io/designer-core/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/burnmark-io/designer-core.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/burnmark-io/designer-core/issues"
+  },
+  "funding": [
+    { "type": "github", "url": "https://github.com/sponsors/mannes" },
+    { "type": "ko-fi",  "url": "https://ko-fi.com/mannes" }
+  ],
+  "keywords": [
+    "label",
+    "thermal",
+    "printer",
+    "cli",
+    "barcode",
+    "brother-ql",
+    "dymo"
+  ],
+  "files": ["dist", "bin", "README.md"],
+  "engines": { "node": ">=24.0.0" },
+  "publishConfig": { "access": "public" },
+  "sideEffects": false,
+  "bin": {
+    "burnmark": "./bin/burnmark.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@burnmark-io/designer-core": "workspace:*",
+    "chalk": "^5.0.0",
+    "commander": "^12.0.0",
+    "ora": "^8.0.0"
+  },
+  "peerDependencies": {
+    "@thermal-label/brother-ql-node": ">=0.0.1",
+    "@thermal-label/labelmanager-node": ">=0.0.1",
+    "@thermal-label/labelwriter-node": ">=0.0.1"
+  },
+  "peerDependenciesMeta": {
+    "@thermal-label/brother-ql-node": { "optional": true },
+    "@thermal-label/labelmanager-node": { "optional": true },
+    "@thermal-label/labelwriter-node": { "optional": true }
+  },
+  "devDependencies": {
+    "@mbtech-nl/tsconfig": "^1.0.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "typescript": "~5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
