@@ -87,5 +87,13 @@ export {
 } from './fonts.js';
 export type { FontLoader, FontDescriptor, BundledFontFamily, BundledFontEntry } from './fonts.js';
 
+// Export
+export { exportPng } from './export/png.js';
+export { exportPdf } from './export/pdf.js';
+export { exportSheet, positionsPerSheet, sheetsNeeded } from './export/sheet.js';
+export type { SheetTemplate } from './export/sheet.js';
+export { exportBundled } from './export/bundle.js';
+export { BUILTIN_SHEETS, findSheet, listSheets } from './export/sheet-registry.js';
+
 // Re-export LabelBitmap type for convenience
 export type { LabelBitmap, RawImageData as BitmapRawImageData } from '@mbtech-nl/bitmap';

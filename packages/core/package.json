@@ -50,6 +50,8 @@
   "dependencies": {
     "@mbtech-nl/bitmap": "^1.0.0",
     "bwip-js": "^4.0.0",
+    "jspdf": "^3.0.0",
+    "jszip": "^3.10.0",
     "papaparse": "^5.5.0"
   },
   "peerDependencies": {

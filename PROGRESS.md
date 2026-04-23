@@ -66,14 +66,15 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 - [x] Gate: typecheck + lint + test + build + format
 - Note: Actual WOFF2 subsets are not checked in — see DECISIONS.md D4
 
-## Step 6: @burnmark-io/designer-core — Export
+## Step 6: @burnmark-io/designer-core — Export ✅
 
-- [ ] src/export/png.ts
-- [ ] src/export/pdf.ts — jsPDF, single + multi-page
-- [ ] src/export/sheet.ts — SheetTemplate type, exportSheet
-- [ ] src/export/bundle.ts — .zip with .label + assets
-- [ ] __tests__ — export dimensions, multi-page PDF, sheet tiling
-- [ ] Gate: typecheck + lint + test + build
+- [x] src/export/png.ts — OffscreenCanvas.convertToBlob / @napi-rs/canvas toBuffer, scale option
+- [x] src/export/pdf.ts — jsPDF, page per CSV row, dynamic page sizes
+- [x] src/export/sheet.ts — SheetTemplate, exportSheet with tiling + multi-page support
+- [x] src/export/sheet-registry.ts — BUILTIN_SHEETS (Avery L7160/L7163/L7173/L7671, Herma, Letter 30up)
+- [x] src/export/bundle.ts — .zip with label.json + assets/ folder via jszip
+- [x] __tests__ — export dimensions, multi-page, sheet tiling, missing assets (13 tests)
+- [x] Gate: typecheck + lint + test + build + format
 
 ## Step 7: @burnmark-io/designer-core — Printer Adapter + Batch
 
@@ -114,3 +115,4 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 | 3    | ✓         | ✓    | 47✓  | ✓     | step 3     |
 | 4    | ✓         | ✓    | 73✓  | ✓     | step 4     |
 | 5    | ✓         | ✓    | 78✓  | ✓     | step 5     |
+| 6    | ✓         | ✓    | 91✓  | ✓     | step 6     |
