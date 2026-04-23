@@ -41,18 +41,21 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 - [x] __tests__ — substitution, validation, CSV parsing edge cases (22 new tests)
 - [x] Gate: typecheck + lint + test + build + format
 
-## Step 4: @burnmark-io/designer-core — Render Pipeline
+## Step 4: @burnmark-io/designer-core — Render Pipeline ✅
 
-- [ ] src/render/canvas.ts — createCanvas abstraction
-- [ ] src/render/text.ts — text renderer
-- [ ] src/render/image.ts — image renderer with per-object fit/threshold/dither
-- [ ] src/render/barcode.ts — BarcodeEngine (bwip-js)
-- [ ] src/render/shape.ts — rectangle, ellipse, line
-- [ ] src/render/group.ts — recursive group rendering
-- [ ] src/render/pipeline.ts — orchestrates full render pass
-- [ ] src/render/colour.ts — flattenForPrinter, matchColourToPlane (explicit only)
-- [ ] __tests__ — render tests, colour pipeline, continuous label, opacity warning
-- [ ] Gate: typecheck + lint + test + build
+- [x] src/render/canvas.ts — createCanvas abstraction (OffscreenCanvas / @napi-rs/canvas)
+- [x] src/render/text.ts — text renderer with wrap, alignment, vertical alignment, invert
+- [x] src/render/image.ts — image renderer, fit modes (contain/cover/fill/none)
+- [x] src/render/barcode.ts — BarcodeEngine via bwip-js, format map with underscore → bwip-js strings
+- [x] src/render/shape.ts — rectangle (rounded), ellipse, line (h/v/diag)
+- [x] src/render/group.ts — recursive group rendering, per-object translate/rotate/opacity
+- [x] src/render/pipeline.ts — renderFull / renderPlaneImages / renderPlanes / toBitmap
+- [x] src/render/colour.ts — SINGLE_COLOR, TWO_COLOR_BLACK_RED, matchColourToPlane, partitionByPlane
+- [x] src/flatten.ts — flattenForPrinter (public function)
+- [x] src/qr-content.ts — QRContent helpers (url, wifi, vcard, email, phone, sms, geo)
+- [x] src/assets.ts — AssetLoader interface + InMemoryAssetLoader
+- [x] __tests__ — render (14), colour pipeline (6), QR content (6), continuous label, opacity warning
+- [x] Gate: typecheck + lint + test + build + format
 
 ## Step 5: @burnmark-io/designer-core — Fonts + Assets
 
@@ -108,3 +111,4 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 | 1    | n/a       | n/a  | n/a  | n/a   | (install ✓) |
 | 2    | ✓         | ✓    | 25✓  | ✓     | step 2     |
 | 3    | ✓         | ✓    | 47✓  | ✓     | step 3     |
+| 4    | ✓         | ✓    | 73✓  | ✓     | step 4     |

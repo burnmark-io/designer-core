@@ -58,3 +58,24 @@ export {
 // CSV
 export { parseCsv } from './csv.js';
 export type { CsvData } from './csv.js';
+
+// Render pipeline
+export {
+  renderFull,
+  renderPlanes as renderPlanesFn,
+  renderPlaneImages,
+  toBitmap,
+  type RenderOptions,
+} from './render/pipeline.js';
+export { flattenForPrinter } from './flatten.js';
+export { SINGLE_COLOR, TWO_COLOR_BLACK_RED, matchColourToPlane } from './render/colour.js';
+export { BarcodeEngine } from './render/barcode.js';
+export { QRContent } from './qr-content.js';
+export type { VCardContact } from './qr-content.js';
+
+// Assets
+export { InMemoryAssetLoader } from './assets.js';
+export type { AssetLoader } from './assets.js';
+
+// Re-export LabelBitmap type for convenience
+export type { LabelBitmap, RawImageData as BitmapRawImageData } from '@mbtech-nl/bitmap';

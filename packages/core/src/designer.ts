@@ -4,12 +4,24 @@ import { EventEmitter, type EventHandler } from './events.js';
 import { History } from './history.js';
 import { randomUUID } from './id.js';
 import { fromJSON, toJSON } from './serialisation.js';
-import { type CanvasConfig, type DesignerEvent } from './types.js';
+import {
+  type CanvasConfig,
+  type DesignerEvent,
+  type PrinterCapabilities,
+  type RawImageData,
+  type RenderWarning,
+} from './types.js';
+import { renderFull, renderPlanes, toBitmap, type RenderOptions } from './render/pipeline.js';
+import { SINGLE_COLOR } from './render/colour.js';
+import { type AssetLoader, InMemoryAssetLoader } from './assets.js';
+import { applyVariables, extractPlaceholders } from './template.js';
+import { type LabelBitmap } from '@mbtech-nl/bitmap';
 
 export interface DesignerOptions {
   canvas?: Partial<CanvasConfig>;
   name?: string;
   maxHistoryDepth?: number;
+  assetLoader?: AssetLoader;
 }
 
 type ReorderDirection = 'up' | 'down' | 'top' | 'bottom';
@@ -25,11 +37,13 @@ export class LabelDesigner {
   private doc: LabelDocument;
   private readonly history: History;
   private readonly emitter = new EventEmitter();
+  readonly assetLoader: AssetLoader;
 
   constructor(options: DesignerOptions = {}) {
     this.doc = createDocument(randomUUID(), options.canvas ?? {}, options.name);
     this.history = new History(options.maxHistoryDepth ?? 100);
     this.history.push(this.doc);
+    this.assetLoader = options.assetLoader ?? new InMemoryAssetLoader();
   }
 
   // --- Document ---
@@ -194,6 +208,64 @@ export class LabelDesigner {
 
   off(event: DesignerEvent, handler: EventHandler): void {
     this.emitter.off(event, handler);
+  }
+
+  // --- Rendering ---
+
+  /** Full-colour RGBA render of the document. No 1bpp conversion. */
+  async render(variables?: Record<string, string>): Promise<RawImageData> {
+    const opts = this.buildRenderOptions(variables);
+    const image = await renderFull(this.doc, opts);
+    this.emitter.emit('render');
+    return image;
+  }
+
+  /** Single-plane 1bpp render. All objects → black. */
+  async renderToBitmap(variables?: Record<string, string>): Promise<LabelBitmap> {
+    const planes = await this.renderPlanes(SINGLE_COLOR, variables);
+    const plane = planes.get('black');
+    if (!plane) throw new Error('SINGLE_COLOR plane "black" not produced');
+    return plane;
+  }
+
+  /** Multi-plane 1bpp render per printer capability set. */
+  async renderPlanes(
+    capabilities: PrinterCapabilities,
+    variables?: Record<string, string>,
+  ): Promise<Map<string, LabelBitmap>> {
+    const opts = this.buildRenderOptions(variables);
+    const out = await renderPlanes(this.doc, capabilities, opts);
+    this.emitter.emit('render');
+    return out;
+  }
+
+  // --- Templates ---
+
+  getPlaceholders(): string[] {
+    return extractPlaceholders(this.doc);
+  }
+
+  applyVariables(variables: Record<string, string>): LabelDocument {
+    return applyVariables(this.doc, variables);
+  }
+
+  private buildRenderOptions(variables?: Record<string, string>): RenderOptions {
+    const opts: RenderOptions = {
+      assetLoader: this.assetLoader,
+      onWarning: (w: RenderWarning) => {
+        this.emitter.emit('error', w);
+      },
+    };
+    if (variables !== undefined) opts.variables = variables;
+    return opts;
+  }
+
+  /** Expose `toBitmap` for callers who already have RGBA pixels. */
+  static toBitmap(
+    rgba: RawImageData,
+    options: { threshold?: number; dither?: boolean; invert?: boolean } = {},
+  ): LabelBitmap {
+    return toBitmap(rgba, options);
   }
 
   // --- internal ---
