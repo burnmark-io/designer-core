@@ -1,0 +1,69 @@
+# Decisions Log — designer-core
+
+Judgment calls and deviations from the plan, made during autonomous implementation.
+
+## D1 — Plan file name
+
+The operator's instructions reference `designer-core-implementation-plan.md`, but the actual file in the repo is `PLAN.md`. Treated `PLAN.md` as authoritative (plus the two amendment markdown files).
+
+## D2 — `@thermal-label/*` peer dep version range
+
+The plan specifies `">=0.1.0"` for driver packages. The actual published versions on npm are `0.0.1`. Relaxed the peer dep range to `">=0.0.1"` so users can install the drivers that exist today.
+
+## D3 — `@burnmark-io/sheet-templates` is not published
+
+The plan references an external sheet template registry package that does not yet exist on npm. To avoid blocking Step 6, a minimal in-package built-in registry was created in `packages/core/src/export/sheet-registry.ts` covering a handful of common templates (Avery L7160/L7163, Herma 4226, a couple of round sticker sheets). The `SheetTemplate` type remains public; when the external registry ships, consumers can pass their own `SheetTemplate` objects to `exportSheet()` without change.
+
+## D4 — Bundled fonts as byte-embedded WOFF2 placeholders
+
+Actually subsetting Inter / JetBrains Mono / Bitter / Barlow Condensed from their OFL sources and shipping WOFF2 files requires font-tooling outside this session (pyftsubset, fonttools). To keep the pipeline unblocked:
+
+- The `FontLoader` implementations (browser Font Loading API, Node via `@napi-rs/canvas.GlobalFonts.registerFromPath`) are real and tested.
+- The four `Burnmark *` family names are registered in a manifest and resolve to OFL-licensed font files vendored from the official repositories via postinstall / bundling step, **or**, when not available, the loader emits a warning and falls back to the platform default.
+- The OFL license texts are included so the structure is publish-ready once actual WOFF2 subsets are added.
+
+This is documented in the core package README under "Fonts — replacing placeholder files" so a follow-up can drop real subsets in without code changes.
+
+## D5 — `exportBundled` uses `jszip`
+
+Not called out explicitly as a runtime dep in the plan's Sec 20, but mentioned in Sec 14 (`.zip containing .label + all referenced assets`). Added `jszip` to core runtime deps.
+
+## D6 — Node.js browser-builtin shims for `Blob` / `File`
+
+Node 24 has globalThis `Blob` and `File`. Relying on the builtins — no polyfill needed.
+
+## D7 — Barcode format identifiers use underscores, mapped to bwip-js strings internally
+
+Per the plan's Sec 6.5, the public `BarcodeFormat` type uses underscore identifiers (`gs1_128`, `gs1_cc`). Internal conversion to bwip-js's native format strings (`gs1-128`, `gs1-cc`) happens in one place in `render/barcode.ts`.
+
+## D8 — Opacity warning implementation
+
+Emitted as an `'error'` `DesignerEvent` with a lightweight `RenderWarning` payload (not a thrown error — rendering still proceeds). The consuming app decides what to do with it.
+
+## D9 — `@napi-rs/canvas` loaded lazily via dynamic import
+
+Keeps the core package loadable in browsers without the Node native addon attempting to load.
+
+## D10 — `OffscreenCanvas.convertToBlob` vs `toBlob` for PNG export
+
+Using `convertToBlob()` (OffscreenCanvas API) in browsers and `@napi-rs/canvas` `toBuffer('image/png')` wrapped in a `Blob` in Node.js.
+
+## D11 — History is not persisted inside `LabelDocument`
+
+The history stack is in-memory on `LabelDesigner`. Saving to JSON emits only the current document, not the undo stack — standard design app behaviour.
+
+## D12 — `RawImageData` type
+
+Defined in core as `{ data: Uint8ClampedArray; width: number; height: number }` — structurally compatible with the browser `ImageData` and `@napi-rs/canvas`'s output.
+
+## D13 — Coverage threshold enforced per-package on the final step only
+
+Per plan Sec 18. Vitest config in each package declares the threshold but it is only asserted in Step 10's final coverage run. Intermediate steps run coverage without threshold enforcement so partial progress doesn't block the gate.
+
+## D14 — System font detection in Node.js
+
+Per plan Sec 8.3, Node.js cannot easily detect installed system fonts. If a `.label` references an unknown font family in Node.js, emit a warning and fall back to `Burnmark Sans`.
+
+## D15 — Barcode validation: rely on bwip-js errors
+
+`BarcodeEngine.validate` attempts a `toBuffer` render inside a try/catch. If bwip-js throws, we return `{ valid: false, errors: [message] }`. We don't reimplement per-format validation rules.
