@@ -34,12 +34,12 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 - [x] __tests__ — CRUD, z-order, serialisation round-trip, migration, events (25 tests)
 - [x] Gate: typecheck + lint + test + build + format
 
-## Step 3: @burnmark-io/designer-core — Template Engine
+## Step 3: @burnmark-io/designer-core — Template Engine ✅
 
-- [ ] src/template.ts — applyTemplate, extractPlaceholders, validateVariables
-- [ ] src/csv.ts — parseCsv, CsvData (papaparse)
-- [ ] __tests__ — substitution, validation, CSV parsing edge cases
-- [ ] Gate: typecheck + lint + test + build
+- [x] src/template.ts — applyTemplate, extractPlaceholders, validateVariables, applyVariables
+- [x] src/csv.ts — parseCsv, CsvData (papaparse)
+- [x] __tests__ — substitution, validation, CSV parsing edge cases (22 new tests)
+- [x] Gate: typecheck + lint + test + build + format
 
 ## Step 4: @burnmark-io/designer-core — Render Pipeline
 
@@ -107,3 +107,4 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 |------|-----------|------|------|-------|--------|
 | 1    | n/a       | n/a  | n/a  | n/a   | (install ✓) |
 | 2    | ✓         | ✓    | 25✓  | ✓     | step 2     |
+| 3    | ✓         | ✓    | 47✓  | ✓     | step 3     |

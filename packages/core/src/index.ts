@@ -46,3 +46,15 @@ export { migrateDocument, registerMigration, DocumentMigrationError } from './mi
 
 // History
 export { History } from './history.js';
+
+// Template engine
+export {
+  applyTemplate,
+  applyVariables,
+  extractPlaceholders,
+  validateVariables,
+} from './template.js';
+
+// CSV
+export { parseCsv } from './csv.js';
+export type { CsvData } from './csv.js';
