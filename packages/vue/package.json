@@ -1,0 +1,76 @@
+{
+  "name": "@burnmark-io/designer-vue",
+  "version": "0.0.0",
+  "description": "Vue 3 composable for the burnmark label design engine",
+  "type": "module",
+  "author": "Mannes Brak",
+  "license": "MIT",
+  "homepage": "https://burnmark-io.github.io/designer-core/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/burnmark-io/designer-core.git",
+    "directory": "packages/vue"
+  },
+  "bugs": {
+    "url": "https://github.com/burnmark-io/designer-core/issues"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mannes"
+    },
+    {
+      "type": "ko-fi",
+      "url": "https://ko-fi.com/mannes"
+    }
+  ],
+  "keywords": [
+    "label",
+    "designer",
+    "vue",
+    "vue3",
+    "composable",
+    "thermal",
+    "printer",
+    "barcode"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3.0",
+    "@burnmark-io/designer-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@burnmark-io/designer-core": "workspace:*",
+    "@mbtech-nl/tsconfig": "^1.0.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "@vue/test-utils": "^2.4.0",
+    "happy-dom": "^15.0.0",
+    "typescript": "~5.5.0",
+    "vitest": "^2.0.0",
+    "vue": "^3.4.0"
+  }
+}

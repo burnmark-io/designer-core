@@ -87,3 +87,28 @@ Papaparse emits "errors" for benign conditions (single-column CSV with no delimi
 ## D18 — `parseRowRange(undefined)` replaced by optional parameter
 
 Per lint rule `unicorn/no-useless-undefined`, `parseRowRange` and `parseVarFlags` now take `?` optional args (`parseRowRange()` rather than `parseRowRange(undefined)`). API-equivalent; easier to call.
+
+---
+
+# Bindings Amendment
+
+## D19 — `exportBundled` returns `{ blob, missing }`, not `Blob`
+
+The bindings amendment (section 2.4) lists `exportBundled: () => Promise<Blob>`, but core's real contract is `{ blob, missing }` — the list of asset keys that could not be resolved. Consumers need `missing` to surface "asset not found" warnings to the user, so the binding mirrors the core contract rather than dropping information to match the plan text. Applied to both Vue and React.
+
+## D20 — Binding composable/hook exposes a force-render method (`render()`)
+
+Not in the plan's explicit API. Added because consumers that load documents externally (via a custom workflow, not `loadDocument`) or want "render now" on mount without waiting for the 200ms debounce benefit from an escape hatch. `render()` clears any pending debounce timer and runs the render through the same generation-counter discipline so stale results from a prior async run are still dropped.
+
+## D21 — `renderOnMount` option, default `true`
+
+The plan did not explicitly spec initial-render behaviour. Most real UIs want a bitmap on mount without waiting for a user action. Added `renderOnMount: boolean` (default `true`) to the options. Tests pass `renderOnMount: false` so the render count is deterministic in fake-timer based assertions.
+
+## D22 — Tests mock `renderToBitmap` / `renderPlanes` rather than exercise the real render pipeline
+
+The binding packages run under `happy-dom` for Vue and `jsdom` / `happy-dom` for React — neither ships `OffscreenCanvas`, and reaching into `@napi-rs/canvas` from inside the binding workspaces is noisy. Tests focus on binding semantics (event wiring, debounce, cancellation, selection pruning, StrictMode safety) and stub the two async render methods with `vi.spyOn(...).mockResolvedValue(fakeBitmap())`. The core package's own test suite exercises the real render pipeline.
+
+## D23 — Binding error-event routing uses `instanceof Error` + duck-typed `RenderWarning`
+
+Core currently only emits `RenderWarning` objects on `'error'`, but the binding is forward-compatible: `instanceof Error` routes to `renderError`; an object with `code` and `message` string fields routes to `renderWarning`. Unrecognised payloads are silently dropped rather than crash the binding.
+

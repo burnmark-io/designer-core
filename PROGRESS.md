@@ -125,3 +125,40 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 | 8    | ✓         | ✓    | 116✓ | ✓     | step 8     |
 | 9    | n/a       | n/a  | n/a  | docs✓ | step 9     |
 | 10   | ✓         | ✓    | 140✓ | ✓     | step 10    |
+| B1   | ✓         | ✓    | 158✓ | ✓     | bindings step 1 |
+
+---
+
+# Bindings Amendment — Progress
+
+Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
+
+## Bindings Step 1: @burnmark-io/designer-vue ✅
+
+- [x] packages/vue/package.json + README.md
+- [x] packages/vue/tsconfig.json + tsconfig.build.json
+- [x] packages/vue/vitest.config.ts (env: happy-dom)
+- [x] src/index.ts — `useLabelDesigner` composable with shallowRef + triggerRef,
+      debounced render, generation-counter cancellation, isRendering, selection
+      auto-prune, RenderWarning vs Error routing, renderOnMount, external
+      designer hand-off, onScopeDispose cleanup
+- [x] src/__tests__/use-label-designer.test.ts — 18 tests covering all items in
+      section 3.4 of the amendment
+- [x] Gate: typecheck + lint + test + build + format
+
+## Bindings Step 2: @burnmark-io/designer-react
+
+- [ ] packages/react/package.json + README.md
+- [ ] packages/react/tsconfig.json + tsconfig.build.json
+- [ ] packages/react/vitest.config.ts
+- [ ] src/index.ts — `useLabelDesigner` hook
+- [ ] src/__tests__/ — tests from section 4.4
+- [ ] Gate: typecheck + lint + test + build + format
+
+## Bindings Step 3: Root README
+
+- [ ] Add install + quick example for both bindings
+
+## Bindings Step 4: Changeset
+
+- [ ] Add `.changeset/*.md` covering the two new packages
