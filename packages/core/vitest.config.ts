@@ -14,6 +14,8 @@ export default defineConfig({
         'src/**/*.spec.ts',
         'src/**/index.ts',
         'src/fonts/bundled/**',
+        // Type-only module — interfaces compile to nothing at runtime.
+        'src/printer.ts',
       ],
     },
   },

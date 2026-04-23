@@ -67,3 +67,23 @@ Per plan Sec 8.3, Node.js cannot easily detect installed system fonts. If a `.la
 ## D15 — Barcode validation: rely on bwip-js errors
 
 `BarcodeEngine.validate` attempts a `toBuffer` render inside a try/catch. If bwip-js throws, we return `{ valid: false, errors: [message] }`. We don't reimplement per-format validation rules.
+
+## D16 — Coverage at step 10: 88% (below the 90% target)
+
+After adding render / shape / text / group / barcode / flatten tests in step 10, core coverage reached **88.29% statements, 79.52% branches, 88.00% functions, 88.29% lines** (140 tests total across core + cli). The remaining gap to 90% is concentrated in files with genuine runtime platform forks we can't easily exercise from a single Node test environment:
+
+- `fonts.ts` (58%) — browser FontFace / document.fonts path is unreachable under Node
+- `png.ts`, `image.ts`, `canvas.ts` (~65%) — each has a `typeof OffscreenCanvas === 'function'` branch that gates out in Node
+- `barcode.ts` (91%) — one remaining branch covers the browser SVG path
+
+Moving these to 90% requires running the same tests twice — once under a browser-like env (happy-dom/jsdom with OffscreenCanvas stubs) — or per-branch mocking. Either is substantially more work than the value it adds.
+
+Accepting 88% for v1. The test suite exercises every user-facing behaviour and every non-trivial branch reachable from the Node runtime. The follow-up docs amendment is the natural place to add browser-env tests alongside the framework-binding tests.
+
+## D17 — CSV parser errors relaxed to ignore informational issues
+
+Papaparse emits "errors" for benign conditions (single-column CSV with no delimiter, `FieldMismatch` on ragged rows). The parser now only throws for `Quotes` errors — genuinely malformed input. Everything else is non-fatal; the parser proceeds with sensible defaults (delimiter = `,`, missing fields = `''`).
+
+## D18 — `parseRowRange(undefined)` replaced by optional parameter
+
+Per lint rule `unicorn/no-useless-undefined`, `parseRowRange` and `parseVarFlags` now take `?` optional args (`parseRowRange()` rather than `parseRowRange(undefined)`). API-equivalent; easier to call.
