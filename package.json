@@ -16,7 +16,7 @@
     "typecheck": "pnpm -r run typecheck",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:api": "typedoc --plugin typedoc-plugin-markdown --tsconfig packages/core/tsconfig.build.json --out docs/reference/api packages/core/src/index.ts",
+    "docs:api": "typedoc --plugin typedoc-plugin-markdown --tsconfig packages/core/tsconfig.build.json --readme none --out docs/reference/api packages/core/src/index.ts",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "changeset publish"
