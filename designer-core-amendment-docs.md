@@ -125,10 +125,12 @@ Note `OffscreenCanvas` requirement (Safari 16.4+).
 - Walk through a two-colour label example end-to-end: black heading + red
   "FRAGILE" text → rendered to two planes → sent to Brother QL
 - What happens with grey: `#808080` text → goes to black plane → dithered
-  to scattered dots by `@mbtech-nl/bitmap`. Show a simulated output.
+  to scattered dots by `@mbtech-nl/bitmap`. **Generate a real PNG** using
+  `renderToBitmap()` and commit to `docs/assets/grey-dither-example.png`.
 - What happens with opacity: `opacity: 0.5` → Canvas composites at 50% →
-  1bpp dithering produces stipple pattern. Warn that this is rarely what
-  users want for thermal printing. Recommend `opacity: 1.0`.
+  1bpp dithering produces stipple pattern. **Generate a real PNG** showing
+  the stipple. Commit to `docs/assets/opacity-stipple-example.png`.
+  Warn that this is rarely what users want for thermal printing.
 - What happens with unmatched colours: `#ff6633` (orange) not in any
   `cssMatch` → goes to default plane (black). Predictable, not surprising.
 - PNG/PDF export keeps full colour — no flattening
@@ -148,11 +150,15 @@ Note `OffscreenCanvas` requirement (Safari 16.4+).
 
 - `{{placeholder}}` syntax rules (case-insensitive, whitespace trimmed)
 - `extractPlaceholders()` — find all tokens in a document
-- `applyVariables()` — substitute values
+- `applyTemplate()` — resolve a single template string with variable substitution
+- `applyVariables()` — resolve all template strings across an entire document
 - `validateVariables()` — check for missing/unused variables, overflow warnings
 - **The Christmas cards walkthrough:** design a label with `{{name}}`,
   `{{address_line_1}}`, `{{city}}`, `{{postcode}}`. Load a CSV. Auto-map
   columns. Render batch. Print. Full working code from start to finish.
+  **Save the `.label` JSON as `docs/assets/christmas-card.label`** — this
+  same file is referenced from `reference/label-format.md` as the annotated
+  example. Single source of truth, do not duplicate.
 - CSV parsing: `parseCsv()` with `papaparse`, header detection, edge cases
 - `renderBatch()` — async generator, memory efficiency, yielding `BatchResult`
 
@@ -173,7 +179,10 @@ Note `OffscreenCanvas` requirement (Safari 16.4+).
 
 ### 2.8 `guide/fonts.md`
 
-- Bundled fonts: Inter, JetBrains Mono, Bitter, Barlow Condensed — when to use each
+- Bundled fonts: `Burnmark Sans` (Inter), `Burnmark Mono` (JetBrains Mono),
+  `Burnmark Serif` (Bitter), `Burnmark Narrow` (Barlow Condensed) — explain
+  the branded naming convention and when to use each. Users reference
+  `Burnmark Sans` in their `.label` files, not `Inter`.
 - `registerFont()` — load a custom WOFF2/TTF from URL or buffer
 - `listFonts()`, `isFontLoaded()` — query loaded fonts
 - System fonts: available in browser (Canvas uses installed fonts), not in Node.js
@@ -189,9 +198,21 @@ Note `OffscreenCanvas` requirement (Safari 16.4+).
   - `SheetTemplate` type — code, paper size, dimensions, grid
   - Walk through an Avery L7160 example with 21 labels per A4 sheet
   - Bulk: each CSV row fills one position, auto-paginates
-- `exportBundled()` — `.zip` containing `.label` + all referenced image/font assets
-  for portability and sharing
+- `exportBundled(doc, assetLoader?)` — `.zip` containing `.label` + all referenced
+  image/font assets. **Returns `{ blob, missing }`,** not just `Blob` — the
+  `missing` array lists asset keys that could not be resolved. Always check
+  and surface `missing` to the user.
 - `.label` file format: JSON, reference `reference/label-format.md` for full spec
+
+**Important — export function signatures take `doc` as the first argument:**
+```typescript
+exportPng(doc, options?)
+exportPdf(doc, rows?, options?)
+exportSheet(doc, sheet, rows?, options?)
+exportBundled(doc, assetLoader?)
+```
+All examples on this page must use the actual signatures from core, not
+the `LabelDesigner` method wrappers (which pass `this.document` implicitly).
 
 ### 2.10 `guide/cli.md`
 
@@ -203,7 +224,7 @@ Note `OffscreenCanvas` requirement (Safari 16.4+).
   - `burnmark print` — template → printer (USB or TCP)
   - `burnmark print --csv` — batch print from CSV
   - `burnmark validate` — check template + CSV compatibility
-  - `burnmark list-printers` — show connected printers
+  - `burnmark list-printers` — show installed driver packages (dynamic discovery)
   - `burnmark list-sheets` — show available sheet templates
 - Flags table with defaults and descriptions
 - Scripting recipes: CI pipeline label generation, cron job, npm script
@@ -244,11 +265,19 @@ Embed `LabelDesigner` in a plain JS/TS application with no framework:
 
 ### 2.14 `embedding/custom-renderer.md`
 
-- The `Renderer` interface: `renderToImageData(doc, variables): Promise<RawImageData>`
-- When to implement: server-side rendering without Canvas, headless testing,
-  alternative rendering backends
-- Example: a mock renderer that returns a solid-colour bitmap for testing
-- Example: a renderer wrapping `sharp` or `puppeteer` for server-side rendering
+> **Note:** no formal `Renderer` interface exists in the shipped core API.
+> The extension point is the canvas abstraction — core auto-detects
+> `OffscreenCanvas` (browser) or `@napi-rs/canvas` (Node.js).
+
+- When you'd want a custom rendering approach: headless testing without
+  Canvas, alternative backends (sharp, puppeteer, skia-canvas)
+- The real extension pattern: provide a pre-configured `@napi-rs/canvas`
+  with custom fonts registered, or mock `OffscreenCanvas` in test environments
+- Example: a test helper that stubs `OffscreenCanvas` with a minimal
+  implementation returning a known bitmap
+- Example: using `skia-canvas` as a drop-in for `@napi-rs/canvas` in
+  environments where the latter doesn't build
+- Note that this is an advanced topic — most users never need this
 
 ### 2.15 `reference/label-format.md`
 
@@ -353,7 +382,7 @@ export default defineConfig({
     search: { provider: 'local' },
     footer: {
       message: 'Not affiliated with Dymo, Brother, Avery, or any hardware vendor.',
-      copyright: 'MIT License © 2025 Mannes Brak',
+      copyright: 'MIT License © 2025–2026 Mannes Brak',
     },
   },
 });
@@ -364,27 +393,45 @@ export default defineConfig({
 ## 4. Implementation Sequence
 
 ```
+0. Pre-flight verification
+   - Verify package names: grep all workspace package.json files and confirm
+     the actual published names match what the docs will reference
+   - Verify pnpm docs:api works (typedoc is already configured)
+   - Verify pnpm docs:dev starts (VitePress config exists from v1)
+   - No commit — this is a sanity check
+
 1. VitePress config
    - Expand .vitepress/config.ts with full nav, sidebar, footer
+   - Preserve existing socialLinks and search config blocks — they already
+     match the plan. Only add/expand, do not rewrite from scratch.
+   - Copyright: 2025–2026
    - Verify docs:dev starts without errors
    - Commit + push
 
 2. Landing page + getting started
-   - index.md (home layout, hero, feature cards, quick start)
-   - getting-started.md (three paths: Node.js, CLI, browser)
+   - Iterate on existing v1 versions (index.md and getting-started.md are
+     already fleshed out — improve and expand, do not start from scratch)
+   - index.md: keep the existing tagline if stronger than the plan's
+     suggestion. Add feature cards and quick start snippet if missing.
+   - getting-started.md: verify all three paths work. Fix any Bun.file()
+     references to use fs.readFile (Node.js standard). Expand prose.
    - Gate: docs:build
    - Commit + push
 
-3. Guide pages — core concepts
+3. Guide pages — core concepts + generated images
    - guide/document-model.md
-   - guide/colour-model.md
+   - guide/colour-model.md — generate real PNGs for grey dithering and
+     opacity stipple examples using renderToBitmap() + exportPng().
+     Commit images to docs/assets/
    - guide/rendering.md
    - Gate: docs:build
    - Commit + push
 
 4. Guide pages — features
-   - guide/template-engine.md (include Christmas cards walkthrough)
-   - guide/barcodes.md
+   - guide/template-engine.md — include Christmas cards walkthrough.
+     Save the .label JSON as docs/assets/christmas-card.label (single
+     source of truth, also referenced from reference/label-format.md)
+   - guide/barcodes.md — generate at least one barcode render as PNG
    - guide/fonts.md
    - Gate: docs:build
    - Commit + push
@@ -396,7 +443,8 @@ export default defineConfig({
    - Commit + push
 
 6. Reference pages
-   - reference/label-format.md
+   - reference/label-format.md — use docs/assets/christmas-card.label as
+     the annotated example (do NOT duplicate the JSON — import or reference it)
    - reference/printer-adapter.md
    - reference/barcode-formats.md
    - reference/faq.md
@@ -412,14 +460,18 @@ export default defineConfig({
    - Commit + push
 
 8. API reference
-   - Run pnpm docs:api (typedoc generation)
-   - Verify generated pages render correctly
+   - Run pnpm docs:api (typedoc regeneration — already configured)
+   - Verify generated pages at docs/reference/api/ render correctly
+   - Verify sidebar links to API section work
    - Gate: docs:build
    - Commit + push
 
 9. Final
    - Full read-through for broken links, stale imports, missing examples
    - Verify all code examples compile against the actual shipped API
+   - Verify generated images render in the built site
+   - Verify christmas-card.label is consistent between template-engine
+     and label-format pages
    - Gate: docs:build completes without errors or warnings
    - Deploy to GitHub Pages
    - Commit + push
@@ -428,3 +480,7 @@ export default defineConfig({
 All pages must use real code examples from the shipped API. Inspect
 `packages/*/src/` for actual method signatures — the plan may have
 drifted during implementation.
+
+**Note for future:** consider extracting fenced TypeScript blocks from docs
+and typechecking them in CI to prevent code examples from going stale.
+Out of scope for this amendment but worth adding as a CI step later.
