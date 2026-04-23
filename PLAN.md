@@ -280,10 +280,38 @@ capabilities — see section 8.2.
 
 **Opacity model:** `opacity` is composited during the Canvas render pass
 (the Canvas API handles this natively). The resulting RGBA pixels are then
-converted to 1bpp by `@mbtech-nl/bitmap`. In practice, 50% opacity text
-becomes a dithered pattern in the 1bpp output — the user should see this
-in the bitmap preview before printing. designer-core produces the bitmap;
-the preview display is the consuming app's responsibility.
+converted to 1bpp by `@mbtech-nl/bitmap`. In practice, sub-1.0 opacity on
+text produces a dithered stipple pattern in the 1bpp output, which is
+typically not what users expect. **Emit an `'error'` event (as a warning)
+when rendering objects with opacity < 1.0 to a bitmap target.** Opacity
+works correctly for PNG and PDF exports where full RGBA is preserved.
+
+For v1, recommend users use `opacity: 1.0` for all thermal print objects.
+The property exists in the model for Canvas design view and export formats
+where it behaves correctly.
+
+### 4.2.1 Document Versioning
+
+The `version` field on `LabelDocument` enables forward-compatible file
+format evolution. Every change to the document schema increments the version
+number and registers a migration function.
+
+```typescript
+export function migrateDocument(doc: unknown): LabelDocument;
+```
+
+`migrateDocument` checks `version` and applies transforms sequentially
+(v1→v2, v2→v3, etc.) until the document matches the current schema version.
+For v1 this is identity — the function validates and returns. But the
+registry must exist from day one so `.label` files created today can be
+opened by future versions without special-casing.
+
+```typescript
+const MIGRATIONS: Record<number, (doc: unknown) => unknown> = {
+  1: (doc) => doc,  // v1 is the current version — identity
+  // 2: (doc) => { ... transform v1 → v2 ... },
+};
+```
 
 ### 4.3 TextObject
 
@@ -535,11 +563,31 @@ documented and tested. Grouped by category for the UI's format picker.
 | ISBT 128 | `isbt128` | Blood bank |
 | PZN (German pharma) | `pzn` | |
 
-### 6.5 BarcodeEngine Class
+### 6.5 BarcodeFormat Type & BarcodeEngine Class
 
-Internal, not exported directly.
+`BarcodeFormat` **must be exported** — it's used in `BarcodeObject.format`
+which is part of the public document model. Use underscores, not hyphens,
+for identifiers (TypeScript-friendly).
 
 ```typescript
+/** Exported — part of the public document model */
+export type BarcodeFormat =
+  | 'code128' | 'code128a' | 'code128b' | 'code128c'
+  | 'code39' | 'code39ext' | 'code93' | 'code11'
+  | 'codabar' | 'ean13' | 'ean8' | 'upca' | 'upce'
+  | 'itf14' | 'interleaved2of5'
+  | 'gs1_128' | 'databar' | 'databarexpanded'
+  | 'pharmacode' | 'msi' | 'postnet' | 'royalmail' | 'kix' | 'onecode'
+  | 'qrcode' | 'microqr'
+  | 'datamatrix' | 'datamatrixrectangular'
+  | 'pdf417' | 'micropdf417'
+  | 'azteccode' | 'aztecrune'
+  | 'maxicode' | 'dotcode' | 'hanxin'
+  | 'gs1qrcode' | 'gs1datamatrix' | 'gs1_cc'
+  | 'auspost' | 'japanpost' | 'leitcode' | 'identcode'
+  | 'hibccode128' | 'isbt128' | 'pzn';
+
+/** Internal — not exported directly, used by the render pipeline */
 class BarcodeEngine {
   render(format: BarcodeFormat, data: string, options: BarcodeOptions,
          targetWidthDots: number, targetHeightDots: number): Promise<RawImageData>;
@@ -736,35 +784,50 @@ LabelDocument + variables + PrinterCapabilities
 
 ### 9.3 Colour Matching Logic
 
-For the two-colour case:
+**Explicit matches only — no heuristics.**
 
 ```typescript
 function matchColourToPlane(
   objectColor: string,
   capabilities: PrinterCapabilities,
 ): string {
-  // Parse object colour to RGB values
-  const rgb = parseCSS(objectColor);
+  // Normalise the colour for comparison (lowercase, trim)
+  const normalised = objectColor.trim().toLowerCase();
 
-  // Check explicit matches first
+  // Check explicit matches — first matching plane wins
   for (const plane of capabilities.colors) {
-    if (plane.cssMatch.includes(objectColor)) return plane.name;
+    if (plane.cssMatch.includes('*')) continue; // skip wildcard on first pass
+    if (plane.cssMatch.some(c => c.toLowerCase() === normalised)) {
+      return plane.name;
+    }
   }
 
-  // Heuristic: is it "red-ish"?
-  // High red channel, low green and blue → red plane
-  if (rgb.r > 180 && rgb.g < 100 && rgb.b < 100) return 'red';
-
-  // Everything else (including grey) → black plane
-  // Grey values get natural dithering from @mbtech-nl/bitmap
-  return 'black';
+  // No explicit match — fall through to the default plane (the one with '*')
+  const defaultPlane = capabilities.colors.find(p => p.cssMatch.includes('*'));
+  return defaultPlane?.name ?? 'black';
 }
 ```
 
-The heuristic is deliberately simple. A more sophisticated version could
-use colour distance (deltaE) but for the two-colour case "is it red-ish?"
-is sufficient. The user sees the plane assignment in the bitmap preview
-and can adjust object colours if the heuristic gets it wrong.
+No RGB parsing, no "is it red-ish" guessing. If the user's colour is in the
+`cssMatch` list, it goes to that plane. If not, it goes to the default (black).
+This is predictable, debuggable, and never misroutes oranges or pinks.
+
+The consuming app (label-maker) can show a visual indicator per object:
+"this colour will print in the red plane" / "this colour will print as black."
+That's a UI concern, not a core concern.
+
+To add more red-ish colours to the red plane, extend `cssMatch`:
+```typescript
+export const TWO_COLOR_BLACK_RED: PrinterCapabilities = {
+  colors: [
+    { name: 'black', cssMatch: ['*'] },
+    { name: 'red',   cssMatch: [
+      '#ff0000', '#f00', 'red', '#cc0000', '#ff3333',
+      '#e60000', '#b30000', '#ff1a1a', 'darkred', 'crimson',
+    ]},
+  ],
+};
+```
 
 ### 9.4 Continuous Labels (heightDots === 0)
 
@@ -788,6 +851,11 @@ async function createCanvas(width: number, height: number): Promise<CanvasLike> 
 }
 ```
 
+**`OffscreenCanvas` is required in browsers.** Supported in Safari 16.4+,
+Chrome 69+, Firefox 105+. Do not fall back to `<canvas>` DOM element — that
+would couple core to the DOM and break the headless design goal. For SSR
+contexts without `OffscreenCanvas`, the `@napi-rs/canvas` Node.js path applies.
+
 `@napi-rs/canvas` is an optional peer dependency — only required in Node.js.
 
 ---
@@ -801,7 +869,10 @@ export class LabelDesigner {
   constructor(options: DesignerOptions);
 
   // --- Document ---
-  readonly document: Readonly<LabelDocument>;
+  // Returns the current document state. Do NOT mutate the returned object
+  // directly — use add/update/remove/setCanvas methods which track history.
+  // In development, enable debug mode to deep-freeze the returned object.
+  readonly document: LabelDocument;
   loadDocument(doc: LabelDocument): void;
   newDocument(canvas: Partial<CanvasConfig>): void;
   toJSON(): string;
@@ -815,10 +886,9 @@ export class LabelDesigner {
   get(id: string): LabelObject | undefined;
   getAll(): LabelObject[];
 
-  // --- Selection (stateful, for UI use) ---
-  select(ids: string[]): void;
-  deselect(): void;
-  readonly selection: string[];
+  // NOTE: Selection is NOT managed by LabelDesigner. Selection is UI state
+  // and belongs in the consuming framework binding (Vue composable, React hook)
+  // or the application. Core only manages document state and rendering.
 
   // --- Canvas ---
   setCanvas(config: Partial<CanvasConfig>): void;
@@ -861,10 +931,10 @@ export class LabelDesigner {
 }
 
 export type DesignerEvent =
-  | 'change'
-  | 'render'
-  | 'historyChange'
-  | 'selectionChange';
+  | 'change'        // any document mutation
+  | 'render'        // render completed
+  | 'historyChange' // undo/redo stack changed
+  | 'error';        // render failure, missing font, invalid barcode, etc.
 
 export interface DesignerOptions {
   canvas?: Partial<CanvasConfig>;
@@ -952,6 +1022,16 @@ export interface LabelStore {
   load(id: string): Promise<LabelDocument>;
   list(): Promise<LabelSummary[]>;
   delete(id: string): Promise<void>;
+}
+
+export interface LabelSummary {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+  canvasWidth: number;
+  canvasHeight: number;
 }
 
 export interface AssetStore {
@@ -1126,44 +1206,61 @@ import('../dist/index.js').then(m => m.run());
   "name": "burnmark-cli",
   "dependencies": {
     "@burnmark-io/designer-core": "workspace:*",
-    "@thermal-label/labelmanager-node": "latest",
-    "@thermal-label/labelwriter-node": "latest",
-    "@thermal-label/brother-ql-node": "latest",
     "commander": "^12.0.0",
     "chalk": "^5.0.0",
     "ora": "^8.0.0"
+  },
+  "peerDependencies": {
+    "@thermal-label/labelmanager-node": ">=0.1.0",
+    "@thermal-label/labelwriter-node": ">=0.1.0",
+    "@thermal-label/brother-ql-node": ">=0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@thermal-label/labelmanager-node": { "optional": true },
+    "@thermal-label/labelwriter-node": { "optional": true },
+    "@thermal-label/brother-ql-node": { "optional": true }
   }
 }
 ```
+
+**Driver discovery via dynamic `import()`** — the CLI does NOT hardcode
+driver dependencies. Each driver is an optional peer dep. At runtime:
+
+```typescript
+async function discoverDrivers(): Promise<PrinterAdapter[]> {
+  const drivers = [];
+  try { drivers.push(await import('@thermal-label/labelmanager-node')); } catch {}
+  try { drivers.push(await import('@thermal-label/labelwriter-node')); } catch {}
+  try { drivers.push(await import('@thermal-label/brother-ql-node')); } catch {}
+  return drivers;
+}
+```
+
+Users install only the drivers they need:
+```bash
+pnpm add burnmark-cli @thermal-label/brother-ql-node
+# CLI auto-discovers brother-ql, doesn't error on missing labelwriter/labelmanager
+```
+
+Adding a new driver package in the future does not require a CLI release —
+just add it to `peerDependencies` as optional.
 
 ---
 
 ## 16. Framework Bindings
 
-### 16.1 Vue Composable (`@burnmark-io/designer-vue`)
+**Deferred to follow-up.** Vue composable and React hook are out of scope for
+v1 to avoid framework reactivity decisions mid-build. See:
+- `designer-core-amendment-bindings.md`
 
-```typescript
-import { useLabelDesigner } from '@burnmark-io/designer-vue';
-
-const {
-  designer,      // LabelDesigner instance
-  document,      // reactive ref to LabelDocument
-  selection,     // reactive ref to selected object IDs
-  bitmap,        // reactive ref to current LabelBitmap (auto-updates, debounced 200ms)
-  canUndo,
-  canRedo,
-  add, update, remove, undo, redo, print,
-} = useLabelDesigner({ canvas: { widthDots: 696, heightDots: 0, dpi: 300 } });
-```
-
-### 16.2 React Hook (`@burnmark-io/designer-react`)
-
-```typescript
-import { useLabelDesigner } from '@burnmark-io/designer-react';
-
-const { designer, document, selection, bitmap, canUndo, canRedo, ...actions } =
-  useLabelDesigner({ canvas: { widthDots: 696, heightDots: 0, dpi: 300 } });
-```
+Key design note for the bindings (when built):
+- **Selection lives in the binding layer, not core.** The composable/hook
+  manages its own `selection: Ref<string[]>` / `selection: string[]` state.
+  Core's `LabelDesigner` has no concept of selection.
+- The binding wraps core events in framework-native reactivity
+  (`ref`/`watch` for Vue, `useState`/`useEffect` for React).
+- The `bitmap` reactive property auto-updates (debounced 200ms) on document
+  changes and handles `'error'` events from the render pipeline.
 
 ---
 
@@ -1365,6 +1462,11 @@ jobs:
 
 ## 19. Implementation Sequence
 
+**v1 scope: `core` + `cli` only.** Framework bindings (Vue, React) and full
+VitePress docs are follow-up phases — see amendment files. This avoids
+framework reactivity decisions mid-build and keeps focus on validating the
+core API surface.
+
 ```
 1. Scaffold
    - LICENSE, .github/FUNDING.yml
@@ -1378,82 +1480,80 @@ jobs:
 
 2. @burnmark-io/designer-core — Document Model
    - package.json + README.md
-   - src/types.ts — all types including colour model
+   - src/types.ts — all types including colour model, BarcodeFormat export
    - src/document.ts — LabelDocument, CanvasConfig
-   - src/objects.ts — all object types
-   - src/designer.ts — LabelDesigner class (add/update/remove/reorder/history)
+   - src/objects.ts — all object types (BaseObject with color: string)
+   - src/designer.ts — LabelDesigner class (NO selection — that's UI state)
    - src/serialisation.ts — toJSON/fromJSON, .label format
-   - src/__tests__/ — CRUD, z-order, serialisation round-trip
+   - src/migration.ts — migrateDocument with version registry (v1 = identity)
+   - src/__tests__/ — CRUD, z-order, serialisation round-trip, migration
    - Gate: typecheck + lint + test + build
 
 3. @burnmark-io/designer-core — Template Engine
    - src/template.ts — applyTemplate, extractPlaceholders, validateVariables
-   - src/csv.ts — parseCsv, CsvData
-   - src/__tests__/ — substitution, validation, CSV parsing
+   - src/csv.ts — parseCsv, CsvData (papaparse)
+   - src/__tests__/ — substitution, validation, CSV parsing edge cases
    - Gate: typecheck + lint + test + build
 
 4. @burnmark-io/designer-core — Render Pipeline
-   - src/render/canvas.ts — createCanvas abstraction (OffscreenCanvas / @napi-rs/canvas)
+   - src/render/canvas.ts — createCanvas (OffscreenCanvas required, @napi-rs/canvas fallback)
    - src/render/text.ts — text renderer with font, size, alignment, wrapping
-   - src/render/image.ts — image renderer with fit modes
-   - src/render/barcode.ts — BarcodeEngine (bwip-js integration)
+   - src/render/image.ts — image renderer with per-object fit/threshold/dither
+   - src/render/barcode.ts — BarcodeEngine (bwip-js)
    - src/render/shape.ts — rectangle, ellipse, line
    - src/render/group.ts — recursive group rendering
-   - src/render/pipeline.ts — orchestrates the full render pass
-   - src/render/colour.ts — flattenForPrinter, matchColourToPlane, overlap resolution
-   - src/__tests__/ — render tests, colour pipeline tests, continuous label
+   - src/render/pipeline.ts — orchestrates full render pass, emits 'error' events
+   - src/render/colour.ts — flattenForPrinter, explicit cssMatch only (no heuristics),
+     overlap resolution (black wins)
+   - src/__tests__/ — render tests, colour pipeline (single + two-colour),
+     continuous label, opacity warning on bitmap target
    - Gate: typecheck + lint + test + build
 
 5. @burnmark-io/designer-core — Fonts + Assets
    - src/fonts.ts — FontLoader interface + browser/Node implementations
-   - src/fonts/bundled/ — Inter, JetBrains Mono, Bitter, Barlow Condensed (WOFF2 subsets)
+   - src/fonts/bundled/ — Inter, JetBrains Mono, Bitter, Barlow Condensed (WOFF2)
    - src/assets.ts — AssetLoader interface
-   - src/__tests__/ — font loading, fallback behaviour
+   - src/__tests__/ — font loading, fallback, system font warning
    - Gate: typecheck + lint + test + build
 
 6. @burnmark-io/designer-core — Export
    - src/export/png.ts — Canvas.toBlob
-   - src/export/pdf.ts — jsPDF, single + multi-page batch
-   - src/export/sheet.ts — SheetTemplate type, exportSheet with tiling
+   - src/export/pdf.ts — jsPDF, single + multi-page batch (full colour)
+   - src/export/sheet.ts — SheetTemplate type, exportSheet tiling
    - src/export/bundle.ts — .zip with .label + assets
-   - src/__tests__/ — export dimensions, multi-page PDF page count
+   - src/__tests__/ — export dimensions, multi-page count, sheet tiling
    - Gate: typecheck + lint + test + build
 
 7. @burnmark-io/designer-core — Printer Adapter + Batch
-   - src/printer.ts — PrinterAdapter interface, PrinterCapabilities
-   - src/batch.ts — renderBatch async generator
-   - src/__tests__/ — batch rendering, memory stability
+   - src/printer.ts — PrinterAdapter interface, PrinterCapabilities,
+     SINGLE_COLOR and TWO_COLOR_BLACK_RED presets
+   - src/batch.ts — renderBatch async generator yielding BatchResult with planes
+   - src/__tests__/ — batch rendering memory stability, multi-plane output
    - Gate: typecheck + lint + test + build
 
 8. burnmark-cli
    - package.json + README.md
+   - Dynamic driver discovery via optional peerDependencies
    - All commands: print, render, validate, list-printers, list-sheets
-   - Tests
+   - Tests (mock drivers)
    - Gate: typecheck + lint + test + build
+   - Publish dry-run: verify `types: "./src/index.ts"` works for workspace
+     consumers AND `exports` works for published consumers
 
-9. @burnmark-io/designer-vue
-   - package.json + README.md
-   - useLabelDesigner composable
-   - Tests
-   - Gate: typecheck + lint + test + build
+9. Minimal docs
+   - VitePress config
+   - index.md — landing page with install, quick start, API overview
+   - Getting started page — scripting guide, CLI usage
+   - Gate: docs:build completes without errors
 
-10. @burnmark-io/designer-react
-    - package.json + README.md
-    - useLabelDesigner hook
-    - Tests
-    - Gate: typecheck + lint + test + build
-
-11. Docs
-    - VitePress config
-    - All pages fully authored (getting started, scripting guide, embedding
-      guide, colour model, barcode reference, template engine, sheet export)
-    - API reference via typedoc
-    - Gate: docs:build completes without errors
-
-12. Final
+10. Final
     - Run pnpm test:coverage — verify 90% thresholds
     - Verify all PROGRESS.md checkboxes ticked
     - Verify ci.yml passes locally
+
+Follow-up (separate amendment documents):
+    - designer-core-amendment-bindings.md — Vue composable + React hook
+    - designer-core-amendment-docs.md — full VitePress docs site
 ```
 
 ---
@@ -1461,31 +1561,52 @@ jobs:
 ## 20. Key Constraints & Agent Notes
 
 - **Do not implement bitmap conversion** — delegate to `@mbtech-nl/bitmap`.
-  `renderImage()`, `rotateBitmap()`, `padBitmap()` etc. are imported, not reimplemented.
 - **Colour model:** `color` is a CSS string on every object, not an enum.
-  Do not limit to `'black' | 'red'`. The design model is colour-honest;
-  flattening happens at output time via `flattenForPrinter()`.
-- **Opacity:** composited on Canvas via `ctx.globalAlpha`. The resulting
-  RGBA pixels are flattened to 1bpp by bitmap's dithering. 50% opacity
-  text becomes a dither pattern — this is correct and expected.
-- **Per-object dithering:** `ImageObject` has its own `threshold` and `dither`
-  settings. Apply these per-image during the render pass, not globally.
-- **Fonts:** use the actual fonts named in section 8.1 (Inter, JetBrains Mono,
-  Bitter, Barlow Condensed). Subset to Latin + Latin Extended, WOFF2 format,
-  under 50KB each. Include OFL license text per font.
-- **`@napi-rs/canvas`** is an optional peer dependency — only needed for
-  Node.js rendering. Browser environments use `OffscreenCanvas`.
-- **`bwip-js`** is a runtime dependency — needed for barcode rendering.
-- **`jsPDF`** is a runtime dependency — needed for PDF and sheet export.
-- **`papaparse`** is a runtime dependency — needed for CSV parsing.
-- **Sheet export** uses the `SheetTemplate` type defined here; the actual
-  template registry is in `@burnmark-io/sheet-templates` (separate package).
-- **`pnpm prettier --check`** in CI (not bare `prettier --check`).
+  Do not limit to `'black' | 'red'`. Flattening uses explicit `cssMatch` only
+  — no RGB heuristics, no "is it red-ish" guessing. Unmatched colours go to
+  the default plane (black).
+- **Opacity:** composited on Canvas via `ctx.globalAlpha`. Produces dithered
+  stipple on thermal print output. Emit `'error'` event (as warning) when
+  rendering sub-1.0 opacity objects to bitmap. Works correctly for PNG/PDF.
+- **Selection is NOT in core.** Selection is UI state — it belongs in the
+  Vue composable / React hook / consuming app. `LabelDesigner` manages
+  document state and rendering only.
+- **`document` property** — returns `LabelDocument` (not `Readonly<>`).
+  Deep freeze in debug mode if desired, but don't pretend shallow `Readonly`
+  protects anything. Document that direct mutation is unsupported.
+- **Document versioning:** `migrateDocument()` must exist from day one with
+  a version registry. v1 is identity. Every future schema change increments
+  version and registers a migration function.
+- **`BarcodeFormat` must be exported** — it's used in `BarcodeObject.format`
+  which is part of the public document model. Use underscores not hyphens
+  for identifiers (`gs1_128` not `gs1-128`).
+- **`LabelSummary` must be defined** — it's used in `LabelStore.list()`.
+- **`OffscreenCanvas` is required** in browsers (Safari 16.4+, Chrome 69+,
+  Firefox 105+). Do not fall back to `<canvas>` DOM element — that breaks
+  the headless design goal.
+- **Error event:** `'error'` is a `DesignerEvent`. Render failures, missing
+  fonts, invalid barcode data, opacity warnings — all emitted as error events.
+  Consuming apps must handle these.
+- **CLI driver coupling:** drivers are optional peer dependencies discovered
+  via dynamic `import()` at runtime. Adding a new driver does not require a
+  CLI release. Users install only the drivers they need.
+- **Per-object dithering:** `ImageObject` has its own `threshold` and `dither`.
+  Apply per-image during render, not globally.
+- **Fonts:** Inter, JetBrains Mono, Bitter, Barlow Condensed. WOFF2 subset,
+  under 50KB each. Include OFL license per font.
+- **`@napi-rs/canvas`** is optional peer dep — Node.js only.
+- **`bwip-js`** is a runtime dependency.
+- **`jsPDF`** is a runtime dependency.
+- **`papaparse`** is a runtime dependency.
+- **`pnpm prettier --check`** in CI.
 - **`publishConfig: { access: "public" }`** in every package.json.
-- **`types: "./src/index.ts"`** in core package.json for workspace consumers.
-- **Coverage thresholds enforced only at step 12.**
-- **All READMEs must be publish-ready** per section 3.8 before marking done.
+- **`types: "./src/index.ts"`** in core package.json — verify with publish
+  dry-run that this works for both workspace and published consumers.
+- **Coverage thresholds enforced only at final step.**
+- **All READMEs must be publish-ready** per section 3.8.
 - **Changesets** for versioning.
 - **`sideEffects: false`** in all package.json files.
-- **Preview is not designer-core's responsibility.** designer-core produces
-  bitmaps. Displaying them in a preview panel is the consuming app's job.
+- **Preview is not core's responsibility** — core produces bitmaps, the
+  consuming app displays them.
+- **v1 scope is core + cli only.** Vue/React bindings and full docs are
+  follow-up amendments.
