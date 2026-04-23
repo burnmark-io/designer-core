@@ -95,12 +95,12 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 - [x] Gate: typecheck + lint + test + build + format
 - [ ] Publish dry-run verification (deferred — runs at step 10)
 
-## Step 9: Minimal docs
+## Step 9: Minimal docs ✅
 
-- [ ] VitePress config
-- [ ] index.md — landing page
-- [ ] getting-started.md
-- [ ] Gate: docs:build completes
+- [x] docs/.vitepress/config.ts — sidebar + nav + social links + local search
+- [x] docs/index.md — landing page with hero, features, quick start
+- [x] docs/getting-started.md — three paths (Node.js script, CLI, browser) with examples
+- [x] Gate: `pnpm docs:build` completes without errors
 
 ## Step 10: Final
 
@@ -120,3 +120,4 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 | 6    | ✓         | ✓    | 91✓  | ✓     | step 6     |
 | 7    | ✓         | ✓    | 96✓  | ✓     | step 7     |
 | 8    | ✓         | ✓    | 116✓ | ✓     | step 8     |
+| 9    | n/a       | n/a  | n/a  | docs✓ | step 9     |
