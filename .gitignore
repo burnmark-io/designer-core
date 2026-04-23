@@ -9,7 +9,7 @@ coverage/
 .vitepress/dist/
 docs/.vitepress/cache/
 docs/.vitepress/dist/
-docs/api/
+docs/reference/api/
 *.tgz
 .turbo/
 .idea/
