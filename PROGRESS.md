@@ -161,9 +161,12 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
       StrictMode safety and options-reinit resistance
 - [x] Gate: typecheck + lint + test + build + format
 
-## Bindings Step 3: Root README
+## Bindings Step 3: Root README ✅
 
-- [ ] Add install + quick example for both bindings
+- [x] Packages table lists the two new bindings with links
+- [x] Install examples for core / Vue / React
+- [x] Quick-start snippets for Vue composable and React hook
+- [x] Removed the "planned as a follow-up" paragraph
 
 ## Bindings Step 4: Changeset
 

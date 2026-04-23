@@ -15,23 +15,36 @@ Drive batch production from CSV. Print directly from Node scripts via the
 
 ## Packages
 
-| Package | Description |
-|---|---|
-| [`@burnmark-io/designer-core`](./packages/core) | Document model, render pipeline, colour flattening, template engine, exports |
-| [`burnmark-cli`](./packages/cli) | Command-line interface — render, print, validate, CSV batch |
-
-Framework bindings for Vue and React are planned as a follow-up — see
-[`designer-core-amendment-bindings.md`](./designer-core-amendment-bindings.md).
+| Package                                           | Description                                                                  |
+| ------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [`@burnmark-io/designer-core`](./packages/core)   | Document model, render pipeline, colour flattening, template engine, exports |
+| [`burnmark-cli`](./packages/cli)                  | Command-line interface — render, print, validate, CSV batch                  |
+| [`@burnmark-io/designer-vue`](./packages/vue)     | Vue 3 composable — reactive document, debounced render, selection            |
+| [`@burnmark-io/designer-react`](./packages/react) | React 18+ hook — same API shape as the Vue composable                        |
 
 ## Install
 
+### Core (Node or browser, no framework)
+
 ```bash
 pnpm add @burnmark-io/designer-core
-# or
-npm install @burnmark-io/designer-core
+```
+
+### Vue 3
+
+```bash
+pnpm add @burnmark-io/designer-vue @burnmark-io/designer-core vue
+```
+
+### React 18+
+
+```bash
+pnpm add @burnmark-io/designer-react @burnmark-io/designer-core react
 ```
 
 ## Quick start
+
+### Core — direct, no framework
 
 ```ts
 import { LabelDesigner } from '@burnmark-io/designer-core';
@@ -42,9 +55,14 @@ const designer = new LabelDesigner({
 
 designer.add({
   type: 'text',
-  x: 10, y: 10, width: 676, height: 40,
-  rotation: 0, opacity: 1,
-  locked: false, visible: true,
+  x: 10,
+  y: 10,
+  width: 676,
+  height: 40,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: 'Hello, {{name}}!',
   fontFamily: 'Burnmark Sans',
@@ -62,6 +80,37 @@ designer.add({
 
 const bitmap = await designer.renderToBitmap({ name: 'Mannes' });
 ```
+
+### Vue 3 composable
+
+```vue
+<script setup lang="ts">
+import { useLabelDesigner } from '@burnmark-io/designer-vue';
+
+const { document, bitmap, isRendering, canUndo, add, undo } = useLabelDesigner({
+  canvas: { widthDots: 696, heightDots: 0, dpi: 300 },
+});
+</script>
+```
+
+Document, bitmap, and history state are reactive; a render is kicked off
+200ms after the last change. See [`packages/vue/README.md`](./packages/vue/README.md).
+
+### React 18+ hook
+
+```tsx
+import { useLabelDesigner } from '@burnmark-io/designer-react';
+
+export function Editor() {
+  const { document, bitmap, isRendering, canUndo, add, undo } = useLabelDesigner({
+    canvas: { widthDots: 696, heightDots: 0, dpi: 300 },
+  });
+  // …
+}
+```
+
+StrictMode- and SSR-safe; same render/selection/history semantics as the
+Vue composable. See [`packages/react/README.md`](./packages/react/README.md).
 
 ## Contributing
 
