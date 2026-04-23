@@ -1,0 +1,336 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  LabelDesigner,
+  exportBundled as exportBundledCore,
+  exportPdf as exportPdfCore,
+  exportPng as exportPngCore,
+  exportSheet as exportSheetCore,
+  type CanvasConfig,
+  type DesignerOptions,
+  type LabelBitmap,
+  type LabelDocument,
+  type LabelObject,
+  type LabelObjectInput,
+  type PrinterCapabilities,
+  type RenderWarning,
+  type ReorderDirection,
+  type SheetTemplate,
+} from '@burnmark-io/designer-core';
+
+export interface DesignerHookOptions {
+  canvas?: Partial<CanvasConfig>;
+  name?: string;
+  designer?: LabelDesigner;
+  capabilities?: PrinterCapabilities;
+  /** Debounce ms for auto-render after a `change` event. Default 200. */
+  renderDebounceMs?: number;
+  /** Render immediately on mount so consumers get a bitmap without user action. Default true. */
+  renderOnMount?: boolean;
+  maxHistoryDepth?: number;
+  assetLoader?: DesignerOptions['assetLoader'];
+}
+
+export interface DesignerHookReturn {
+  designer: LabelDesigner;
+
+  document: LabelDocument;
+  canUndo: boolean;
+  canRedo: boolean;
+  isRendering: boolean;
+  bitmap: LabelBitmap | null;
+  planes: Map<string, LabelBitmap> | null;
+  renderWarning: RenderWarning | null;
+  renderError: Error | null;
+
+  selection: string[];
+  select: (ids: string[]) => void;
+  deselect: () => void;
+
+  loadDocument: (doc: LabelDocument) => void;
+  newDocument: (canvas?: Partial<CanvasConfig>, name?: string) => void;
+  toJSON: () => string;
+  fromJSON: (json: string) => void;
+
+  add: (object: LabelObjectInput) => string;
+  update: (id: string, patch: Partial<LabelObject>) => void;
+  remove: (id: string) => void;
+  reorder: (id: string, direction: ReorderDirection) => void;
+  get: (id: string) => LabelObject | undefined;
+  getAll: () => LabelObject[];
+
+  setCanvas: (patch: Partial<CanvasConfig>) => void;
+
+  undo: () => void;
+  redo: () => void;
+  clearHistory: () => void;
+
+  getPlaceholders: () => string[];
+  applyVariables: (variables: Record<string, string>) => LabelDocument;
+
+  /** Force a render now (bypasses debounce). Useful after external doc changes. */
+  render: () => Promise<void>;
+
+  exportPng: (variables?: Record<string, string>, scale?: number) => Promise<Blob>;
+  exportPdf: (rows?: Record<string, string>[], variables?: Record<string, string>) => Promise<Blob>;
+  exportSheet: (
+    sheet: SheetTemplate,
+    rows?: Record<string, string>[],
+    variables?: Record<string, string>,
+  ) => Promise<Blob>;
+  /** Zip containing `label.json` + referenced assets; mirrors core's `{ blob, missing }` contract. */
+  exportBundled: () => Promise<{ blob: Blob; missing: string[] }>;
+}
+
+/**
+ * React 18+ hook wrapping a `LabelDesigner` with reactive state and a
+ * debounced render loop. See `designer-core-amendment-bindings.md` for the
+ * design rationale — the version-counter pattern is required because core
+ * mutates the document object in place on every `add`/`update`/`remove`.
+ *
+ * StrictMode safe: the effect's subscription is idempotent — cleanup fires on
+ * first-effect teardown and re-subscription is the live copy.
+ *
+ * SSR safe: no browser APIs are used at construction; the debounce timer only
+ * starts inside `useEffect`, which does not run on the server.
+ */
+export function useLabelDesigner(options: DesignerHookOptions = {}): DesignerHookReturn {
+  // Designer — initialised exactly once per hook instance.
+  const designerRef = useRef<LabelDesigner | null>(null);
+  designerRef.current ??=
+    options.designer ??
+    new LabelDesigner({
+      ...(options.canvas && { canvas: options.canvas }),
+      ...(options.name !== undefined && { name: options.name }),
+      ...(options.maxHistoryDepth !== undefined && { maxHistoryDepth: options.maxHistoryDepth }),
+      ...(options.assetLoader && { assetLoader: options.assetLoader }),
+    });
+  const designer = designerRef.current;
+
+  // Version counter — bumping forces the component to re-render and pick up
+  // the latest `designer.document` (which is mutated in place).
+  const [, setVersion] = useState<number>(0);
+  const bump = useCallback((): void => {
+    setVersion(v => v + 1);
+  }, []);
+
+  const [bitmap, setBitmap] = useState<LabelBitmap | null>(null);
+  const [planes, setPlanes] = useState<Map<string, LabelBitmap> | null>(null);
+  const [renderWarning, setRenderWarning] = useState<RenderWarning | null>(null);
+  const [renderError, setRenderError] = useState<Error | null>(null);
+  const [isRendering, setIsRendering] = useState<boolean>(false);
+  const [selection, setSelection] = useState<string[]>([]);
+
+  // Keep latest capabilities / debounce values in refs so the effect does not
+  // need to re-subscribe when they change.
+  const capabilitiesRef = useRef<PrinterCapabilities | undefined>(options.capabilities);
+  capabilitiesRef.current = options.capabilities;
+  const debounceRef = useRef<number>(options.renderDebounceMs ?? 200);
+  debounceRef.current = options.renderDebounceMs ?? 200;
+
+  const renderOnMount = options.renderOnMount ?? true;
+
+  // Exposed as `render()` — populated when the effect is live.
+  const forceRenderRef = useRef<(() => Promise<void>) | null>(null);
+
+  useEffect(() => {
+    let generation = 0;
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    let disposed = false;
+
+    async function runRender(): Promise<void> {
+      const thisGeneration = ++generation;
+      setIsRendering(true);
+      setRenderWarning(null);
+      try {
+        const caps = capabilitiesRef.current;
+        if (caps) {
+          const result = await designer.renderPlanes(caps);
+          if (thisGeneration !== generation || disposed) return;
+          setPlanes(result);
+          setBitmap(result.get('black') ?? firstValue(result));
+        } else {
+          const result = await designer.renderToBitmap();
+          if (thisGeneration !== generation || disposed) return;
+          setBitmap(result);
+          setPlanes(null);
+        }
+        setRenderError(null);
+      } catch (error) {
+        if (thisGeneration !== generation || disposed) return;
+        setRenderError(error instanceof Error ? error : new Error(String(error)));
+      } finally {
+        if (thisGeneration === generation && !disposed) {
+          setIsRendering(false);
+        }
+      }
+    }
+
+    function scheduleRender(): void {
+      if (disposed) return;
+      if (debounceTimer !== null) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        debounceTimer = null;
+        void runRender();
+      }, debounceRef.current);
+    }
+
+    const offChange = designer.on('change', () => {
+      // Auto-prune selection — only bump React state when it actually changes.
+      setSelection(prev => {
+        if (prev.length === 0) return prev;
+        const valid = new Set<string>();
+        for (const o of designer.getAll()) valid.add(o.id);
+        const filtered = prev.filter(id => valid.has(id));
+        return filtered.length === prev.length ? prev : filtered;
+      });
+      bump();
+      scheduleRender();
+    });
+
+    const offHistory = designer.on('historyChange', () => {
+      bump();
+    });
+
+    const offError = designer.on('error', payload => {
+      if (payload instanceof Error) {
+        setRenderError(payload);
+        return;
+      }
+      if (
+        payload !== null &&
+        typeof payload === 'object' &&
+        'code' in payload &&
+        'message' in payload
+      ) {
+        setRenderWarning(payload as RenderWarning);
+      }
+    });
+
+    forceRenderRef.current = async (): Promise<void> => {
+      if (debounceTimer !== null) {
+        clearTimeout(debounceTimer);
+        debounceTimer = null;
+      }
+      await runRender();
+    };
+
+    if (renderOnMount) {
+      scheduleRender();
+    }
+
+    return () => {
+      disposed = true;
+      offChange();
+      offHistory();
+      offError();
+      if (debounceTimer !== null) {
+        clearTimeout(debounceTimer);
+        debounceTimer = null;
+      }
+      forceRenderRef.current = null;
+    };
+  }, [designer, renderOnMount, bump]);
+
+  const select = useCallback((ids: string[]): void => {
+    setSelection([...ids]);
+  }, []);
+
+  const deselect = useCallback((): void => {
+    setSelection([]);
+  }, []);
+
+  const render = useCallback(async (): Promise<void> => {
+    const fn = forceRenderRef.current;
+    if (fn) await fn();
+  }, []);
+
+  const actions = useMemo(
+    () => ({
+      loadDocument: (doc: LabelDocument): void => {
+        designer.loadDocument(doc);
+      },
+      newDocument: (canvas?: Partial<CanvasConfig>, name?: string): void => {
+        designer.newDocument(canvas ?? {}, name);
+      },
+      toJSON: (): string => designer.toJSON(),
+      fromJSON: (json: string): void => {
+        designer.fromJSON(json);
+      },
+      add: (object: LabelObjectInput): string => designer.add(object),
+      update: (id: string, patch: Partial<LabelObject>): void => {
+        designer.update(id, patch);
+      },
+      remove: (id: string): void => {
+        designer.remove(id);
+      },
+      reorder: (id: string, direction: ReorderDirection): void => {
+        designer.reorder(id, direction);
+      },
+      get: (id: string): LabelObject | undefined => designer.get(id),
+      getAll: (): LabelObject[] => designer.getAll(),
+      setCanvas: (patch: Partial<CanvasConfig>): void => {
+        designer.setCanvas(patch);
+      },
+      undo: (): void => {
+        designer.undo();
+      },
+      redo: (): void => {
+        designer.redo();
+      },
+      clearHistory: (): void => {
+        designer.clearHistory();
+      },
+      getPlaceholders: (): string[] => designer.getPlaceholders(),
+      applyVariables: (variables: Record<string, string>): LabelDocument =>
+        designer.applyVariables(variables),
+      exportPng: (variables?: Record<string, string>, scale?: number): Promise<Blob> =>
+        exportPngCore(designer.document, {
+          assetLoader: designer.assetLoader,
+          ...(variables && { variables }),
+          ...(scale !== undefined && { scale }),
+        }),
+      exportPdf: (
+        rows?: Record<string, string>[],
+        variables?: Record<string, string>,
+      ): Promise<Blob> =>
+        exportPdfCore(designer.document, rows, {
+          assetLoader: designer.assetLoader,
+          ...(variables && { variables }),
+        }),
+      exportSheet: (
+        sheet: SheetTemplate,
+        rows?: Record<string, string>[],
+        variables?: Record<string, string>,
+      ): Promise<Blob> =>
+        exportSheetCore(designer.document, sheet, rows, {
+          assetLoader: designer.assetLoader,
+          ...(variables && { variables }),
+        }),
+      exportBundled: (): Promise<{ blob: Blob; missing: string[] }> =>
+        exportBundledCore(designer.document, designer.assetLoader),
+    }),
+    [designer],
+  );
+
+  return {
+    designer,
+    document: designer.document,
+    canUndo: designer.canUndo,
+    canRedo: designer.canRedo,
+    isRendering,
+    bitmap,
+    planes,
+    renderWarning,
+    renderError,
+    selection,
+    select,
+    deselect,
+    render,
+    ...actions,
+  };
+}
+
+function firstValue<V>(map: Map<string, V>): V | null {
+  for (const v of map.values()) return v;
+  return null;
+}

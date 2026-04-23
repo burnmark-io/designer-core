@@ -126,6 +126,7 @@ Per the plan's Section 19 implementation sequence. Each step is a commit.
 | 9    | n/a       | n/a  | n/a  | docs✓ | step 9     |
 | 10   | ✓         | ✓    | 140✓ | ✓     | step 10    |
 | B1   | ✓         | ✓    | 158✓ | ✓     | bindings step 1 |
+| B2   | ✓         | ✓    | 178✓ | ✓     | bindings step 2 |
 
 ---
 
@@ -146,14 +147,19 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
       section 3.4 of the amendment
 - [x] Gate: typecheck + lint + test + build + format
 
-## Bindings Step 2: @burnmark-io/designer-react
+## Bindings Step 2: @burnmark-io/designer-react ✅
 
-- [ ] packages/react/package.json + README.md
-- [ ] packages/react/tsconfig.json + tsconfig.build.json
-- [ ] packages/react/vitest.config.ts
-- [ ] src/index.ts — `useLabelDesigner` hook
-- [ ] src/__tests__/ — tests from section 4.4
-- [ ] Gate: typecheck + lint + test + build + format
+- [x] packages/react/package.json + README.md
+- [x] packages/react/tsconfig.json + tsconfig.build.json
+- [x] packages/react/vitest.config.ts (env: happy-dom)
+- [x] src/index.ts — `useLabelDesigner` hook with useRef-stable designer,
+      version-counter re-renders, debounced render with generation-counter
+      cancellation, isRendering, selection auto-prune, StrictMode-safe
+      effect, SSR-safe construction, renderOnMount, external designer,
+      force `render()`
+- [x] src/__tests__/use-label-designer.test.tsx — 20 tests including
+      StrictMode safety and options-reinit resistance
+- [x] Gate: typecheck + lint + test + build + format
 
 ## Bindings Step 3: Root README
 
