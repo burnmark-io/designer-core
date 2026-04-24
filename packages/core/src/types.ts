@@ -1,7 +1,7 @@
 /**
  * Shared types for @burnmark-io/designer-core.
  *
- * Public types used across document, render, colour, template, and batch.
+ * Public types used across document, render, template, and batch.
  */
 
 export interface Margins {
@@ -99,17 +99,6 @@ export interface BarcodeOptions {
   version?: number;
   rows?: number;
   columns?: number;
-}
-
-// ---------- Printer capabilities / colour pipeline ----------
-
-export interface PrinterColor {
-  name: string;
-  cssMatch: string[];
-}
-
-export interface PrinterCapabilities {
-  colors: PrinterColor[];
 }
 
 // ---------- Events ----------

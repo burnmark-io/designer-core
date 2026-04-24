@@ -7,12 +7,10 @@ import { fromJSON, toJSON } from './serialisation.js';
 import {
   type CanvasConfig,
   type DesignerEvent,
-  type PrinterCapabilities,
   type RawImageData,
   type RenderWarning,
 } from './types.js';
-import { renderFull, renderPlanes, toBitmap, type RenderOptions } from './render/pipeline.js';
-import { SINGLE_COLOR } from './render/colour.js';
+import { renderFull, toBitmap, type RenderOptions } from './render/pipeline.js';
 import { type AssetLoader, InMemoryAssetLoader } from './assets.js';
 import { applyVariables, extractPlaceholders } from './template.js';
 import { type BatchResult } from './batch.js';
@@ -221,23 +219,10 @@ export class LabelDesigner {
     return image;
   }
 
-  /** Single-plane 1bpp render. All objects → black. */
+  /** Single-plane 1bpp render. All objects → black, Floyd–Steinberg dithered. */
   async renderToBitmap(variables?: Record<string, string>): Promise<LabelBitmap> {
-    const planes = await this.renderPlanes(SINGLE_COLOR, variables);
-    const plane = planes.get('black');
-    if (!plane) throw new Error('SINGLE_COLOR plane "black" not produced');
-    return plane;
-  }
-
-  /** Multi-plane 1bpp render per printer capability set. */
-  async renderPlanes(
-    capabilities: PrinterCapabilities,
-    variables?: Record<string, string>,
-  ): Promise<Map<string, LabelBitmap>> {
-    const opts = this.buildRenderOptions(variables);
-    const out = await renderPlanes(this.doc, capabilities, opts);
-    this.emitter.emit('render');
-    return out;
+    const rgba = await this.render(variables);
+    return toBitmap(rgba, { dither: true });
   }
 
   // --- Templates ---
@@ -274,12 +259,9 @@ export class LabelDesigner {
    * `BatchResult` so the consumer can print it and let it be garbage
    * collected before the next is produced.
    */
-  async *renderBatch(
-    rows: Record<string, string>[],
-    capabilities?: PrinterCapabilities,
-  ): AsyncGenerator<BatchResult> {
+  async *renderBatch(rows: Record<string, string>[]): AsyncGenerator<BatchResult> {
     const { renderBatch } = await import('./batch.js');
-    yield* renderBatch(this, rows, capabilities);
+    yield* renderBatch(this, rows);
   }
 
   // --- internal ---

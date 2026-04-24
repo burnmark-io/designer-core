@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LabelDesigner } from '../designer.js';
 import { renderBatch } from '../batch.js';
-import { TWO_COLOR_BLACK_RED } from '../render/colour.js';
 import { type LabelObjectInput, type TextObject } from '../objects.js';
 
 const textInput = (overrides: Partial<TextObject> = {}): LabelObjectInput<TextObject> => ({
@@ -31,28 +30,19 @@ const textInput = (overrides: Partial<TextObject> = {}): LabelObjectInput<TextOb
 });
 
 describe('renderBatch', () => {
-  it('yields one BatchResult per row with planes', async () => {
+  it('yields one BatchResult per row with an RGBA image', async () => {
     const d = new LabelDesigner({ canvas: { widthDots: 200, heightDots: 50 } });
     d.add(textInput());
     const rows = [{ name: 'A' }, { name: 'B' }, { name: 'C' }];
-    const results: { index: number; planeNames: string[] }[] = [];
+    const results: { index: number; width: number; height: number }[] = [];
     for await (const r of renderBatch(d, rows)) {
-      results.push({ index: r.index, planeNames: [...r.planes.keys()] });
+      results.push({ index: r.index, width: r.image.width, height: r.image.height });
     }
     expect(results).toEqual([
-      { index: 0, planeNames: ['black'] },
-      { index: 1, planeNames: ['black'] },
-      { index: 2, planeNames: ['black'] },
+      { index: 0, width: 200, height: 50 },
+      { index: 1, width: 200, height: 50 },
+      { index: 2, width: 200, height: 50 },
     ]);
-  });
-
-  it('respects custom PrinterCapabilities', async () => {
-    const d = new LabelDesigner({ canvas: { widthDots: 200, heightDots: 50 } });
-    d.add(textInput());
-    const rows = [{ name: 'X' }];
-    for await (const r of renderBatch(d, rows, TWO_COLOR_BLACK_RED)) {
-      expect([...r.planes.keys()].sort()).toEqual(['black', 'red']);
-    }
   });
 
   it('yields nothing for an empty rows array', async () => {
@@ -77,7 +67,7 @@ describe('renderBatch', () => {
     d.add(textInput());
     let count = 0;
     for await (const r of d.renderBatch([{ name: 'A' }, { name: 'B' }])) {
-      expect(r.planes.size).toBeGreaterThan(0);
+      expect(r.image.width).toBe(200);
       count += 1;
     }
     expect(count).toBe(2);

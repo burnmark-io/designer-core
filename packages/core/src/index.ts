@@ -6,8 +6,6 @@ export type {
   RawImageData,
   BarcodeFormat,
   BarcodeOptions,
-  PrinterColor,
-  PrinterCapabilities,
   DesignerEvent,
   RenderWarning,
 } from './types.js';
@@ -61,15 +59,7 @@ export { parseCsv } from './csv.js';
 export type { CsvData, CsvInput } from './csv.js';
 
 // Render pipeline
-export {
-  renderFull,
-  renderPlanes as renderPlanesFn,
-  renderPlaneImages,
-  toBitmap,
-  type RenderOptions,
-} from './render/pipeline.js';
-export { flattenForPrinter } from './flatten.js';
-export { SINGLE_COLOR, TWO_COLOR_BLACK_RED, matchColourToPlane } from './render/colour.js';
+export { renderFull, toBitmap, type RenderOptions } from './render/pipeline.js';
 export { BarcodeEngine } from './render/barcode.js';
 export { QRContent } from './qr-content.js';
 export type { VCardContact } from './qr-content.js';
@@ -104,15 +94,8 @@ export type { SheetTemplate, SheetLayout } from './export/sheet.js';
 export { exportBundled } from './export/bundle.js';
 export { BUILTIN_SHEETS, findSheet, listSheets } from './export/sheet-registry.js';
 
-// Printer adapter / store interfaces
-export type {
-  PrinterAdapter,
-  PrinterStatus,
-  PrintOptions,
-  LabelStore,
-  LabelSummary,
-  AssetStore,
-} from './printer.js';
+// Storage interfaces
+export type { LabelStore, LabelSummary, AssetStore } from './storage.js';
 
 // Batch
 export { renderBatch } from './batch.js';

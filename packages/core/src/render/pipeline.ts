@@ -1,11 +1,10 @@
 import { type LabelDocument } from '../document.js';
-import { type PrinterCapabilities, type RawImageData, type RenderWarning } from '../types.js';
+import { type RawImageData, type RenderWarning } from '../types.js';
 import { type AssetLoader, InMemoryAssetLoader } from '../assets.js';
 import { applyVariables } from '../template.js';
 import { context2d, createCanvas, type CanvasContextLike } from './canvas.js';
 import { BarcodeEngine } from './barcode.js';
 import { renderObjects, type RenderContext } from './group.js';
-import { partitionByPlane } from './colour.js';
 import { ensureFontsLoaded } from './fonts.js';
 import { renderImage as bitmapFromImage, type LabelBitmap } from '@mbtech-nl/bitmap';
 
@@ -16,8 +15,9 @@ export interface RenderOptions {
 }
 
 /**
- * Render a document to a single full-colour RGBA canvas. No plane splitting
- * or bitmap conversion — caller is responsible for those steps.
+ * Render a document to a single full-colour RGBA canvas. No 1bpp conversion
+ * — caller is responsible for that step (typically via a driver's `print()`
+ * or `createPreview()` which handles colour separation and thresholding).
  */
 export async function renderFull(
   doc: LabelDocument,
@@ -44,37 +44,6 @@ export async function renderFull(
 }
 
 /**
- * Render each printer plane as its own full-colour canvas.
- * For each plane, only the objects that map to that plane are rendered.
- * Returns one RawImageData per plane.
- */
-export async function renderPlaneImages(
-  doc: LabelDocument,
-  capabilities: PrinterCapabilities,
-  options: RenderOptions = {},
-): Promise<Map<string, RawImageData>> {
-  const resolved = options.variables ? applyVariables(doc, options.variables) : doc;
-  await ensureFontsLoaded(resolved, options.onWarning);
-  const height = resolveHeight(resolved);
-  const { widthDots } = resolved.canvas;
-  const buckets = partitionByPlane(resolved.objects, capabilities);
-
-  const result = new Map<string, RawImageData>();
-  for (const [planeName, objects] of buckets) {
-    const canvas = await createCanvas(widthDots, height);
-    const ctx = context2d(canvas);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, widthDots, height);
-
-    const rc = buildRenderContext(ctx, options);
-    await renderObjects(objects, rc);
-    const rgba = ctx.getImageData(0, 0, widthDots, height);
-    result.set(planeName, resolved.canvas.heightDots === 0 ? cropToContent(rgba, '#ffffff') : rgba);
-  }
-  return result;
-}
-
-/**
  * Convert RawImageData (RGBA) to a 1bpp `LabelBitmap` via @mbtech-nl/bitmap.
  * Uses Floyd–Steinberg dithering by default; threshold defaults to 128.
  */
@@ -91,42 +60,6 @@ export function toBitmap(
       ...(options.invert !== undefined ? { invert: options.invert } : {}),
     },
   );
-}
-
-/**
- * Render planes directly to 1bpp LabelBitmaps — the common case for
- * sending to a printer.
- *
- * Overlap resolution: where a non-default plane and the default (wildcard)
- * plane both have a set bit at the same position, the non-default plane
- * wins the pixel, and it is cleared from the default plane. Matches the
- * Brother QL firmware's behaviour when a red and black bit collide.
- */
-export async function renderPlanes(
-  doc: LabelDocument,
-  capabilities: PrinterCapabilities,
-  options: RenderOptions = {},
-): Promise<Map<string, LabelBitmap>> {
-  const imageMap = await renderPlaneImages(doc, capabilities, options);
-  const planes = new Map<string, LabelBitmap>();
-  for (const [name, rgba] of imageMap) {
-    planes.set(name, toBitmap(rgba, { dither: true }));
-  }
-
-  const defaultPlane = capabilities.colors.find(p => p.cssMatch.includes('*'));
-  if (defaultPlane) {
-    const primary = planes.get(defaultPlane.name);
-    if (primary) {
-      for (const plane of capabilities.colors) {
-        if (plane === defaultPlane) continue;
-        const other = planes.get(plane.name);
-        if (!other) continue;
-        clearOverlap(primary, other);
-      }
-    }
-  }
-
-  return planes;
 }
 
 function resolveHeight(doc: LabelDocument): number {
@@ -211,18 +144,4 @@ function isApproxEqual(
   const dg = Math.abs((data[i + 1] ?? 0) - g);
   const db = Math.abs((data[i + 2] ?? 0) - b);
   return dr <= delta && dg <= delta && db <= delta;
-}
-
-function clearOverlap(primary: LabelBitmap, other: LabelBitmap): void {
-  // Where `other` has a set bit, clear the same position in `primary`.
-  // Black wins: the non-default (red, etc.) plane keeps its bit, default plane loses it.
-  if (primary.widthPx !== other.widthPx || primary.heightPx !== other.heightPx) return;
-  const bytes = primary.data.length;
-  for (let i = 0; i < bytes; i++) {
-    const otherByte = other.data[i] ?? 0;
-    const primaryByte = primary.data[i];
-    if (otherByte !== 0 && primaryByte !== undefined) {
-      primary.data[i] = primaryByte & ~otherByte;
-    }
-  }
 }

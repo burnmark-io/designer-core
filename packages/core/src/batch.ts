@@ -1,12 +1,10 @@
 import { type LabelDesigner } from './designer.js';
-import { type PrinterCapabilities } from './types.js';
-import { type LabelBitmap } from '@mbtech-nl/bitmap';
-import { SINGLE_COLOR } from './render/colour.js';
+import { type RawImageData } from './types.js';
 
 export interface BatchResult {
   row: Record<string, string>;
   index: number;
-  planes: Map<string, LabelBitmap>;
+  image: RawImageData;
 }
 
 /**
@@ -14,16 +12,15 @@ export interface BatchResult {
  * rendered on demand and yielded, so the consumer can print/save/GC it
  * before the next one is produced.
  *
- * If `capabilities` is omitted, defaults to `SINGLE_COLOR` — one `'black'`
- * plane per yielded result.
+ * Yields full-colour RGBA per row. Colour separation and 1bpp conversion
+ * happen downstream in the driver (`printer.print(image, media)`).
  */
 export async function* renderBatch(
   designer: LabelDesigner,
   rows: Record<string, string>[],
-  capabilities: PrinterCapabilities = SINGLE_COLOR,
 ): AsyncGenerator<BatchResult> {
   for (const [index, row] of rows.entries()) {
-    const planes = await designer.renderPlanes(capabilities, row);
-    yield { row, index, planes };
+    const image = await designer.render(row);
+    yield { row, index, image };
   }
 }

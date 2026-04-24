@@ -6,7 +6,6 @@ import {
   type ShapeObject,
   type TextObject,
 } from '../objects.js';
-import { SINGLE_COLOR, TWO_COLOR_BLACK_RED } from '../render/colour.js';
 import { fitImage } from '../render/image.js';
 
 const shapeInput = (overrides: Partial<ShapeObject> = {}): LabelObjectInput<ShapeObject> => ({
@@ -97,32 +96,6 @@ describe('renderToBitmap', () => {
     d.add(textInput({ content: 'Name: {{name}}' }));
     const bm = await d.renderToBitmap({ name: 'Mannes' });
     expect(bm.widthPx).toBe(200);
-  });
-});
-
-describe('renderPlanes — multi-colour', () => {
-  it('single-colour capability → one plane', async () => {
-    const d = new LabelDesigner({ canvas: { widthDots: 100, heightDots: 100 } });
-    d.add(shapeInput({ color: '#000000' }));
-    d.add(shapeInput({ color: '#ff0000' }));
-    const planes = await d.renderPlanes(SINGLE_COLOR);
-    expect(planes.size).toBe(1);
-    expect(planes.get('black')).toBeDefined();
-  });
-
-  it('two-colour capability → two planes with object partitioning', async () => {
-    const d = new LabelDesigner({ canvas: { widthDots: 100, heightDots: 100 } });
-    d.add(shapeInput({ color: '#000000', x: 10, y: 10 }));
-    d.add(shapeInput({ color: '#ff0000', x: 50, y: 10 }));
-    const planes = await d.renderPlanes(TWO_COLOR_BLACK_RED);
-    expect(planes.size).toBe(2);
-    const black = planes.get('black')!;
-    const red = planes.get('red')!;
-    expect(black.widthPx).toBe(100);
-    expect(red.widthPx).toBe(100);
-    // Each plane has some content.
-    expect([...black.data].some(b => b !== 0)).toBe(true);
-    expect([...red.data].some(b => b !== 0)).toBe(true);
   });
 });
 
