@@ -108,8 +108,15 @@ describe('sheet-registry', () => {
     for (const s of BUILTIN_SHEETS) {
       expect(s.code).toMatch(/^[\da-z-]+$/);
       expect(s.paperSize).toMatch(/^(A4|Letter)$/);
-      expect(s.columns).toBeGreaterThan(0);
-      expect(s.rows).toBeGreaterThan(0);
+      expect(s.paperWidthMm).toBeGreaterThan(0);
+      expect(s.paperHeightMm).toBeGreaterThan(0);
+      expect(s.layouts.length).toBeGreaterThan(0);
+      for (const layout of s.layouts) {
+        expect(layout.columns).toBeGreaterThan(0);
+        expect(layout.rows).toBeGreaterThan(0);
+        expect(layout.pitchXMm).toBeGreaterThan(0);
+        expect(layout.pitchYMm).toBeGreaterThan(0);
+      }
     }
   });
 });

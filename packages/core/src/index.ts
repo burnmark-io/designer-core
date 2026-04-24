@@ -91,8 +91,16 @@ export type { FontLoader, FontDescriptor, BundledFontFamily, BundledFontEntry } 
 // Export
 export { exportPng } from './export/png.js';
 export { exportPdf } from './export/pdf.js';
-export { exportSheet, positionsPerSheet, sheetsNeeded } from './export/sheet.js';
-export type { SheetTemplate } from './export/sheet.js';
+export {
+  exportSheet,
+  positionsFromSheet,
+  positionsPerSheet,
+  labelsPerPage,
+  primaryLayout,
+  isMultiLayout,
+  sheetsNeeded,
+} from './export/sheet.js';
+export type { SheetTemplate, SheetLayout } from './export/sheet.js';
 export { exportBundled } from './export/bundle.js';
 export { BUILTIN_SHEETS, findSheet, listSheets } from './export/sheet-registry.js';
 

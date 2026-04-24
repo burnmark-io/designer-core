@@ -144,22 +144,40 @@ const all = listSheets();  // SheetTemplate[]
 interface SheetTemplate {
   code: string;              // 'avery-l7160'
   name: string;              // 'Avery L7160 — 21 per sheet (63.5 × 38.1 mm)'
-  paperSize: 'A4' | 'Letter';
+  paperSize: string;         // 'A4', 'Letter', any named size
+  paperWidthMm: number;
+  paperHeightMm: number;
   labelWidthMm: number;
   labelHeightMm: number;
-  columns: number;
-  rows: number;
-  marginTopMm: number;
-  marginLeftMm: number;
-  gutterHMm: number;
-  gutterVMm: number;
+  layouts: SheetLayout[];    // one or more grid layouts per sheet
+  labelShape?: 'rectangle' | 'round' | 'ellipse';  // UI metadata
+  cornerRadiusMm?: number;                          // UI metadata
+  marginMm?: number;                                // UI metadata
+}
+
+interface SheetLayout {
+  columns: number;     // labels per row in this layout
+  rows: number;        // label rows in this layout
+  originXMm: number;   // left offset of the first label
+  originYMm: number;   // top offset of the first label
+  pitchXMm: number;    // horizontal distance between label origins
+  pitchYMm: number;    // vertical distance between label origins
 }
 ```
 
+Most sheets have one layout. A few — staggered business-card sheets,
+offset product-code sheets — have two: a "normal" grid and an offset
+grid on the same page. `exportSheet` walks every layout and places
+labels in top-to-bottom, left-to-right order regardless of which layout
+a position came from.
+
+The three optional fields (`labelShape`, `cornerRadiusMm`, `marginMm`)
+are carry-through UI metadata. `exportSheet` does not consume them —
+use them when drawing cut guides in your own preview canvas.
+
 Built-in sheets include `avery-l7160`, `avery-l7163`, `avery-l7173`,
 `herma-4226`, `avery-l7671` (round), and `letter-30up` (Avery 5160).
-Full list in the [Export reference](/reference/label-format) — or run
-`burnmark list-sheets` from the CLI.
+Full list via `burnmark list-sheets` from the CLI.
 
 ### Avery L7160 walkthrough — 21 labels per A4
 
@@ -198,16 +216,28 @@ await writeFile('sheet.pdf', Buffer.from(await blob.arrayBuffer()));
 - If you pass no `rows` at all, every position is filled with the same
   label. That's useful for rendering 21 identical stickers.
 
-### The `positionsPerSheet` / `sheetsNeeded` helpers
+### Layout helpers
 
 ```ts
-import { positionsPerSheet, sheetsNeeded } from '@burnmark-io/designer-core';
+import {
+  labelsPerPage,
+  positionsFromSheet,
+  primaryLayout,
+  isMultiLayout,
+  sheetsNeeded,
+} from '@burnmark-io/designer-core';
 
-positionsPerSheet(sheet);          // 21
-sheetsNeeded(sheet, 50);           // 3  — ceil(50 / 21)
+labelsPerPage(sheet);               // 21  — total positions across every layout
+sheetsNeeded(sheet, 50);            // 3   — ceil(50 / 21)
+isMultiLayout(sheet);               // false for avery-l7160; true for staggered sheets
+primaryLayout(sheet);               // the first SheetLayout — the common case
+
+positionsFromSheet(sheet);
+// [{ xMm: 7.2, yMm: 15.1 }, { xMm: 73.2, yMm: 15.1 }, …] — sorted top-to-bottom, left-to-right
 ```
 
-Useful when you're estimating paper usage ahead of the render.
+`labelsPerPage` is also exported as `positionsPerSheet` for
+backwards-readable code; the two are aliases.
 
 ## `exportBundled(doc, assetLoader?)`
 

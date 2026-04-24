@@ -143,3 +143,42 @@ location and removed the stray `docs/assets/.vitepress/` and
 `docs/**/dist/` directories. Committed as a step-5 fix-up alongside the
 regular step-5 content so history stays linear. Future steps add files
 only under the canonical paths.
+
+## D27 — Multi-layout sheet templates: keep jsPDF on numeric dimensions
+
+`exportSheet` will pass `format: [paperWidthMm, paperHeightMm]` to jsPDF
+unconditionally, dropping the `PAPER_SIZES_MM` lookup. The sheet-templates
+package will ship many paper sizes beyond A4/Letter; relying on jsPDF's
+named-format recognition couples us to that library's coverage and
+silently mis-pages anything it doesn't know.
+
+## D28 — `marginMm` / `labelShape` / `cornerRadiusMm` are pass-through UI metadata
+
+These fields are part of the sheet-templates shape so they're allowed on
+our `SheetTemplate` for structural compatibility, but `exportSheet` does
+not consume them. Applications that want round labels or cut guides draw
+them themselves. Documenting the carry-through contract in the type-
+declaration comment avoids the implicit "this will eventually be honoured"
+expectation.
+
+## D29 — `categories: string[]` is NOT on designer-core's SheetTemplate
+
+Categories are a UI-filtering concern. sheet-templates carries them as
+its own extra field; TypeScript structural typing lets a
+sheet-templates-shaped object pass to `exportSheet` without designer-core
+needing to define (or ignore) the field.
+
+## D30 — `positionsFromSheet` single-layout parity verified by test
+
+The multi-layout change replaces a row-major nested loop with a layouts-
+traverse-then-sort. For any single-layout sheet the results must match
+bit-for-bit. Guarded by a dedicated test that computes positions the old
+way (row-major with gutters) and compares to `positionsFromSheet`.
+
+## D31 — Docs `guide/export.md` sheet-templates section deferred
+
+The "More Sheet Templates" section names specific exports (`findSheet`,
+`findByBrand`, `findBySize`, `listBrands`). Those names are not final
+until `@burnmark-io/sheet-templates` publishes. Holding the docs until
+the API is frozen — the docs amendment is a follow-up PR, not part of
+this core-only change.

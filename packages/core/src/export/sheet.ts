@@ -2,26 +2,57 @@ import { type LabelDocument } from '../document.js';
 import { renderFull, type RenderOptions } from '../render/pipeline.js';
 import { exportPng } from './png.js';
 
+/**
+ * A single rectangular grid of label positions on a sheet.
+ *
+ * Most sheets have one layout. A few (staggered business cards, offset
+ * product codes) have two — a "normal" grid and an offset grid on the
+ * same sheet. Encoding the positions as `origin + pitch` rather than
+ * `margin + labelSize + gutter` keeps offset and overlap cases
+ * expressible without special-casing.
+ */
+export interface SheetLayout {
+  columns: number; // `nx` — labels per row
+  rows: number; // `ny` — label rows
+  originXMm: number; // `x0` — left offset of the first label
+  originYMm: number; // `y0` — top offset of the first label
+  pitchXMm: number; // `dx` — horizontal distance between label origins
+  pitchYMm: number; // `dy` — vertical distance between label origins
+}
+
+/**
+ * Sticker-sheet template — paper size, label size, one or more grid
+ * layouts. Structurally compatible with
+ * `@burnmark-io/sheet-templates` so objects from that package pass
+ * directly to {@link exportSheet} without conversion.
+ *
+ * Fields marked "UI metadata" are carried through but **not consumed**
+ * by {@link exportSheet}. Applications that need round cut guides,
+ * non-printing label margins, or category filters draw/filter them
+ * themselves.
+ */
 export interface SheetTemplate {
   code: string;
   name: string;
-  paperSize: 'A4' | 'Letter';
+  /**
+   * Paper size name (e.g. `'A4'`, `'Letter'`, `'A3'`, `'Legal'`). Free-form
+   * so sheet-templates can carry any name; the exporter uses
+   * {@link paperWidthMm} / {@link paperHeightMm} for the actual page.
+   */
+  paperSize: string;
+  paperWidthMm: number;
+  paperHeightMm: number;
   labelWidthMm: number;
   labelHeightMm: number;
-  columns: number;
-  rows: number;
-  marginTopMm: number;
-  marginLeftMm: number;
-  gutterHMm: number;
-  gutterVMm: number;
+  /** One or more grid layouts; positions from all layouts are union-sorted. */
+  layouts: SheetLayout[];
+  /** UI metadata — shape hint for cut guides. Not consumed by `exportSheet`. */
+  labelShape?: 'rectangle' | 'round' | 'ellipse';
+  /** UI metadata — corner radius for rectangle labels. Not consumed. */
+  cornerRadiusMm?: number;
+  /** UI metadata — non-printing margin inside each label. Not consumed. */
+  marginMm?: number;
 }
-
-const PAPER_SIZES_MM: Record<SheetTemplate['paperSize'], { widthMm: number; heightMm: number }> = {
-  A4: { widthMm: 210, heightMm: 297 },
-  Letter: { widthMm: 215.9, heightMm: 279.4 },
-};
-
-const MM_PER_INCH = 25.4;
 
 interface JsPdfSheet {
   addPage: (format: [number, number], orientation: 'portrait' | 'landscape') => void;
@@ -37,10 +68,52 @@ interface JsPdfSheet {
 }
 
 /**
- * Export a sticker sheet PDF. Tiles the label design across the
- * `SheetTemplate`. If `rows` is supplied, each row is rendered as a unique
- * label on consecutive sheet positions, creating additional sheets as
- * needed. Otherwise every position is filled with the same label.
+ * Enumerate every label position on one sheet — across all layouts —
+ * sorted top-to-bottom then left-to-right. For a single-layout sheet
+ * the result is identical to the old row-major iteration.
+ */
+export function positionsFromSheet(sheet: SheetTemplate): { xMm: number; yMm: number }[] {
+  const positions: { xMm: number; yMm: number }[] = [];
+  for (const layout of sheet.layouts) {
+    for (let row = 0; row < layout.rows; row++) {
+      for (let col = 0; col < layout.columns; col++) {
+        positions.push({
+          xMm: layout.originXMm + col * layout.pitchXMm,
+          yMm: layout.originYMm + row * layout.pitchYMm,
+        });
+      }
+    }
+  }
+  positions.sort((a, b) => a.yMm - b.yMm || a.xMm - b.xMm);
+  return positions;
+}
+
+/**
+ * Total label positions on one sheet across every layout.
+ */
+export function labelsPerPage(sheet: SheetTemplate): number {
+  let total = 0;
+  for (const layout of sheet.layouts) total += layout.columns * layout.rows;
+  return total;
+}
+
+/** The first (primary) layout — the common case for single-grid sheets. */
+export function primaryLayout(sheet: SheetTemplate): SheetLayout {
+  const first = sheet.layouts[0];
+  if (!first) throw new Error(`Sheet "${sheet.code}" has no layouts`);
+  return first;
+}
+
+/** `true` when the sheet has more than one grid (staggered / offset). */
+export function isMultiLayout(sheet: SheetTemplate): boolean {
+  return sheet.layouts.length > 1;
+}
+
+/**
+ * Export a sticker-sheet PDF. Tiles the label design across every
+ * position produced by {@link positionsFromSheet}. If `rows` is supplied,
+ * each row becomes a unique label; otherwise every position is filled
+ * with the same label. Extra rows paginate onto new sheets.
  */
 export async function exportSheet(
   doc: LabelDocument,
@@ -51,41 +124,40 @@ export async function exportSheet(
   const { jsPDF } = (await import('jspdf')) as unknown as {
     jsPDF: new (opts: {
       unit: string;
-      format: SheetTemplate['paperSize'];
+      format: [number, number];
       orientation: 'portrait' | 'landscape';
     }) => JsPdfSheet;
   };
 
-  const pdf = new jsPDF({ unit: 'mm', format: sheet.paperSize, orientation: 'portrait' });
-  const positions = sheet.columns * sheet.rows;
+  const pageFormat: [number, number] = [sheet.paperWidthMm, sheet.paperHeightMm];
+  const pdf = new jsPDF({ unit: 'mm', format: pageFormat, orientation: 'portrait' });
+
+  const positions = positionsFromSheet(sheet);
+  const perPage = positions.length;
+  if (perPage === 0) return pdf.output('blob');
 
   const iterRows: Record<string, string>[] = rows && rows.length > 0 ? rows : [{}];
 
-  // Cache rendered images per unique variable set so we don't re-render
-  // when the same row is used to fill all positions.
+  // Cache rendered label PNGs per unique variable set — cheap when the
+  // same row fills every position on a sheet.
   const cache = new Map<string, string>();
 
+  const total = rows && rows.length > 0 ? rows.length : perPage;
   let pageIndex = 0;
-  for (let i = 0; i < (rows && rows.length > 0 ? rows.length : positions); i++) {
+  for (let i = 0; i < total; i++) {
     const row = iterRows[i % iterRows.length] ?? {};
     const dataUrl = await getDataUrl(doc, row, options, cache);
 
-    const positionOnPage = i % positions;
+    const positionOnPage = i % perPage;
     if (positionOnPage === 0 && pageIndex > 0) {
-      pdf.addPage(
-        [PAPER_SIZES_MM[sheet.paperSize].widthMm, PAPER_SIZES_MM[sheet.paperSize].heightMm],
-        'portrait',
-      );
+      pdf.addPage(pageFormat, 'portrait');
     }
     if (positionOnPage === 0) pageIndex += 1;
 
-    const col = positionOnPage % sheet.columns;
-    const rowIdx = Math.floor(positionOnPage / sheet.columns);
+    const pos = positions[positionOnPage];
+    if (!pos) continue;
 
-    const x = sheet.marginLeftMm + col * (sheet.labelWidthMm + sheet.gutterHMm);
-    const y = sheet.marginTopMm + rowIdx * (sheet.labelHeightMm + sheet.gutterVMm);
-
-    pdf.addImage(dataUrl, 'PNG', x, y, sheet.labelWidthMm, sheet.labelHeightMm);
+    pdf.addImage(dataUrl, 'PNG', pos.xMm, pos.yMm, sheet.labelWidthMm, sheet.labelHeightMm);
   }
 
   return pdf.output('blob');
@@ -121,18 +193,16 @@ function btoaFallback(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
-/** How many labels fit on a single sheet. */
+/** Alias for {@link labelsPerPage}. */
 export function positionsPerSheet(sheet: SheetTemplate): number {
-  return sheet.rows * sheet.columns;
+  return labelsPerPage(sheet);
 }
 
 /** Total number of sheets needed for a given row count. */
 export function sheetsNeeded(sheet: SheetTemplate, rowCount: number): number {
-  const per = positionsPerSheet(sheet);
+  const per = labelsPerPage(sheet);
   return per > 0 ? Math.ceil(rowCount / per) : 0;
 }
-
-export { MM_PER_INCH };
 
 // Re-render entry: uses renderFull directly when callers already have an
 // RGBA image; not currently used internally but exposed for future work.

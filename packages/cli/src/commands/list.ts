@@ -1,11 +1,17 @@
-import { listSheets } from '@burnmark-io/designer-core';
+import { labelsPerPage, listSheets } from '@burnmark-io/designer-core';
 import { discoverDrivers } from '../drivers.js';
 
 export function listSheetsCommand(): string[] {
-  return listSheets().map(
-    s =>
-      `${s.code.padEnd(18)} ${s.paperSize.padEnd(7)} ${String(s.rows)}×${String(s.columns)} — ${s.name}`,
+  const lines = listSheets().map(s => {
+    const perPage = labelsPerPage(s);
+    return `${s.code.padEnd(18)} ${s.paperSize.padEnd(7)} ${String(perPage).padStart(3)}/page — ${s.name}`;
+  });
+  lines.push('');
+  lines.push(
+    'Install @burnmark-io/sheet-templates for hundreds of additional templates:',
   );
+  lines.push('  pnpm add @burnmark-io/sheet-templates');
+  return lines;
 }
 
 export async function listPrintersCommand(): Promise<string[]> {
