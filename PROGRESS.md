@@ -266,7 +266,22 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
       scanning unreliably)
 - [x] Gate: `pnpm docs:build` passes
 
-## Docs Amendment Step 7: Embedding pages 📋
+## Docs Amendment Step 7: Embedding pages ✅
+
+- [x] `embedding/vanilla.md` — events, preview drawing onto a
+      `<canvas>`, font + asset handling, full HTML+TS example
+- [x] `embedding/vue.md` — full `useLabelDesigner` API (options,
+      returned refs/actions), selection auto-pruning, debounced
+      preview, error/warning split, complete single-file component
+      with Konva + properties panel, two-colour example
+- [x] `embedding/react.md` — same scope with React idioms, explicit
+      StrictMode and SSR safety notes, full example with bitmap-to-
+      canvas preview
+- [x] `embedding/custom-renderer.md` — reframed around the canvas
+      extension point (no formal Renderer interface), three real
+      scenarios (`@napi-rs/canvas` font pre-config, OffscreenCanvas
+      stubbing in tests, `skia-canvas` drop-in for Alpine)
+- [x] Gate: `pnpm docs:build` passes
 
 ## Docs Amendment Step 8: API reference regen + sidebar wiring 📋
 
