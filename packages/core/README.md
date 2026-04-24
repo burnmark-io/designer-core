@@ -137,7 +137,7 @@ import { QRContent } from '@burnmark-io/designer-core';
 
 QRContent.wifi('MyNetwork', 'hunter2');
 QRContent.url('https://example.com');
-QRContent.vcard({ firstName: 'Mannes', lastName: 'Brak', ... });
+QRContent.vcard({ firstName: 'Piet', lastName: 'Brak', ... });
 ```
 
 ## Template engine
