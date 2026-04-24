@@ -54,21 +54,16 @@ function emitInternal(designer: LabelDesigner, event: string, payload: unknown):
   internal.emitter.emit(event, payload);
 }
 
-/** Build a designer with renderToBitmap + renderPlanes stubbed, pass it into the hook. */
+/** Build a designer with renderToBitmap stubbed, pass it into the hook. */
 function stubbedDesigner(): {
   designer: LabelDesigner;
   renderBitmap: ReturnType<typeof vi.fn>;
-  renderPlanes: ReturnType<typeof vi.fn>;
 } {
   const designer = new LabelDesigner();
   const renderBitmap = vi.spyOn(designer, 'renderToBitmap').mockResolvedValue(fakeBitmap());
-  const renderPlanes = vi
-    .spyOn(designer, 'renderPlanes')
-    .mockResolvedValue(new Map([['black', fakeBitmap()]]));
   return {
     designer,
     renderBitmap: renderBitmap as unknown as ReturnType<typeof vi.fn>,
-    renderPlanes: renderPlanes as unknown as ReturnType<typeof vi.fn>,
   };
 }
 
@@ -245,35 +240,6 @@ describe('useLabelDesigner (react)', () => {
       await vi.runAllTimersAsync();
     });
     expect(result.current.isRendering).toBe(false);
-    unmount();
-  });
-
-  it('uses renderPlanes when capabilities are provided', async () => {
-    const designer = new LabelDesigner();
-    vi.spyOn(designer, 'renderPlanes').mockResolvedValue(
-      new Map([
-        ['black', fakeBitmap(1, 1)],
-        ['red', fakeBitmap(2, 2)],
-      ]),
-    );
-    const bitmapSpy = vi.spyOn(designer, 'renderToBitmap');
-    const { result, unmount } = renderHook(() =>
-      useLabelDesigner({
-        designer,
-        capabilities: { colors: [{ name: 'black', cssMatch: ['#000'] }] },
-        renderOnMount: false,
-      }),
-    );
-    act(() => {
-      result.current.add(textInput());
-    });
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(200);
-      await vi.runAllTimersAsync();
-    });
-    expect(bitmapSpy).not.toHaveBeenCalled();
-    expect(result.current.planes?.size).toBe(2);
-    expect(result.current.bitmap).toBe(result.current.planes?.get('black'));
     unmount();
   });
 

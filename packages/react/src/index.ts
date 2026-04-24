@@ -11,7 +11,6 @@ import {
   type LabelDocument,
   type LabelObject,
   type LabelObjectInput,
-  type PrinterCapabilities,
   type RenderWarning,
   type ReorderDirection,
   type SheetTemplate,
@@ -21,7 +20,6 @@ export interface DesignerHookOptions {
   canvas?: Partial<CanvasConfig>;
   name?: string;
   designer?: LabelDesigner;
-  capabilities?: PrinterCapabilities;
   /** Debounce ms for auto-render after a `change` event. Default 200. */
   renderDebounceMs?: number;
   /** Render immediately on mount so consumers get a bitmap without user action. Default true. */
@@ -38,7 +36,6 @@ export interface DesignerHookReturn {
   canRedo: boolean;
   isRendering: boolean;
   bitmap: LabelBitmap | null;
-  planes: Map<string, LabelBitmap> | null;
   renderWarning: RenderWarning | null;
   renderError: Error | null;
 
@@ -83,9 +80,9 @@ export interface DesignerHookReturn {
 
 /**
  * React 18+ hook wrapping a `LabelDesigner` with reactive state and a
- * debounced render loop. See `designer-core-amendment-bindings.md` for the
- * design rationale — the version-counter pattern is required because core
- * mutates the document object in place on every `add`/`update`/`remove`.
+ * debounced render loop. The hook produces a single-colour 1bpp bitmap for
+ * quick on-canvas preview; apps that want driver-accurate multi-colour
+ * preview call `printer.createPreview(rgba)` with RGBA from `designer.render()`.
  *
  * StrictMode safe: the effect's subscription is idempotent — cleanup fires on
  * first-effect teardown and re-subscription is the live copy.
@@ -114,16 +111,13 @@ export function useLabelDesigner(options: DesignerHookOptions = {}): DesignerHoo
   }, []);
 
   const [bitmap, setBitmap] = useState<LabelBitmap | null>(null);
-  const [planes, setPlanes] = useState<Map<string, LabelBitmap> | null>(null);
   const [renderWarning, setRenderWarning] = useState<RenderWarning | null>(null);
   const [renderError, setRenderError] = useState<Error | null>(null);
   const [isRendering, setIsRendering] = useState<boolean>(false);
   const [selection, setSelection] = useState<string[]>([]);
 
-  // Keep latest capabilities / debounce values in refs so the effect does not
-  // need to re-subscribe when they change.
-  const capabilitiesRef = useRef<PrinterCapabilities | undefined>(options.capabilities);
-  capabilitiesRef.current = options.capabilities;
+  // Keep latest debounce value in a ref so the effect does not need to
+  // re-subscribe when it changes.
   const debounceRef = useRef<number>(options.renderDebounceMs ?? 200);
   debounceRef.current = options.renderDebounceMs ?? 200;
 
@@ -142,18 +136,9 @@ export function useLabelDesigner(options: DesignerHookOptions = {}): DesignerHoo
       setIsRendering(true);
       setRenderWarning(null);
       try {
-        const caps = capabilitiesRef.current;
-        if (caps) {
-          const result = await designer.renderPlanes(caps);
-          if (thisGeneration !== generation || disposed) return;
-          setPlanes(result);
-          setBitmap(result.get('black') ?? firstValue(result));
-        } else {
-          const result = await designer.renderToBitmap();
-          if (thisGeneration !== generation || disposed) return;
-          setBitmap(result);
-          setPlanes(null);
-        }
+        const result = await designer.renderToBitmap();
+        if (thisGeneration !== generation || disposed) return;
+        setBitmap(result);
         setRenderError(null);
       } catch (error) {
         if (thisGeneration !== generation || disposed) return;
@@ -319,7 +304,6 @@ export function useLabelDesigner(options: DesignerHookOptions = {}): DesignerHoo
     canRedo: designer.canRedo,
     isRendering,
     bitmap,
-    planes,
     renderWarning,
     renderError,
     selection,
@@ -328,9 +312,4 @@ export function useLabelDesigner(options: DesignerHookOptions = {}): DesignerHoo
     render,
     ...actions,
   };
-}
-
-function firstValue<V>(map: Map<string, V>): V | null {
-  for (const v of map.values()) return v;
-  return null;
 }

@@ -11,7 +11,6 @@ import {
   type LabelDocument,
   type LabelObject,
   type LabelObjectInput,
-  type PrinterCapabilities,
   type RenderWarning,
   type ReorderDirection,
   type SheetTemplate,
@@ -21,7 +20,6 @@ export interface DesignerComposableOptions {
   canvas?: Partial<CanvasConfig>;
   name?: string;
   designer?: LabelDesigner;
-  capabilities?: PrinterCapabilities;
   /** Debounce ms for auto-render after a `change` event. Default 200. */
   renderDebounceMs?: number;
   /** Render immediately on mount so consumers get a bitmap without user action. Default true. */
@@ -39,7 +37,6 @@ export interface DesignerComposableReturn {
   canRedo: Ref<boolean>;
   isRendering: Ref<boolean>;
   bitmap: ShallowRef<LabelBitmap | null>;
-  planes: ShallowRef<Map<string, LabelBitmap> | null>;
   renderWarning: ShallowRef<RenderWarning | null>;
   renderError: ShallowRef<Error | null>;
 
@@ -87,9 +84,10 @@ export interface DesignerComposableReturn {
 
 /**
  * Vue 3 composable wrapping a `LabelDesigner` instance with reactive state
- * and debounced rendering. See `designer-core-amendment-bindings.md` for the
- * design rationale — in particular the `shallowRef` + `triggerRef` pattern
- * used to force updates despite the core mutating the document in place.
+ * and debounced rendering. The composable renders a single-colour 1bpp
+ * bitmap for quick on-canvas preview; apps that want a driver-accurate
+ * multi-colour preview should call `printer.createPreview(rgba)` with the
+ * RGBA from `designer.render()`.
  */
 export function useLabelDesigner(
   options: DesignerComposableOptions = {},
@@ -103,7 +101,6 @@ export function useLabelDesigner(
       ...(options.assetLoader && { assetLoader: options.assetLoader }),
     });
 
-  const capabilities = options.capabilities;
   const debounceMs = options.renderDebounceMs ?? 200;
   const renderOnMount = options.renderOnMount ?? true;
 
@@ -112,7 +109,6 @@ export function useLabelDesigner(
   const canRedo = ref<boolean>(designer.canRedo);
   const isRendering = ref<boolean>(false);
   const bitmap = shallowRef<LabelBitmap | null>(null);
-  const planes = shallowRef<Map<string, LabelBitmap> | null>(null);
   const renderWarning = shallowRef<RenderWarning | null>(null);
   const renderError = shallowRef<Error | null>(null);
   const selection = ref<string[]>([]);
@@ -128,17 +124,9 @@ export function useLabelDesigner(
     renderWarning.value = null;
 
     try {
-      if (capabilities) {
-        const result = await designer.renderPlanes(capabilities);
-        if (thisGeneration !== generation || disposed) return;
-        planes.value = result;
-        bitmap.value = result.get('black') ?? firstValue(result);
-      } else {
-        const result = await designer.renderToBitmap();
-        if (thisGeneration !== generation || disposed) return;
-        bitmap.value = result;
-        planes.value = null;
-      }
+      const result = await designer.renderToBitmap();
+      if (thisGeneration !== generation || disposed) return;
+      bitmap.value = result;
       renderError.value = null;
     } catch (error) {
       if (thisGeneration !== generation || disposed) return;
@@ -216,7 +204,6 @@ export function useLabelDesigner(
     canRedo,
     isRendering,
     bitmap,
-    planes,
     renderWarning,
     renderError,
     selection,
@@ -296,9 +283,4 @@ export function useLabelDesigner(
     exportBundled: (): Promise<{ blob: Blob; missing: string[] }> =>
       exportBundledCore(designer.document, designer.assetLoader),
   };
-}
-
-function firstValue<V>(map: Map<string, V>): V | null {
-  for (const v of map.values()) return v;
-  return null;
 }

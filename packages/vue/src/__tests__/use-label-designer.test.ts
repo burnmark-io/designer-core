@@ -72,15 +72,11 @@ function setup(options: Parameters<typeof useLabelDesigner>[0] = {}): {
   designer: LabelDesigner;
   api: DesignerComposableReturn;
   renderBitmap: ReturnType<typeof vi.fn>;
-  renderPlanes: ReturnType<typeof vi.fn>;
   dispose: () => void;
 } {
   const designer =
     options.designer ?? new LabelDesigner(options.canvas ? { canvas: options.canvas } : {});
   const renderBitmap = vi.spyOn(designer, 'renderToBitmap').mockResolvedValue(fakeBitmap());
-  const renderPlanes = vi
-    .spyOn(designer, 'renderPlanes')
-    .mockResolvedValue(new Map([['black', fakeBitmap()]]));
   const { result, dispose } = withScope(() =>
     useLabelDesigner({ ...options, designer, renderOnMount: options.renderOnMount ?? false }),
   );
@@ -88,7 +84,6 @@ function setup(options: Parameters<typeof useLabelDesigner>[0] = {}): {
     designer,
     api: result,
     renderBitmap: renderBitmap as unknown as ReturnType<typeof vi.fn>,
-    renderPlanes: renderPlanes as unknown as ReturnType<typeof vi.fn>,
     dispose,
   };
 }
@@ -225,32 +220,6 @@ describe('useLabelDesigner (vue)', () => {
     resolveRender?.(fakeBitmap());
     await vi.runAllTimersAsync();
     expect(result.isRendering.value).toBe(false);
-    dispose();
-  });
-
-  it('uses renderPlanes when capabilities are provided', async () => {
-    const designer = new LabelDesigner();
-    vi.spyOn(designer, 'renderPlanes').mockResolvedValue(
-      new Map([
-        ['black', fakeBitmap(1, 1)],
-        ['red', fakeBitmap(2, 2)],
-      ]),
-    );
-    const bitmapSpy = vi.spyOn(designer, 'renderToBitmap');
-    const { result, dispose } = withScope(() =>
-      useLabelDesigner({
-        designer,
-        capabilities: { colors: [{ name: 'black', cssMatch: ['#000'] }] },
-        renderOnMount: false,
-      }),
-    );
-    result.add(textInput());
-    await vi.advanceTimersByTimeAsync(200);
-    await vi.runAllTimersAsync();
-    expect(bitmapSpy).not.toHaveBeenCalled();
-    expect(result.planes.value?.size).toBe(2);
-    // `bitmap` shortcut is the 'black' plane.
-    expect(result.bitmap.value).toBe(result.planes.value?.get('black'));
     dispose();
   });
 
