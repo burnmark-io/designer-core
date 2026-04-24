@@ -69,7 +69,7 @@ to the docs as the single source of truth. Opening it produces:
       "opacity": 1,
       "locked": false,
       "visible": true,
-      "color": "#000000",
+      "color": "#ff0000",
       "content": "{{name}}",
       "fontFamily": "Burnmark Sans",
       "fontSize": 44,

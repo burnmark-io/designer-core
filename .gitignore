@@ -21,3 +21,4 @@ docs/reference/api/
 .idea/
 .vscode/
 !.vscode/extensions.json
+.claude/

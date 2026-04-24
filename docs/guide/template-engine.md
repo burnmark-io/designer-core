@@ -111,7 +111,7 @@ designer.add({
   type: 'text',
   x: 24, y: 24, width: 648, height: 60,
   rotation: 0, opacity: 1, locked: false, visible: true,
-  color: '#000000',
+  color: '#ff0000',                         // recipient name in red
   content: '{{name}}',
   fontFamily: 'Burnmark Sans',
   fontSize: 44, fontWeight: 'bold', fontStyle: 'normal',
@@ -179,14 +179,22 @@ if (!report.valid) {
 
 ### Render and print
 
+The design has the recipient name in red and the address in black, so
+we pass `TWO_COLOR_BLACK_RED` as the capabilities — each result's
+`planes` map will contain both a `'black'` and a `'red'` plane that
+a Brother QL can print in a single pass.
+
 ```ts
-import { renderBatch } from '@burnmark-io/designer-core';
+import {
+  renderBatch,
+  TWO_COLOR_BLACK_RED,
+} from '@burnmark-io/designer-core';
 import { openPrinter } from 'burnmark-cli/dist/drivers.js'; // or your own driver factory
 
 const printer = await openPrinter('usb://brother-ql');
 await printer.connect();
 
-for await (const result of renderBatch(designer, csv.rows)) {
+for await (const result of renderBatch(designer, csv.rows, TWO_COLOR_BLACK_RED)) {
   await printer.print(result.planes);
 }
 
@@ -195,10 +203,10 @@ await printer.disconnect();
 
 `renderBatch` is an **async generator**. Each iteration renders one row
 and yields a `BatchResult` with a `planes: Map<string, LabelBitmap>`
-map (single-colour by default — add `TWO_COLOR_BLACK_RED` as the third
-argument for two-colour printing). The previous iteration's bitmaps are
-eligible for garbage collection as soon as the loop advances, so memory
-stays flat even on very large CSVs.
+map. Omit the capabilities argument (or pass `SINGLE_COLOR`) for a
+one-plane output where every object prints as black. The previous
+iteration's bitmaps are eligible for garbage collection as soon as
+the loop advances, so memory stays flat even on very large CSVs.
 
 Or, the equivalent from the CLI:
 
