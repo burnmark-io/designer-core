@@ -70,7 +70,7 @@ designer.add({
 });
 
 const blob = await exportPng(designer.document, {
-  variables: { name: 'Mannes' },
+  variables: { name: 'Piet' },
 });
 ```
 

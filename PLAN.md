@@ -1166,7 +1166,7 @@ and multi-colour support.
 
 ```
 burnmark print --template label.label --csv cards.csv --printer usb://brother-ql
-burnmark print --template badge.label --var name="Mannes" --printer tcp://192.168.1.42
+burnmark print --template badge.label --var name="Piet" --printer tcp://192.168.1.42
 burnmark render --template label.label --output preview.png
 burnmark render --template label.label --csv data.csv --output labels.pdf
 burnmark render --template label.label --sheet avery-l7160 --csv data.csv --output sheet.pdf

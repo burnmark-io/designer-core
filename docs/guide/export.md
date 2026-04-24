@@ -39,7 +39,7 @@ to `URL.createObjectURL` or a download anchor.
 
 ```ts
 const blob = await exportPng(designer.document, {
-  variables: { name: 'Mannes' },
+  variables: { name: 'Piet' },
   scale: 2,                  // optional — render at 2× the document DPI
   assetLoader: myAssetLoader, // optional — defaults to designer's or an empty in-memory loader
 });
@@ -92,9 +92,9 @@ const single = await exportPdf(designer.document);
 
 // Multi-page batch (one page per row):
 const batch = await exportPdf(designer.document, [
-  { name: 'Mannes', order_id: '001' },
-  { name: 'Anna',   order_id: '002' },
-  { name: 'Tom',    order_id: '003' },
+  { name: 'Piet', order_id: '001' },
+  { name: 'Anna', order_id: '002' },
+  { name: 'Tom',  order_id: '003' },
 ]);
 ```
 

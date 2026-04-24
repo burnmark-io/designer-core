@@ -52,7 +52,7 @@ designer.add({
 });
 
 const blob = await exportPng(designer.document, {
-  variables: { order_id: '12345', name: 'Mannes' },
+  variables: { order_id: '12345', name: 'Piet' },
 });
 await writeFile('preview.png', Buffer.from(await blob.arrayBuffer()));
 ```
@@ -155,7 +155,7 @@ reference for the full schema):
 Render to PNG:
 
 ```bash
-burnmark render --template my-label.label --var name="Mannes" --output preview.png
+burnmark render --template my-label.label --var name="Piet" --output preview.png
 ```
 
 Render to a multi-page PDF from a CSV (one page per row):
@@ -179,7 +179,7 @@ burnmark validate --template my-label.label --csv people.csv
 Print — requires a `@thermal-label/*` driver to be installed:
 
 ```bash
-burnmark print --template my-label.label --var name="Mannes" --printer usb://brother-ql
+burnmark print --template my-label.label --var name="Piet" --printer usb://brother-ql
 ```
 
 Show which drivers are installed and which sheet templates are built in:
@@ -219,7 +219,7 @@ designer.add({
 });
 
 const blob = await exportPng(designer.document, {
-  variables: { name: 'Mannes' },
+  variables: { name: 'Piet' },
 });
 const url = URL.createObjectURL(blob);
 

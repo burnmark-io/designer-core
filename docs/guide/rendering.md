@@ -65,7 +65,7 @@ document:
 ```ts
 const bitmap = await designer.renderToBitmap({
   order_id: '12345',
-  name: 'Mannes',
+  name: 'Piet',
 });
 ```
 

@@ -39,8 +39,8 @@ strings dynamically or running ad-hoc substitutions outside the
 document.
 
 ```ts
-applyTemplate('Order #{{id}} — {{name}}', { id: '12345', name: 'Mannes' });
-// → 'Order #12345 — Mannes'
+applyTemplate('Order #{{id}} — {{name}}', { id: '12345', name: 'Piet' });
+// → 'Order #12345 — Piet'
 ```
 
 ### `applyVariables(doc, variables)`
@@ -72,7 +72,7 @@ Check a variable record against the document's placeholders and get
 back `{ valid, missing, unused, warnings }`.
 
 ```ts
-validateVariables(doc, { name: 'Mannes', postcode: '3528 BJ' });
+validateVariables(doc, { name: 'Piet', postcode: '3528 BJ' });
 // {
 //   valid: false,
 //   missing: ['address_line_1', 'city'],
@@ -151,7 +151,7 @@ designer.add({
 
 ```csv
 name,address_line_1,postcode,city
-Mannes Brak,Papendorpseweg 100,3528 BJ,Utrecht
+Piet Paddestoel,Papendorpseweg 100,3528 BJ,Utrecht
 Anna de Vries,Keizersgracht 12,1015 CJ,Amsterdam
 Tom Jansen,Coolsingel 42,3011 AD,Rotterdam
 ```

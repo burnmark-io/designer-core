@@ -56,7 +56,7 @@ Flags:
 | `--template <path>` | yes | `.label` JSON file |
 | `--output <path>` | yes | `.png` or `.pdf` — extension decides the format |
 | `--csv <path>` | no | CSV file. One page per row (PDF) or one label (PNG, row 1 only) |
-| `--var key=value` | no | Static variable; repeatable (`--var name=Mannes --var city=Utrecht`) |
+| `--var key=value` | no | Static variable; repeatable (`--var name=Piet --var city=Utrecht`) |
 | `--sheet <code>` | no | Sticker-sheet code (`avery-l7160`, etc.); forces PDF output |
 | `--rows <range>` | no | Filter CSV rows: `1-50` or `1,3,7,12` |
 
@@ -89,7 +89,7 @@ Render + send to a connected printer. Requires a `@thermal-label/*`
 driver to be installed.
 
 ```bash
-burnmark print --template address.label --var name="Mannes" --printer usb://brother-ql
+burnmark print --template address.label --var name="Piet" --printer usb://brother-ql
 burnmark print --template address.label --csv addresses.csv --printer usb://brother-ql
 ```
 

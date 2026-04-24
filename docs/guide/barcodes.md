@@ -181,9 +181,9 @@ camera apps auto-detect this format and offer a "Join network" prompt.
 
 ```ts
 QRContent.vcard({
-  firstName: 'Mannes',
-  lastName: 'Brak',
-  email: 'mannes@example.nl',
+  firstName: 'Piet',
+  lastName: 'Paddestoel',
+  email: 'piet@example.nl',
   phone: '+31 20 555 0100',
   url: 'https://example.nl',
   address: {
@@ -195,9 +195,9 @@ QRContent.vcard({
 });
 // → BEGIN:VCARD
 //   VERSION:3.0
-//   N:Brak;Mannes;;;
-//   FN:Mannes Brak
-//   EMAIL:mannes@example.nl
+//   N:Paddestoel;Piet;;;
+//   FN:Piet Paddestoel
+//   EMAIL:piet@example.nl
 //   TEL:+31 20 555 0100
 //   URL:https://example.nl
 //   ADR:;;Papendorpseweg 100;Utrecht;;3528 BJ;NL

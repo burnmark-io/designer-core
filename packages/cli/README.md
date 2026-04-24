@@ -53,7 +53,7 @@ The CLI auto-discovers drivers at runtime.
 ## Examples
 
 ```bash
-burnmark render --template badge.label --var name="Mannes" --output badge.png
+burnmark render --template badge.label --var name="Piet" --output badge.png
 burnmark render --template cards.label --csv addresses.csv --output cards.pdf
 burnmark render --template product.label --sheet avery-l7160 --csv sku.csv --output sheet.pdf
 burnmark validate --template invoice.label --csv orders.csv

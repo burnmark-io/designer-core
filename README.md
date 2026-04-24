@@ -78,7 +78,7 @@ designer.add({
   autoHeight: false,
 });
 
-const bitmap = await designer.renderToBitmap({ name: 'Mannes' });
+const bitmap = await designer.renderToBitmap({ name: 'Piet' });
 ```
 
 ### Vue 3 composable
