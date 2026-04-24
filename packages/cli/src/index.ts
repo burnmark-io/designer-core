@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { renderCommand, type RenderArgs } from './commands/render.js';
 import { validateCommand, type ValidateArgs } from './commands/validate.js';
 import { printCommand, type PrintArgs } from './commands/print.js';
-import { listPrintersCommand, listSheetsCommand } from './commands/list.js';
+import { listPrintersCommand, listSheetsCommand, type ListSheetsArgs } from './commands/list.js';
 
 export async function run(argv: string[]): Promise<void> {
   const program = new Command();
@@ -83,9 +83,12 @@ export async function run(argv: string[]): Promise<void> {
 
   program
     .command('list-sheets')
-    .description('Show built-in sheet templates')
-    .action(() => {
-      const lines = listSheetsCommand();
+    .description('Show sticker-sheet templates (built-ins + @burnmark-io/sheet-templates)')
+    .option('--brand <name>', 'filter by brand (e.g. Avery, Herma, APLI)')
+    .option('--paper <size>', 'filter by paper size (e.g. A4, Letter)')
+    .option('--all', 'show every template from the combined registry')
+    .action((opts: ListSheetsArgs) => {
+      const lines = listSheetsCommand(opts);
       for (const line of lines) console.log(line);
     });
 

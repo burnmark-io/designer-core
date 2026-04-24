@@ -1,11 +1,6 @@
 import { extname } from 'node:path';
-import {
-  exportPdf,
-  exportPng,
-  exportSheet,
-  findSheet,
-  LabelDesigner,
-} from '@burnmark-io/designer-core';
+import { exportPdf, exportPng, exportSheet, LabelDesigner } from '@burnmark-io/designer-core';
+import { resolveSheet } from './list.js';
 import {
   filterRows,
   parseRowRange,
@@ -42,8 +37,12 @@ export async function renderCommand(args: RenderArgs): Promise<void> {
   const ext = extname(output).toLowerCase();
 
   if (args.sheet) {
-    const sheet = findSheet(args.sheet);
-    if (!sheet) throw new Error(`Unknown sheet code: ${args.sheet}`);
+    const sheet = resolveSheet(args.sheet);
+    if (!sheet) {
+      throw new Error(
+        `Unknown sheet code: ${args.sheet}. Run \`burnmark list-sheets --brand <name>\` to find it.`,
+      );
+    }
     const blob = await exportSheet(designer.document, sheet, csvRows);
     await writeBlobFile(output, blob);
     return;

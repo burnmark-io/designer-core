@@ -50,6 +50,9 @@ importers:
       '@burnmark-io/designer-core':
         specifier: workspace:*
         version: link:../core
+      '@burnmark-io/sheet-templates':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@napi-rs/canvas':
         specifier: ^0.1.0
         version: 0.1.99
@@ -306,6 +309,10 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
+
+  '@burnmark-io/sheet-templates@0.1.0':
+    resolution: {integrity: sha512-Tvf5/b5GYRFRNUmGAmrJt+cae5vKnZVoWWRNtQYCTeOf8ic2aOXnBimwpgja5HQZ8ZAAnriZX4KfTu4PpM26iQ==}
+    engines: {node: '>=24.0.0'}
 
   '@changesets/apply-release-plan@7.1.1':
     resolution: {integrity: sha512-9qPCm/rLx/xoOFXIHGB229+4GOL76S4MC+7tyOuTsR6+1jYlfFDQORdvwR5hDA6y4FL2BPt3qpbcQIS+dW85LA==}
@@ -3019,6 +3026,8 @@ snapshots:
       '@babel/helper-validator-identifier': 7.28.5
 
   '@bcoe/v8-coverage@0.2.3': {}
+
+  '@burnmark-io/sheet-templates@0.1.0': {}
 
   '@changesets/apply-release-plan@7.1.1':
     dependencies:
