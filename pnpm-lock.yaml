@@ -50,6 +50,9 @@ importers:
       '@burnmark-io/designer-core':
         specifier: workspace:*
         version: link:../core
+      '@napi-rs/canvas':
+        specifier: ^0.1.0
+        version: 0.1.99
       '@thermal-label/brother-ql-node':
         specifier: '>=0.0.1'
         version: 0.0.1
