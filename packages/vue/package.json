@@ -1,6 +1,6 @@
 {
   "name": "@burnmark-io/designer-vue",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Vue 3 composable for the burnmark label design engine",
   "type": "module",
   "author": "Mannes Brak",
