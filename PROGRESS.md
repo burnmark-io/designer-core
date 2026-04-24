@@ -202,7 +202,21 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
       Bun.file() references replaced with `fs.readFile` + `node:buffer`.
 - [x] Gate: `pnpm docs:build` passes (with `ignoreDeadLinks` enabled — see D25)
 
-## Docs Amendment Step 3: Guide — core concepts + generated images 📋
+## Docs Amendment Step 3: Guide — core concepts + generated images ✅
+
+- [x] `guide/document-model.md` — LabelDocument, CanvasConfig, all five
+      object types with creation examples, mutation API, serialisation,
+      versioning + migrations, history
+- [x] `guide/colour-model.md` — design philosophy, presets, matching
+      rules, two-colour walkthrough, grey/opacity/unmatched edge cases
+- [x] `guide/rendering.md` — pipeline overview, three entry points,
+      continuous labels, per-object image settings, canvas abstraction,
+      performance, batch memory
+- [x] `packages/core/scripts/generate-docs-assets.mjs` — real PNGs for
+      grey dither + opacity stipple + QR example. Renders through the
+      shipped pipeline (renderFull + toBitmap) and upscales 1bpp to RGBA
+      so the stipple is visible in a browser.
+- [x] Gate: `pnpm docs:build` passes
 
 ## Docs Amendment Step 4: Guide — features (template/barcodes/fonts) 📋
 
