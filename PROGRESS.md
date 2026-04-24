@@ -283,6 +283,16 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
       stubbing in tests, `skia-canvas` drop-in for Alpine)
 - [x] Gate: `pnpm docs:build` passes
 
-## Docs Amendment Step 8: API reference regen + sidebar wiring 📋
+## Docs Amendment Step 8: API reference regen + sidebar wiring ✅
+
+- [x] `pnpm docs:api` regenerates `docs/reference/api/` (gitignored;
+      the `docs.yml` GitHub Actions workflow runs `docs:api` before
+      `docs:build` on every deploy, so the pages ship from CI)
+- [x] `docs/.vitepress/config.ts` already links `/reference/api/` in
+      both top nav and the Reference sidebar group (step 1)
+- [x] Verified post-build that every class / interface / function /
+      type-alias / variable has an HTML file under
+      `docs/.vitepress/dist/reference/api/*` — 100+ generated pages
+- [x] Gate: `pnpm docs:build` passes
 
 ## Docs Amendment Step 9: Final review + deploy 📋
