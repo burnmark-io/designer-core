@@ -218,7 +218,21 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
       so the stipple is visible in a browser.
 - [x] Gate: `pnpm docs:build` passes
 
-## Docs Amendment Step 4: Guide — features (template/barcodes/fonts) 📋
+## Docs Amendment Step 4: Guide — features (template/barcodes/fonts) ✅
+
+- [x] `guide/template-engine.md` — placeholder syntax, all four helpers
+      (applyTemplate / applyVariables / extractPlaceholders / validateVariables),
+      Christmas-cards end-to-end walkthrough referencing
+      `docs/assets/christmas-card.label`, CSV parsing, renderBatch memory
+- [x] `guide/barcodes.md` — adding barcodes, one example per category
+      (1D code128, 2D qrcode, GS1-128, postal KIX), QRContent helpers,
+      validation, colour/plane interaction, links to full format table
+- [x] `guide/fonts.md` — branded family names (Burnmark Sans/Mono/Serif/
+      Narrow), registerFont/listFonts/isFontLoaded, browser vs Node system
+      font rules, fallback behaviour, subsetting, OFL license
+- [x] `docs/assets/christmas-card.label` committed as the single source of
+      truth (also referenced from `reference/label-format.md` in step 6)
+- [x] Gate: `pnpm docs:build` passes
 
 ## Docs Amendment Step 5: Guide — output (export/cli) 📋
 
