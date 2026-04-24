@@ -1,7 +1,7 @@
 ---
 '@burnmark-io/designer-core': minor
-'@burnmark-io/designer-vue': minor
-'@burnmark-io/designer-react': minor
+'@burnmark-io/designer-vue': patch
+'@burnmark-io/designer-react': patch
 'burnmark-cli': minor
 ---
 
