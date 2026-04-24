@@ -12,19 +12,21 @@ describe('BUNDLED_FONTS', () => {
     for (const entry of Object.values(BUNDLED_FONTS)) {
       expect(entry.license).toBe('OFL');
       expect(entry.actualFont.length).toBeGreaterThan(0);
+      expect(entry.files.regular).toMatch(/\.woff2$/);
+      expect(entry.files.bold).toMatch(/\.woff2$/);
     }
   });
 });
 
 describe('DefaultFontLoader', () => {
-  it('warns and marks as loaded when a bundled family file is absent', async () => {
+  it('loads a bundled family from disk without warning', async () => {
     const warnings: string[] = [];
     const loader = new DefaultFontLoader(family => {
       warnings.push(family);
     });
     await loader.load('Burnmark Sans');
     expect(loader.isLoaded('Burnmark Sans')).toBe(true);
-    expect(warnings).toContain('Burnmark Sans');
+    expect(warnings).toEqual([]);
   });
 
   it('warns and marks as loaded for unknown system fonts', async () => {
@@ -42,8 +44,10 @@ describe('DefaultFontLoader', () => {
     const loader = new DefaultFontLoader(() => {
       warnings += 1;
     });
-    await loader.load('Burnmark Sans');
-    await loader.load('Burnmark Sans');
+    // Use an unknown system font — hitting `load()` twice on a *bundled*
+    // family shouldn't warn at all now, so we need a path that does.
+    await loader.load('Definitely-Not-A-Real-Font');
+    await loader.load('Definitely-Not-A-Real-Font');
     expect(warnings).toBe(1);
   });
 

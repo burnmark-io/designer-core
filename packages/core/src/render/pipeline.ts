@@ -6,6 +6,7 @@ import { context2d, createCanvas, type CanvasContextLike } from './canvas.js';
 import { BarcodeEngine } from './barcode.js';
 import { renderObjects, type RenderContext } from './group.js';
 import { partitionByPlane } from './colour.js';
+import { ensureFontsLoaded } from './fonts.js';
 import { renderImage as bitmapFromImage, type LabelBitmap } from '@mbtech-nl/bitmap';
 
 export interface RenderOptions {
@@ -23,6 +24,7 @@ export async function renderFull(
   options: RenderOptions = {},
 ): Promise<RawImageData> {
   const resolved = options.variables ? applyVariables(doc, options.variables) : doc;
+  await ensureFontsLoaded(resolved, options.onWarning);
   const height = resolveHeight(resolved);
   const { widthDots } = resolved.canvas;
   const canvas = await createCanvas(widthDots, height);
@@ -52,6 +54,7 @@ export async function renderPlaneImages(
   options: RenderOptions = {},
 ): Promise<Map<string, RawImageData>> {
   const resolved = options.variables ? applyVariables(doc, options.variables) : doc;
+  await ensureFontsLoaded(resolved, options.onWarning);
   const height = resolveHeight(resolved);
   const { widthDots } = resolved.canvas;
   const buckets = partitionByPlane(resolved.objects, capabilities);
