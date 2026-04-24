@@ -131,3 +131,15 @@ would block the gate and force out-of-order writing. Workaround: set
 `ignoreDeadLinks: true` in `.vitepress/config.ts` for the duration of
 the amendment. Step 9 flips this back off and runs the build once every
 page is present, which is the real "no broken links" gate.
+
+## D26 — Fix up misplaced `.vitepress/config.ts` between steps 4 and 5
+
+During step 4's commit, git detected a rename: `docs/.vitepress/config.ts`
+had moved to `docs/assets/.vitepress/config.ts`. This is almost certainly
+an artefact of running `pnpm docs:build` with a stale cache (VitePress
+emits intermediate output adjacent to the source tree and a past iteration
+placed it inside `docs/assets/`). Restored the config to its canonical
+location and removed the stray `docs/assets/.vitepress/` and
+`docs/**/dist/` directories. Committed as a step-5 fix-up alongside the
+regular step-5 content so history stays linear. Future steps add files
+only under the canonical paths.

@@ -234,7 +234,20 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
       truth (also referenced from `reference/label-format.md` in step 6)
 - [x] Gate: `pnpm docs:build` passes
 
-## Docs Amendment Step 5: Guide — output (export/cli) 📋
+## Docs Amendment Step 5: Guide — output (export/cli) ✅
+
+- [x] `guide/export.md` — every export function with its real signature
+      (`doc` as first argument), `{ blob, missing }` contract for
+      `exportBundled`, Avery L7160 walkthrough, `positionsPerSheet` /
+      `sheetsNeeded` helpers
+- [x] `guide/cli.md` — every shipped CLI command (`render` / `render
+      --sheet` / `print` / `print --csv` / `validate` / `list-printers`
+      / `list-sheets`) with real flags, `list-printers` correctly framed
+      as "installed drivers" rather than "connected printers", scripting
+      recipes
+- [x] Fix-up: restored `docs/.vitepress/config.ts` to canonical location
+      (see D26)
+- [x] Gate: `pnpm docs:build` passes
 
 ## Docs Amendment Step 6: Reference pages 📋
 
