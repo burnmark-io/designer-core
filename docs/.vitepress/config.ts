@@ -6,6 +6,11 @@ export default defineConfig({
   base: '/designer-core/',
   lastUpdated: true,
   cleanUrls: true,
+  // Deliberately permissive during the docs amendment build-out — links to
+  // yet-unwritten pages in the sidebar would otherwise fail the build. The
+  // final step 9 of the amendment flips this back to the default (strict)
+  // once every page exists.
+  ignoreDeadLinks: true,
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/getting-started' },

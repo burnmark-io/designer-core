@@ -192,7 +192,15 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
 - [x] Copyright: 2025–2026
 - [x] Gate: `pnpm docs:build` passes
 
-## Docs Amendment Step 2: Landing page + getting started 📋
+## Docs Amendment Step 2: Landing page + getting started ✅
+
+- [x] Iterated on existing `index.md` — kept the stronger tagline,
+      expanded feature cards to eight, added a proper quick-start snippet,
+      linked to API reference + Getting started + GitHub in the hero
+- [x] Rewrote `getting-started.md` — Node.js, CLI, and browser paths each
+      fully self-contained, with CSV batch + `.label` load sub-sections.
+      Bun.file() references replaced with `fs.readFile` + `node:buffer`.
+- [x] Gate: `pnpm docs:build` passes (with `ignoreDeadLinks` enabled — see D25)
 
 ## Docs Amendment Step 3: Guide — core concepts + generated images 📋
 
