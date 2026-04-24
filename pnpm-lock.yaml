@@ -57,17 +57,17 @@ importers:
         specifier: ^0.1.0
         version: 0.1.99
       '@thermal-label/brother-ql-node':
-        specifier: '>=0.0.1'
-        version: 0.0.1
+        specifier: '>=0.2.0'
+        version: 0.2.1
       '@thermal-label/contracts':
         specifier: ^0.1.2
         version: 0.1.2
       '@thermal-label/labelmanager-node':
-        specifier: '>=0.0.1'
-        version: 0.0.1
+        specifier: '>=0.2.0'
+        version: 0.2.1
       '@thermal-label/labelwriter-node':
-        specifier: '>=0.0.1'
-        version: 0.0.1
+        specifier: '>=0.2.0'
+        version: 0.2.1
       chalk:
         specifier: ^5.0.0
         version: 5.6.2
@@ -77,6 +77,9 @@ importers:
       ora:
         specifier: ^8.0.0
         version: 8.2.0
+      serialport:
+        specifier: ^13.0.0
+        version: 13.0.0
     devDependencies:
       '@mbtech-nl/tsconfig':
         specifier: ^1.0.0
@@ -890,6 +893,70 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@serialport/binding-mock@10.2.2':
+    resolution: {integrity: sha512-HAFzGhk9OuFMpuor7aT5G1ChPgn5qSsklTFOTUX72Rl6p0xwcSVsRtG/xaGp6bxpN7fI9D/S8THLBWbBgS6ldw==}
+    engines: {node: '>=12.0.0'}
+
+  '@serialport/bindings-cpp@13.0.0':
+    resolution: {integrity: sha512-r25o4Bk/vaO1LyUfY/ulR6hCg/aWiN6Wo2ljVlb4Pj5bqWGcSRC4Vse4a9AcapuAu/FeBzHCbKMvRQeCuKjzIQ==}
+    engines: {node: '>=18.0.0'}
+
+  '@serialport/bindings-interface@1.2.2':
+    resolution: {integrity: sha512-CJaUd5bLvtM9c5dmO9rPBHPXTa9R2UwpkJ0wdh9JCYcbrPWsKz+ErvR0hBLeo7NPeiFdjFO4sonRljiw4d2XiA==}
+    engines: {node: ^12.22 || ^14.13 || >=16}
+
+  '@serialport/parser-byte-length@13.0.0':
+    resolution: {integrity: sha512-32yvqeTAqJzAEtX5zCrN1Mej56GJ5h/cVFsCDPbF9S1ZSC9FWjOqNAgtByseHfFTSTs/4ZBQZZcZBpolt8sUng==}
+    engines: {node: '>=20.0.0'}
+
+  '@serialport/parser-cctalk@13.0.0':
+    resolution: {integrity: sha512-RErAe57g9gvnlieVYGIn1xymb1bzNXb2QtUQd14FpmbQQYlcrmuRnJwKa1BgTCujoCkhtaTtgHlbBWOxm8U2uA==}
+    engines: {node: '>=20.0.0'}
+
+  '@serialport/parser-delimiter@12.0.0':
+    resolution: {integrity: sha512-gu26tVt5lQoybhorLTPsH2j2LnX3AOP2x/34+DUSTNaUTzu2fBXw+isVjQJpUBFWu6aeQRZw5bJol5X9Gxjblw==}
+    engines: {node: '>=12.0.0'}
+
+  '@serialport/parser-delimiter@13.0.0':
+    resolution: {integrity: sha512-Qqyb0FX1avs3XabQqNaZSivyVbl/yl0jywImp7ePvfZKLwx7jBZjvL+Hawt9wIG6tfq6zbFM24vzCCK7REMUig==}
+    engines: {node: '>=20.0.0'}
+
+  '@serialport/parser-inter-byte-timeout@13.0.0':
+    resolution: {integrity: sha512-a0w0WecTW7bD2YHWrpTz1uyiWA2fDNym0kjmPeNSwZ2XCP+JbirZt31l43m2ey6qXItTYVuQBthm75sPVeHnGA==}
+    engines: {node: '>=20.0.0'}
+
+  '@serialport/parser-packet-length@13.0.0':
+    resolution: {integrity: sha512-60ZDDIqYRi0Xs2SPZUo4Jr5LLIjtb+rvzPKMJCohrO6tAqSDponcNpcB1O4W21mKTxYjqInSz+eMrtk0LLfZIg==}
+    engines: {node: '>=8.6.0'}
+
+  '@serialport/parser-readline@12.0.0':
+    resolution: {integrity: sha512-O7cywCWC8PiOMvo/gglEBfAkLjp/SENEML46BXDykfKP5mTPM46XMaX1L0waWU6DXJpBgjaL7+yX6VriVPbN4w==}
+    engines: {node: '>=12.0.0'}
+
+  '@serialport/parser-readline@13.0.0':
+    resolution: {integrity: sha512-dov3zYoyf0dt1Sudd1q42VVYQ4WlliF0MYvAMA3MOyiU1IeG4hl0J6buBA2w4gl3DOCC05tGgLDN/3yIL81gsA==}
+    engines: {node: '>=20.0.0'}
+
+  '@serialport/parser-ready@13.0.0':
+    resolution: {integrity: sha512-JNUQA+y2Rfs4bU+cGYNqOPnNMAcayhhW+XJZihSLQXOHcZsFnOa2F9YtMg9VXRWIcnHldHYtisp62Etjlw24bw==}
+    engines: {node: '>=20.0.0'}
+
+  '@serialport/parser-regex@13.0.0':
+    resolution: {integrity: sha512-m7HpIf56G5XcuDdA3DB34Z0pJiwxNRakThEHjSa4mG05OnWYv0IG8l2oUyYfuGMowQWaVnQ+8r+brlPxGVH+eA==}
+    engines: {node: '>=20.0.0'}
+
+  '@serialport/parser-slip-encoder@13.0.0':
+    resolution: {integrity: sha512-fUHZEExm6izJ7rg0A1yjXwu4sOzeBkPAjDZPfb+XQoqgtKAk+s+HfICiYn7N2QU9gyaeCO8VKgWwi+b/DowYOg==}
+    engines: {node: '>=20.0.0'}
+
+  '@serialport/parser-spacepacket@13.0.0':
+    resolution: {integrity: sha512-DoXJ3mFYmyD8X/8931agJvrBPxqTaYDsPoly9/cwQSeh/q4EjQND9ySXBxpWz5WcpyCU4jOuusqCSAPsbB30Eg==}
+    engines: {node: '>=20.0.0'}
+
+  '@serialport/stream@13.0.0':
+    resolution: {integrity: sha512-F7xLJKsjGo2WuEWMSEO1SimRcOA+WtWICsY13r0ahx8s2SecPQH06338g28OT7cW7uRXI7oEQAk62qh5gHJW3g==}
+    engines: {node: '>=20.0.0'}
+
   '@shikijs/core@2.5.0':
     resolution: {integrity: sha512-uu/8RExTKtavlpH7XqnVYBrfBkUc20ngXiX9NSrBhOVZYv/7XQRKUyhtkeflY5QsxC0GbJThCerruZfsUaSldg==}
 
@@ -945,32 +1012,44 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@thermal-label/brother-ql-core@0.0.1':
-    resolution: {integrity: sha512-q0QdoPbm97oWYQB8XXg3EFjRTJLHgilZHhEnnAcqfKXs5rivQmRWfCxRHuz+THNhwr+GVS2mvArBr5BgLc4+5g==}
+  '@thermal-label/brother-ql-core@0.2.1':
+    resolution: {integrity: sha512-PuPvp1Th73AvyJxfj/wFGU+AT9Yb7zr67eHv4iip5rDJcHQ+6EwXAHSw6bC7HG5kkKmtDRexQcCbDGIMpSUsNw==}
     engines: {node: '>=24.0.0'}
 
-  '@thermal-label/brother-ql-node@0.0.1':
-    resolution: {integrity: sha512-+1a6GADju2bUCN4BFnli2tu1lrkShu+UipC+91fU452LJ9MiniI/rVMJEcISH2aFebGXiXkMLCfMYsi2GEZDPg==}
+  '@thermal-label/brother-ql-node@0.2.1':
+    resolution: {integrity: sha512-BnbI4aR6jpsiO/m4bpPMQBbJ/oHsTykOgynnW8Nw7j2/rVlYMg0KypDff4wtamtF6PZ/l9LnNhjBpzjQ0MMohg==}
     engines: {node: '>=24.0.0'}
 
   '@thermal-label/contracts@0.1.2':
     resolution: {integrity: sha512-p3Fj9PjGrTdCtNoMHcQNbCSfVffFd0E42okIAjIyoCNRsTM+L2qR7AAVIL6EX33EFxV7A7F5ziGpNZxz9yNU7w==}
 
-  '@thermal-label/labelmanager-core@0.0.1':
-    resolution: {integrity: sha512-NfFQcV3mq3EGsEP4rQC7/sZsOz/Xm5Ta1/M3eLgvTjbKIqLK4UmloaF/gZ385hJhcB0lBQMMo89AUxnhV0OaTQ==}
+  '@thermal-label/labelmanager-core@0.2.1':
+    resolution: {integrity: sha512-g5Awzk0Nm7IfbxCXv48olRgI1/Xj7D7URunlBQlobekMYrou8puBpzJbWp8HmnFMs3RzGm611ctKYx+gQYFimw==}
     engines: {node: '>=24.0.0'}
 
-  '@thermal-label/labelmanager-node@0.0.1':
-    resolution: {integrity: sha512-yWhKuL/l373hPxnvi8I7NB7l8cyTxHJCW5azUX6RX5qbLQdP1l7E6vEE1EkebnWaeG1A5EW+MfveibAFiUO9SQ==}
+  '@thermal-label/labelmanager-node@0.2.1':
+    resolution: {integrity: sha512-cd1fJsBNpL5R+DMBZSjdyAJe62hzk5b/kwu6doIPwFnh2P4v/FecRQEGW+gJagU3yw+wA/GhqmOxhy/WGm05pA==}
     engines: {node: '>=24.0.0'}
 
-  '@thermal-label/labelwriter-core@0.0.1':
-    resolution: {integrity: sha512-k3PcMRqj7KhYb75/rRYObY7af9YE2I/Wk31tVtgmsogdLptsxW/Jvwrsf8G6U6lMw+GLvtiWVCFHZGGqb7dvcQ==}
+  '@thermal-label/labelwriter-core@0.2.1':
+    resolution: {integrity: sha512-GsT6040WsUFb6ZS+r3DwitS6mt5D4Hctu4ud/BR6XK/hZJLsIzMJ7j4UgJEu5nKpEJo65Hd2VMAMD+AL1VtvIg==}
     engines: {node: '>=24.0.0'}
 
-  '@thermal-label/labelwriter-node@0.0.1':
-    resolution: {integrity: sha512-gDyK0PTf6XvWDXa9iN/wkBliphNgl+5fPNgdUQ8MRoaBa25vZEI6YEUtdBnEesa9w7pnJbd+ZGOCmq5gtvNbJg==}
+  '@thermal-label/labelwriter-node@0.2.1':
+    resolution: {integrity: sha512-AWZ0pkE0s05qj8fjVPdVLNNeJSoiHBkbmwMyGvL6/G+4Wigo/f1/7JON32jND8NOgUqhGqAYlxL5+Wi9qTOcpQ==}
     engines: {node: '>=24.0.0'}
+
+  '@thermal-label/transport@0.2.0':
+    resolution: {integrity: sha512-MXoVkK71okEkKzp3ZfAqGo80jTogHGw56kc6DwJXtVUJRLRgMqwpjnvDVL5qnQ1xi7zKGB9mLp639nIhXPnk+w==}
+    engines: {node: '>=24.0.0'}
+    peerDependencies:
+      serialport: '>=12.0.0'
+      usb: '>=2.14.0'
+    peerDependenciesMeta:
+      serialport:
+        optional: true
+      usb:
+        optional: true
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -1554,6 +1633,15 @@ packages:
 
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
+
+  debug@4.4.0:
+    resolution: {integrity: sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -2204,6 +2292,10 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
+  node-addon-api@8.3.0:
+    resolution: {integrity: sha512-8VOpLHFrOQlAH+qA0ZzuGRlALRA6/LVh8QJldbrC4DY0hXoMP0l4Acq8TzFC018HztWiRqyCEj2aTWY2UvnJUg==}
+    engines: {node: ^18 || ^20 || >= 21}
+
   node-addon-api@8.7.0:
     resolution: {integrity: sha512-9MdFxmkKaOYVTV+XVRG8ArDwwQ77XIgIPyKASB1k3JPq3M8fGQQQE3YpMOrKm6g//Ktx8ivZr8xo1Qmtqub+GA==}
     engines: {node: ^18 || ^20 || >= 21}
@@ -2500,6 +2592,10 @@ packages:
     resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
     engines: {node: '>=10'}
     hasBin: true
+
+  serialport@13.0.0:
+    resolution: {integrity: sha512-PHpnTd8isMGPfFTZNCzOZp9m4mAJSNWle9Jxu6BPTcWq7YXl5qN7tp8Sgn0h+WIGcD6JFz5QDgixC2s4VW7vzg==}
+    engines: {node: '>=20.0.0'}
 
   setimmediate@1.0.5:
     resolution: {integrity: sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==}
@@ -3585,6 +3681,60 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.60.2':
     optional: true
 
+  '@serialport/binding-mock@10.2.2':
+    dependencies:
+      '@serialport/bindings-interface': 1.2.2
+      debug: 4.4.3
+    transitivePeerDependencies:
+      - supports-color
+
+  '@serialport/bindings-cpp@13.0.0':
+    dependencies:
+      '@serialport/bindings-interface': 1.2.2
+      '@serialport/parser-readline': 12.0.0
+      debug: 4.4.0
+      node-addon-api: 8.3.0
+      node-gyp-build: 4.8.4
+    transitivePeerDependencies:
+      - supports-color
+
+  '@serialport/bindings-interface@1.2.2': {}
+
+  '@serialport/parser-byte-length@13.0.0': {}
+
+  '@serialport/parser-cctalk@13.0.0': {}
+
+  '@serialport/parser-delimiter@12.0.0': {}
+
+  '@serialport/parser-delimiter@13.0.0': {}
+
+  '@serialport/parser-inter-byte-timeout@13.0.0': {}
+
+  '@serialport/parser-packet-length@13.0.0': {}
+
+  '@serialport/parser-readline@12.0.0':
+    dependencies:
+      '@serialport/parser-delimiter': 12.0.0
+
+  '@serialport/parser-readline@13.0.0':
+    dependencies:
+      '@serialport/parser-delimiter': 13.0.0
+
+  '@serialport/parser-ready@13.0.0': {}
+
+  '@serialport/parser-regex@13.0.0': {}
+
+  '@serialport/parser-slip-encoder@13.0.0': {}
+
+  '@serialport/parser-spacepacket@13.0.0': {}
+
+  '@serialport/stream@13.0.0':
+    dependencies:
+      '@serialport/bindings-interface': 1.2.2
+      debug: 4.4.0
+    transitivePeerDependencies:
+      - supports-color
+
   '@shikijs/core@2.5.0':
     dependencies:
       '@shikijs/engine-javascript': 2.5.0
@@ -3664,43 +3814,64 @@ snapshots:
       '@types/react': 18.3.28
       '@types/react-dom': 18.3.7(@types/react@18.3.28)
 
-  '@thermal-label/brother-ql-core@0.0.1':
+  '@thermal-label/brother-ql-core@0.2.1':
     dependencies:
       '@mbtech-nl/bitmap': 0.1.0
+      '@thermal-label/contracts': 0.1.2
 
-  '@thermal-label/brother-ql-node@0.0.1':
+  '@thermal-label/brother-ql-node@0.2.1':
     dependencies:
       '@mbtech-nl/bitmap': 0.1.0
-      '@thermal-label/brother-ql-core': 0.0.1
+      '@thermal-label/brother-ql-core': 0.2.1
+      '@thermal-label/contracts': 0.1.2
+      '@thermal-label/transport': 0.2.0(usb@2.17.0)
       usb: 2.17.0
     optionalDependencies:
       '@napi-rs/canvas': 0.1.99
+    transitivePeerDependencies:
+      - serialport
 
   '@thermal-label/contracts@0.1.2':
     dependencies:
       '@mbtech-nl/bitmap': 1.0.1
 
-  '@thermal-label/labelmanager-core@0.0.1':
+  '@thermal-label/labelmanager-core@0.2.1':
     dependencies:
       '@mbtech-nl/bitmap': 1.0.1
+      '@thermal-label/contracts': 0.1.2
 
-  '@thermal-label/labelmanager-node@0.0.1':
+  '@thermal-label/labelmanager-node@0.2.1':
     dependencies:
-      '@thermal-label/labelmanager-core': 0.0.1
+      '@thermal-label/contracts': 0.1.2
+      '@thermal-label/labelmanager-core': 0.2.1
+      '@thermal-label/transport': 0.2.0(usb@2.17.0)
       usb: 2.17.0
     optionalDependencies:
       '@napi-rs/canvas': 0.1.99
+    transitivePeerDependencies:
+      - serialport
 
-  '@thermal-label/labelwriter-core@0.0.1':
+  '@thermal-label/labelwriter-core@0.2.1':
     dependencies:
       '@mbtech-nl/bitmap': 0.1.0
+      '@thermal-label/contracts': 0.1.2
 
-  '@thermal-label/labelwriter-node@0.0.1':
+  '@thermal-label/labelwriter-node@0.2.1':
     dependencies:
-      '@thermal-label/labelwriter-core': 0.0.1
+      '@thermal-label/contracts': 0.1.2
+      '@thermal-label/labelwriter-core': 0.2.1
+      '@thermal-label/transport': 0.2.0(usb@2.17.0)
       usb: 2.17.0
     optionalDependencies:
       '@napi-rs/canvas': 0.1.99
+    transitivePeerDependencies:
+      - serialport
+
+  '@thermal-label/transport@0.2.0(usb@2.17.0)':
+    dependencies:
+      '@thermal-label/contracts': 0.1.2
+    optionalDependencies:
+      usb: 2.17.0
 
   '@tybys/wasm-util@0.10.1':
     dependencies:
@@ -4291,6 +4462,10 @@ snapshots:
     optional: true
 
   csstype@3.2.3: {}
+
+  debug@4.4.0:
+    dependencies:
+      ms: 2.1.3
 
   debug@4.4.3:
     dependencies:
@@ -4965,6 +5140,8 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
+  node-addon-api@8.3.0: {}
+
   node-addon-api@8.7.0: {}
 
   node-gyp-build@4.8.4: {}
@@ -5267,6 +5444,25 @@ snapshots:
   semver@5.7.2: {}
 
   semver@7.7.4: {}
+
+  serialport@13.0.0:
+    dependencies:
+      '@serialport/binding-mock': 10.2.2
+      '@serialport/bindings-cpp': 13.0.0
+      '@serialport/parser-byte-length': 13.0.0
+      '@serialport/parser-cctalk': 13.0.0
+      '@serialport/parser-delimiter': 13.0.0
+      '@serialport/parser-inter-byte-timeout': 13.0.0
+      '@serialport/parser-packet-length': 13.0.0
+      '@serialport/parser-readline': 13.0.0
+      '@serialport/parser-ready': 13.0.0
+      '@serialport/parser-regex': 13.0.0
+      '@serialport/parser-slip-encoder': 13.0.0
+      '@serialport/parser-spacepacket': 13.0.0
+      '@serialport/stream': 13.0.0
+      debug: 4.4.0
+    transitivePeerDependencies:
+      - supports-color
 
   setimmediate@1.0.5: {}
 

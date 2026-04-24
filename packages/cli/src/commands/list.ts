@@ -77,8 +77,12 @@ export async function listPrintersCommand(): Promise<string[]> {
   if (drivers.length === 0) {
     return ['No printer drivers installed.'];
   }
-  return drivers.map(
-    d =>
-      `${d.family.padEnd(15)} ${d.packageName}${d.createAdapter ? '' : '  (no createAdapter export)'}`,
-  );
+  return drivers.map(d => {
+    const marker = d.discovery
+      ? ''
+      : d.loadError
+        ? `  (load failed: ${d.loadError})`
+        : '  (no discovery export)';
+    return `${d.family.padEnd(15)} ${d.packageName}${marker}`;
+  });
 }

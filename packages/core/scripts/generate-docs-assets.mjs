@@ -15,12 +15,7 @@ import { writeFile, mkdir } from 'node:fs/promises';
 import { Buffer } from 'node:buffer';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import {
-  LabelDesigner,
-  exportPng,
-  SINGLE_COLOR,
-} from '../dist/index.js';
-import { toBitmap } from '../dist/render/pipeline.js';
+import { LabelDesigner, exportPng, toBitmap } from '../dist/index.js';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const assetsDir = resolve(repoRoot, 'docs', 'assets');
@@ -131,4 +126,3 @@ async function qrBarcodeExample() {
 await greyDitherExample();
 await opacityStippleExample();
 await qrBarcodeExample();
-void SINGLE_COLOR;
