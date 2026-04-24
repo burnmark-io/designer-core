@@ -7,9 +7,7 @@ export function listSheetsCommand(): string[] {
     return `${s.code.padEnd(18)} ${s.paperSize.padEnd(7)} ${String(perPage).padStart(3)}/page — ${s.name}`;
   });
   lines.push('');
-  lines.push(
-    'Install @burnmark-io/sheet-templates for hundreds of additional templates:',
-  );
+  lines.push('Install @burnmark-io/sheet-templates for hundreds of additional templates:');
   lines.push('  pnpm add @burnmark-io/sheet-templates');
   return lines;
 }
