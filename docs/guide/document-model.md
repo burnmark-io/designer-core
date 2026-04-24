@@ -14,11 +14,11 @@ import { type LabelDocument, type CanvasConfig } from '@burnmark-io/designer-cor
 ```ts
 interface LabelDocument {
   id: string;
-  version: number;            // matches CURRENT_DOCUMENT_VERSION when loaded
+  version: number; // matches CURRENT_DOCUMENT_VERSION when loaded
   name: string;
   description?: string;
-  createdAt: string;          // ISO-8601
-  updatedAt: string;          // ISO-8601 — updated on every mutation
+  createdAt: string; // ISO-8601
+  updatedAt: string; // ISO-8601 — updated on every mutation
   canvas: CanvasConfig;
   objects: LabelObject[];
   metadata: Record<string, unknown>;
@@ -44,11 +44,11 @@ invitation to write through it.
 
 ```ts
 interface CanvasConfig {
-  widthDots: number;      // e.g. 696 for 62 mm @ 300 dpi
-  heightDots: number;     // 0 = continuous — auto-crop to content
+  widthDots: number; // e.g. 696 for 62 mm @ 300 dpi
+  heightDots: number; // 0 = continuous — auto-crop to content
   dpi: number;
-  margins: Margins;       // drawn as a guide, not clipped
-  background: string;     // CSS colour — cropped out of continuous labels
+  margins: Margins; // drawn as a guide, not clipped
+  background: string; // CSS colour — cropped out of continuous labels
   grid: { enabled: boolean; spacingDots: number };
 }
 ```
@@ -78,18 +78,18 @@ time and cannot change via `update()`.
 
 ```ts
 interface BaseObject {
-  id: string;         // assigned by designer.add()
-  type: string;       // discriminator — stable for the lifetime of the object
-  x: number;          // top-left, in canvas dots
+  id: string; // assigned by designer.add()
+  type: string; // discriminator — stable for the lifetime of the object
+  x: number; // top-left, in canvas dots
   y: number;
   width: number;
   height: number;
-  rotation: number;   // degrees, clockwise; pivot is the centre of the bbox
-  opacity: number;    // 0..1 — composited before 1bpp dithering
-  locked: boolean;    // UI hint; core does not enforce
-  visible: boolean;   // hidden objects do not render
+  rotation: number; // degrees, clockwise; pivot is the centre of the bbox
+  opacity: number; // 0..1 — composited before 1bpp dithering
+  locked: boolean; // UI hint; core does not enforce
+  visible: boolean; // hidden objects do not render
   name?: string;
-  color: string;      // CSS colour — used for flattening to printer planes
+  color: string; // CSS colour — used for flattening to printer planes
 }
 ```
 
@@ -100,21 +100,27 @@ The five object types:
 ```ts
 designer.add({
   type: 'text',
-  x: 20, y: 20, width: 656, height: 60,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 656,
+  height: 60,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: 'Hello {{name}}',
   fontFamily: 'Burnmark Sans',
   fontSize: 40,
-  fontWeight: 'bold',           // 'normal' | 'bold'
-  fontStyle: 'normal',          // 'normal' | 'italic'
-  textAlign: 'left',            // 'left' | 'center' | 'right'
-  verticalAlign: 'top',         // 'top' | 'middle' | 'bottom'
+  fontWeight: 'bold', // 'normal' | 'bold'
+  fontStyle: 'normal', // 'normal' | 'italic'
+  textAlign: 'left', // 'left' | 'center' | 'right'
+  verticalAlign: 'top', // 'top' | 'middle' | 'bottom'
   letterSpacing: 0,
   lineHeight: 1.2,
-  invert: false,                // invert final raster in this object's bbox
-  wrap: true,                   // word-wrap to width
-  autoHeight: false,            // expand height to fit wrapped text
+  invert: false, // invert final raster in this object's bbox
+  wrap: true, // word-wrap to width
+  autoHeight: false, // expand height to fit wrapped text
 });
 ```
 
@@ -126,13 +132,19 @@ Text supports `{{placeholder}}` substitution from `applyVariables()` — see
 ```ts
 designer.add({
   type: 'image',
-  x: 20, y: 100, width: 200, height: 120,
-  rotation: 0, opacity: 1, locked: false, visible: true,
-  color: '#000000',             // required by BaseObject — not used for images
-  assetKey: 'sha1-of-image',    // key into the AssetLoader
-  fit: 'contain',               // 'contain' | 'cover' | 'fill' | 'none'
-  threshold: 128,               // 0..255 — black/white cutoff for 1bpp
-  dither: true,                 // Floyd-Steinberg vs. hard threshold
+  x: 20,
+  y: 100,
+  width: 200,
+  height: 120,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
+  color: '#000000', // required by BaseObject — not used for images
+  assetKey: 'sha1-of-image', // key into the AssetLoader
+  fit: 'contain', // 'contain' | 'cover' | 'fill' | 'none'
+  threshold: 128, // 0..255 — black/white cutoff for 1bpp
+  dither: true, // Floyd-Steinberg vs. hard threshold
   invert: false,
 });
 ```
@@ -147,12 +159,18 @@ with something other than in-memory bytes.
 ```ts
 designer.add({
   type: 'barcode',
-  x: 20, y: 100, width: 240, height: 80,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 100,
+  width: 240,
+  height: 80,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
-  format: 'qrcode',             // any `BarcodeFormat`
+  format: 'qrcode', // any `BarcodeFormat`
   data: 'https://example.com/{{slug}}',
-  options: { eclevel: 'M' },    // passed through to bwip-js
+  options: { eclevel: 'M' }, // passed through to bwip-js
 });
 ```
 
@@ -164,15 +182,21 @@ for the full format list and per-format options.
 ```ts
 designer.add({
   type: 'shape',
-  x: 0, y: 0, width: 696, height: 4,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 0,
+  y: 0,
+  width: 696,
+  height: 4,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
-  shape: 'rectangle',           // 'rectangle' | 'ellipse' | 'line'
-  fill: true,                   // false -> stroked outline
+  shape: 'rectangle', // 'rectangle' | 'ellipse' | 'line'
+  fill: true, // false -> stroked outline
   strokeWidth: 2,
   invert: false,
-  cornerRadius: 0,              // rectangle only
-  lineDirection: 'horizontal',  // 'line' only
+  cornerRadius: 0, // rectangle only
+  lineDirection: 'horizontal', // 'line' only
 });
 ```
 
@@ -184,8 +208,14 @@ position offset and `visible`/`opacity` flags.
 ```ts
 designer.add({
   type: 'group',
-  x: 0, y: 0, width: 300, height: 120,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 0,
+  y: 0,
+  width: 300,
+  height: 120,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   children: [
     // …nested LabelObject[]
@@ -219,12 +249,12 @@ value in a single pass.
 ## Mutation API
 
 ```ts
-const id = designer.add({ type: 'text', /* …fields */ });
+const id = designer.add({ type: 'text' /* …fields */ });
 
 designer.update(id, { color: '#ff0000', fontSize: 32 });
 // `type` on the patch is ignored — the discriminator is immutable.
 
-designer.reorder(id, 'top');    // 'up' | 'down' | 'top' | 'bottom'
+designer.reorder(id, 'top'); // 'up' | 'down' | 'top' | 'bottom'
 
 designer.remove(id);
 
@@ -245,7 +275,7 @@ That's the contract the Vue composable and React hook rely on.
 ```ts
 import { toJSON, fromJSON } from '@burnmark-io/designer-core';
 
-const json = designer.toJSON();                  // pretty-printed JSON string
+const json = designer.toJSON(); // pretty-printed JSON string
 await writeFile('my-label.label', json, 'utf-8');
 
 const loaded = fromJSON(await readFile('my-label.label', 'utf-8'));
@@ -307,12 +337,12 @@ with the `maxHistoryDepth` constructor option.
 ```ts
 const designer = new LabelDesigner({ maxHistoryDepth: 50 });
 
-designer.add({ type: 'text', /* … */ });
-designer.undo();            // reverts the add
-designer.redo();            // reapplies it
-designer.canUndo;           // boolean getter
-designer.canRedo;           // boolean getter
-designer.clearHistory();    // drops everything except the current snapshot
+designer.add({ type: 'text' /* … */ });
+designer.undo(); // reverts the add
+designer.redo(); // reapplies it
+designer.canUndo; // boolean getter
+designer.canRedo; // boolean getter
+designer.clearHistory(); // drops everything except the current snapshot
 ```
 
 Listen for history changes:

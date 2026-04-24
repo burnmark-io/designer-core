@@ -104,9 +104,14 @@ const designer = new LabelDesigner({
 
 designer.add({
   type: 'text',
-  x: 10, y: 10, width: 676, height: 40,
-  rotation: 0, opacity: 1,
-  locked: false, visible: true,
+  x: 10,
+  y: 10,
+  width: 676,
+  height: 40,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: 'Order #{{order_id}}',
   fontFamily: 'Burnmark Sans',

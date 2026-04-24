@@ -109,41 +109,77 @@ const designer = new LabelDesigner({
 
 designer.add({
   type: 'text',
-  x: 24, y: 24, width: 648, height: 60,
-  rotation: 0, opacity: 1, locked: false, visible: true,
-  color: '#ff0000',                         // recipient name in red
+  x: 24,
+  y: 24,
+  width: 648,
+  height: 60,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
+  color: '#ff0000', // recipient name in red
   content: '{{name}}',
   fontFamily: 'Burnmark Sans',
-  fontSize: 44, fontWeight: 'bold', fontStyle: 'normal',
-  textAlign: 'left', verticalAlign: 'top',
-  letterSpacing: 0, lineHeight: 1.2,
-  invert: false, wrap: true, autoHeight: false,
+  fontSize: 44,
+  fontWeight: 'bold',
+  fontStyle: 'normal',
+  textAlign: 'left',
+  verticalAlign: 'top',
+  letterSpacing: 0,
+  lineHeight: 1.2,
+  invert: false,
+  wrap: true,
+  autoHeight: false,
 });
 
 designer.add({
   type: 'text',
-  x: 24, y: 96, width: 648, height: 44,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 24,
+  y: 96,
+  width: 648,
+  height: 44,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: '{{address_line_1}}',
   fontFamily: 'Burnmark Sans',
-  fontSize: 32, fontWeight: 'normal', fontStyle: 'normal',
-  textAlign: 'left', verticalAlign: 'top',
-  letterSpacing: 0, lineHeight: 1.2,
-  invert: false, wrap: true, autoHeight: false,
+  fontSize: 32,
+  fontWeight: 'normal',
+  fontStyle: 'normal',
+  textAlign: 'left',
+  verticalAlign: 'top',
+  letterSpacing: 0,
+  lineHeight: 1.2,
+  invert: false,
+  wrap: true,
+  autoHeight: false,
 });
 
 designer.add({
   type: 'text',
-  x: 24, y: 148, width: 648, height: 44,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 24,
+  y: 148,
+  width: 648,
+  height: 44,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: '{{postcode}}  {{city}}',
   fontFamily: 'Burnmark Sans',
-  fontSize: 32, fontWeight: 'normal', fontStyle: 'normal',
-  textAlign: 'left', verticalAlign: 'top',
-  letterSpacing: 0, lineHeight: 1.2,
-  invert: false, wrap: true, autoHeight: false,
+  fontSize: 32,
+  fontWeight: 'normal',
+  fontStyle: 'normal',
+  textAlign: 'left',
+  verticalAlign: 'top',
+  letterSpacing: 0,
+  lineHeight: 1.2,
+  invert: false,
+  wrap: true,
+  autoHeight: false,
 });
 ```
 
@@ -185,10 +221,7 @@ we pass `TWO_COLOR_BLACK_RED` as the capabilities — each result's
 a Brother QL can print in a single pass.
 
 ```ts
-import {
-  renderBatch,
-  TWO_COLOR_BLACK_RED,
-} from '@burnmark-io/designer-core';
+import { renderBatch, TWO_COLOR_BLACK_RED } from '@burnmark-io/designer-core';
 import { openPrinter } from 'burnmark-cli/dist/drivers.js'; // or your own driver factory
 
 const printer = await openPrinter('usb://brother-ql');
@@ -277,7 +310,7 @@ for await (const result of progressify(
   'Printed',
 )) {
   const black = result.planes.get('black');
-  const red   = result.planes.get('red');
+  const red = result.planes.get('red');
   // Send to the driver…
 }
 ```

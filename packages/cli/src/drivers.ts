@@ -80,7 +80,9 @@ export async function openPrinter(url: string): Promise<PrinterAdapter> {
   const viable = drivers.filter(d => d.discovery);
   if (viable.length === 0) {
     if (broken.length > 0) {
-      const detail = broken.map(d => `  ${d.packageName}: ${d.loadError ?? '(no detail)'}`).join('\n');
+      const detail = broken
+        .map(d => `  ${d.packageName}: ${d.loadError ?? '(no detail)'}`)
+        .join('\n');
       throw new Error(`Printer drivers failed to load:\n${detail}`);
     }
     throw new Error(
@@ -91,9 +93,7 @@ export async function openPrinter(url: string): Promise<PrinterAdapter> {
 
   const parsed = parsePrinterUrl(url);
   const match =
-    parsed.family !== undefined
-      ? viable.find(d => d.family === parsed.family)
-      : viable[0];
+    parsed.family !== undefined ? viable.find(d => d.family === parsed.family) : viable[0];
   if (!match?.discovery) {
     throw new Error(
       `No installed driver matches "${url}". Installed: ${viable.map(d => d.family).join(', ')}`,

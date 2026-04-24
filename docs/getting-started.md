@@ -30,21 +30,39 @@ const designer = new LabelDesigner({
 
 designer.add({
   type: 'text',
-  x: 20, y: 20, width: 656, height: 60,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 656,
+  height: 60,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: 'Order #{{order_id}} — {{name}}',
   fontFamily: 'Burnmark Sans',
-  fontSize: 36, fontWeight: 'bold', fontStyle: 'normal',
-  textAlign: 'left', verticalAlign: 'top',
-  letterSpacing: 0, lineHeight: 1.2,
-  invert: false, wrap: true, autoHeight: false,
+  fontSize: 36,
+  fontWeight: 'bold',
+  fontStyle: 'normal',
+  textAlign: 'left',
+  verticalAlign: 'top',
+  letterSpacing: 0,
+  lineHeight: 1.2,
+  invert: false,
+  wrap: true,
+  autoHeight: false,
 });
 
 designer.add({
   type: 'barcode',
-  x: 20, y: 100, width: 240, height: 80,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 100,
+  width: 240,
+  height: 80,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   format: 'qrcode',
   data: 'https://example.com/orders/{{order_id}}',
@@ -65,11 +83,7 @@ a QR code linking to the order URL. The continuous-height canvas
 
 ```ts
 import { readFile } from 'node:fs/promises';
-import {
-  LabelDesigner,
-  parseCsv,
-  renderBatch,
-} from '@burnmark-io/designer-core';
+import { LabelDesigner, parseCsv, renderBatch } from '@burnmark-io/designer-core';
 
 const designer = new LabelDesigner({
   canvas: { widthDots: 696, heightDots: 200, dpi: 300 },
@@ -127,7 +141,9 @@ reference for the full schema):
   "createdAt": "2026-01-01T00:00:00.000Z",
   "updatedAt": "2026-01-01T00:00:00.000Z",
   "canvas": {
-    "widthDots": 696, "heightDots": 0, "dpi": 300,
+    "widthDots": 696,
+    "heightDots": 0,
+    "dpi": 300,
     "margins": { "top": 10, "right": 10, "bottom": 10, "left": 10 },
     "background": "#ffffff",
     "grid": { "enabled": false, "spacingDots": 10 }
@@ -136,16 +152,27 @@ reference for the full schema):
     {
       "id": "t1",
       "type": "text",
-      "x": 20, "y": 20, "width": 656, "height": 60,
-      "rotation": 0, "opacity": 1, "locked": false, "visible": true,
+      "x": 20,
+      "y": 20,
+      "width": 656,
+      "height": 60,
+      "rotation": 0,
+      "opacity": 1,
+      "locked": false,
+      "visible": true,
       "color": "#000000",
       "content": "Hello {{name}}",
       "fontFamily": "Burnmark Sans",
       "fontSize": 40,
-      "fontWeight": "bold", "fontStyle": "normal",
-      "textAlign": "left", "verticalAlign": "top",
-      "letterSpacing": 0, "lineHeight": 1.2,
-      "invert": false, "wrap": true, "autoHeight": false
+      "fontWeight": "bold",
+      "fontStyle": "normal",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "invert": false,
+      "wrap": true,
+      "autoHeight": false
     }
   ],
   "metadata": {}
@@ -207,15 +234,27 @@ const designer = new LabelDesigner({
 
 designer.add({
   type: 'text',
-  x: 20, y: 20, width: 656, height: 60,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 656,
+  height: 60,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: 'Hello {{name}}',
   fontFamily: 'Burnmark Sans',
-  fontSize: 40, fontWeight: 'bold', fontStyle: 'normal',
-  textAlign: 'left', verticalAlign: 'top',
-  letterSpacing: 0, lineHeight: 1.2,
-  invert: false, wrap: true, autoHeight: false,
+  fontSize: 40,
+  fontWeight: 'bold',
+  fontStyle: 'normal',
+  textAlign: 'left',
+  verticalAlign: 'top',
+  letterSpacing: 0,
+  lineHeight: 1.2,
+  invert: false,
+  wrap: true,
+  autoHeight: false,
 });
 
 const blob = await exportPng(designer.document, {

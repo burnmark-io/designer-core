@@ -58,15 +58,27 @@ const designer = new LabelDesigner({
 
 designer.add({
   type: 'text',
-  x: 20, y: 20, width: 656, height: 60,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 656,
+  height: 60,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: 'Hello, {{name}}!',
   fontFamily: 'Burnmark Sans',
-  fontSize: 40, fontWeight: 'bold', fontStyle: 'normal',
-  textAlign: 'left', verticalAlign: 'top',
-  letterSpacing: 0, lineHeight: 1.2,
-  invert: false, wrap: true, autoHeight: false,
+  fontSize: 40,
+  fontWeight: 'bold',
+  fontStyle: 'normal',
+  textAlign: 'left',
+  verticalAlign: 'top',
+  letterSpacing: 0,
+  lineHeight: 1.2,
+  invert: false,
+  wrap: true,
+  autoHeight: false,
 });
 
 const blob = await exportPng(designer.document, {

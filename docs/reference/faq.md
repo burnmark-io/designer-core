@@ -62,15 +62,15 @@ with a message from bwip-js like
 **Cause.** The `BarcodeObject.data` value violates the format's
 constraints. Common offenders:
 
-| Format | Required |
-|---|---|
-| `ean13` | 12 or 13 digits (bwip-js computes the check digit if you give 12) |
-| `ean8` | 7 or 8 digits |
-| `upca` | 11 or 12 digits |
-| `upce` | 6, 7, or 8 digits |
-| `code39` | uppercase + digits + `-. $/+%`; no lowercase, no punctuation |
-| `itf14` | Even digit count |
-| `gs1_128` | Well-formed application identifiers in parentheses |
+| Format    | Required                                                          |
+| --------- | ----------------------------------------------------------------- |
+| `ean13`   | 12 or 13 digits (bwip-js computes the check digit if you give 12) |
+| `ean8`    | 7 or 8 digits                                                     |
+| `upca`    | 11 or 12 digits                                                   |
+| `upce`    | 6, 7, or 8 digits                                                 |
+| `code39`  | uppercase + digits + `-. $/+%`; no lowercase, no punctuation      |
+| `itf14`   | Even digit count                                                  |
+| `gs1_128` | Well-formed application identifiers in parentheses                |
 
 **Fix.** Use `burnmark validate --template … --csv …` to catch every
 offending row before you start printing. In-app, call
@@ -127,10 +127,7 @@ black.
       { name: 'black', cssMatch: ['*'] },
       {
         name: 'red',
-        cssMatch: [
-          ...TWO_COLOR_BLACK_RED.colors[1].cssMatch,
-          '#ff6633', 'orange',
-        ],
+        cssMatch: [...TWO_COLOR_BLACK_RED.colors[1].cssMatch, '#ff6633', 'orange'],
       },
     ],
   };

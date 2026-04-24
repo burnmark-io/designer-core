@@ -13,12 +13,12 @@ uses the OS font stack.
 
 Four families, four open-licensed typefaces:
 
-| Family (use this name) | Underlying typeface | License | Good for |
-|---|---|---|---|
-| `Burnmark Sans` | Inter | SIL OFL | Body text, labels, most UI |
-| `Burnmark Mono` | JetBrains Mono | SIL OFL | Barcodes with readable text, SKUs, code |
-| `Burnmark Serif` | Bitter | SIL OFL | Long-form or classic-feel labels |
-| `Burnmark Narrow` | Barlow Condensed | SIL OFL | Tight layouts, long names |
+| Family (use this name) | Underlying typeface | License | Good for                                |
+| ---------------------- | ------------------- | ------- | --------------------------------------- |
+| `Burnmark Sans`        | Inter               | SIL OFL | Body text, labels, most UI              |
+| `Burnmark Mono`        | JetBrains Mono      | SIL OFL | Barcodes with readable text, SKUs, code |
+| `Burnmark Serif`       | Bitter              | SIL OFL | Long-form or classic-feel labels        |
+| `Burnmark Narrow`      | Barlow Condensed    | SIL OFL | Tight layouts, long names               |
 
 ```ts
 import { BUNDLED_FONTS, type BundledFontFamily } from '@burnmark-io/designer-core';
@@ -77,8 +77,8 @@ peer — it is on the standard Node.js install path.
 ```ts
 import { isFontLoaded, listFonts } from '@burnmark-io/designer-core';
 
-isFontLoaded('Burnmark Sans');    // true if the bundled font has been loaded at least once
-isFontLoaded('Acme Display');     // true after registerFont() completes
+isFontLoaded('Burnmark Sans'); // true if the bundled font has been loaded at least once
+isFontLoaded('Acme Display'); // true after registerFont() completes
 
 listFonts();
 // FontDescriptor[]:

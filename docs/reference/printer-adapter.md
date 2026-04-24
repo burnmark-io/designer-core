@@ -18,9 +18,9 @@ import { type PrinterAdapter } from '@burnmark-io/designer-core';
 
 ```ts
 interface PrinterAdapter {
-  readonly family: string;                   // 'brother-ql', 'labelmanager', 'labelwriter', …
-  readonly model: string;                    // specific model, e.g. 'QL-800'
-  readonly connected: boolean;               // transport state
+  readonly family: string; // 'brother-ql', 'labelmanager', 'labelwriter', …
+  readonly model: string; // specific model, e.g. 'QL-800'
+  readonly connected: boolean; // transport state
   readonly capabilities: PrinterCapabilities;
 
   connect(): Promise<void>;
@@ -44,8 +44,8 @@ interface PrinterCapabilities {
 }
 
 interface PrinterColor {
-  name: string;         // plane name — 'black', 'red', 'cyan', …
-  cssMatch: string[];   // exact CSS colour strings; or ['*'] for wildcard
+  name: string; // plane name — 'black', 'red', 'cyan', …
+  cssMatch: string[]; // exact CSS colour strings; or ['*'] for wildcard
 }
 ```
 
@@ -74,11 +74,11 @@ core directly; drivers for two-colour hardware usually extend
 
 ```ts
 interface PrinterStatus {
-  ready: boolean;                // true if the printer is idle and reachable
-  mediaLoaded: boolean;          // tape present?
-  mediaWidthMm?: number;         // detected media width
-  mediaType?: string;            // 'DK-22251', '4XL', …
-  errors: string[];              // empty when healthy
+  ready: boolean; // true if the printer is idle and reachable
+  mediaLoaded: boolean; // tape present?
+  mediaWidthMm?: number; // detected media width
+  mediaType?: string; // 'DK-22251', '4XL', …
+  errors: string[]; // empty when healthy
 }
 ```
 
@@ -128,7 +128,7 @@ A `LabelBitmap` is:
 interface LabelBitmap {
   widthPx: number;
   heightPx: number;
-  data: Uint8Array;       // packed 1bpp, MSB-first per byte
+  data: Uint8Array; // packed 1bpp, MSB-first per byte
 }
 ```
 
@@ -157,7 +157,10 @@ export class MyThermalAdapter implements PrinterAdapter {
 
   private socket: Socket | null = null;
 
-  constructor(model: string, private readonly host: string) {
+  constructor(
+    model: string,
+    private readonly host: string,
+  ) {
     this.model = model;
   }
 
@@ -179,10 +182,7 @@ export class MyThermalAdapter implements PrinterAdapter {
     return parseStatus(res);
   }
 
-  async print(
-    planes: Map<string, LabelBitmap>,
-    options: PrintOptions = {},
-  ): Promise<void> {
+  async print(planes: Map<string, LabelBitmap>, options: PrintOptions = {}): Promise<void> {
     const black = planes.get('black');
     if (!black) throw new Error('mythermal: no black plane produced');
     const job = buildJob(black, options);

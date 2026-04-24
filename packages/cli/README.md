@@ -24,16 +24,16 @@ The CLI auto-discovers drivers at runtime.
 
 ## Commands
 
-| Command | Description |
-|---|---|
-| `burnmark render --template <file> --output <file>` | Render to PNG or PDF |
-| `burnmark render --template <file> --csv <file> --output labels.pdf` | Batch render CSV to PDF |
-| `burnmark render --template <file> --sheet <code> --csv <file> --output sheet.pdf` | Sticker sheet export |
-| `burnmark print --template <file> --printer <url>` | Render and send to printer |
-| `burnmark print --template <file> --csv <file> --printer <url>` | Batch print |
-| `burnmark validate --template <file> --csv <file>` | Check variables and barcode data |
-| `burnmark list-printers` | Show installed driver packages |
-| `burnmark list-sheets` | Show built-in sheet templates |
+| Command                                                                            | Description                      |
+| ---------------------------------------------------------------------------------- | -------------------------------- |
+| `burnmark render --template <file> --output <file>`                                | Render to PNG or PDF             |
+| `burnmark render --template <file> --csv <file> --output labels.pdf`               | Batch render CSV to PDF          |
+| `burnmark render --template <file> --sheet <code> --csv <file> --output sheet.pdf` | Sticker sheet export             |
+| `burnmark print --template <file> --printer <url>`                                 | Render and send to printer       |
+| `burnmark print --template <file> --csv <file> --printer <url>`                    | Batch print                      |
+| `burnmark validate --template <file> --csv <file>`                                 | Check variables and barcode data |
+| `burnmark list-printers`                                                           | Show installed driver packages   |
+| `burnmark list-sheets`                                                             | Show built-in sheet templates    |
 
 ## Flags
 

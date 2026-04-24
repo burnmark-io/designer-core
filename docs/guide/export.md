@@ -16,12 +16,7 @@ loaded from disk without putting it into a designer first. When you
 already have a designer, pass `designer.document`:
 
 ```ts
-import {
-  exportPng,
-  exportPdf,
-  exportSheet,
-  exportBundled,
-} from '@burnmark-io/designer-core';
+import { exportPng, exportPdf, exportSheet, exportBundled } from '@burnmark-io/designer-core';
 
 const blob = await exportPng(designer.document);
 ```
@@ -40,7 +35,7 @@ to `URL.createObjectURL` or a download anchor.
 ```ts
 const blob = await exportPng(designer.document, {
   variables: { name: 'Piet' },
-  scale: 2,                  // optional — render at 2× the document DPI
+  scale: 2, // optional — render at 2× the document DPI
   assetLoader: myAssetLoader, // optional — defaults to designer's or an empty in-memory loader
 });
 ```
@@ -94,7 +89,7 @@ const single = await exportPdf(designer.document);
 const batch = await exportPdf(designer.document, [
   { name: 'Piet', order_id: '001' },
   { name: 'Anna', order_id: '002' },
-  { name: 'Tom',  order_id: '003' },
+  { name: 'Tom', order_id: '003' },
 ]);
 ```
 
@@ -135,33 +130,33 @@ import {
 const l7160 = findSheet('avery-l7160');
 
 // Or pick from the built-in list:
-const all = listSheets();  // SheetTemplate[]
+const all = listSheets(); // SheetTemplate[]
 ```
 
 ### `SheetTemplate` shape
 
 ```ts
 interface SheetTemplate {
-  code: string;              // 'avery-l7160'
-  name: string;              // 'Avery L7160 — 21 per sheet (63.5 × 38.1 mm)'
-  paperSize: string;         // 'A4', 'Letter', any named size
+  code: string; // 'avery-l7160'
+  name: string; // 'Avery L7160 — 21 per sheet (63.5 × 38.1 mm)'
+  paperSize: string; // 'A4', 'Letter', any named size
   paperWidthMm: number;
   paperHeightMm: number;
   labelWidthMm: number;
   labelHeightMm: number;
-  layouts: SheetLayout[];    // one or more grid layouts per sheet
-  labelShape?: 'rectangle' | 'round' | 'ellipse';  // UI metadata
-  cornerRadiusMm?: number;                          // UI metadata
-  marginMm?: number;                                // UI metadata
+  layouts: SheetLayout[]; // one or more grid layouts per sheet
+  labelShape?: 'rectangle' | 'round' | 'ellipse'; // UI metadata
+  cornerRadiusMm?: number; // UI metadata
+  marginMm?: number; // UI metadata
 }
 
 interface SheetLayout {
-  columns: number;     // labels per row in this layout
-  rows: number;        // label rows in this layout
-  originXMm: number;   // left offset of the first label
-  originYMm: number;   // top offset of the first label
-  pitchXMm: number;    // horizontal distance between label origins
-  pitchYMm: number;    // vertical distance between label origins
+  columns: number; // labels per row in this layout
+  rows: number; // label rows in this layout
+  originXMm: number; // left offset of the first label
+  originYMm: number; // top offset of the first label
+  pitchXMm: number; // horizontal distance between label origins
+  pitchYMm: number; // vertical distance between label origins
 }
 ```
 
@@ -182,12 +177,7 @@ Full list via `burnmark list-sheets` from the CLI.
 ### Avery L7160 walkthrough — 21 labels per A4
 
 ```ts
-import {
-  exportSheet,
-  findSheet,
-  LabelDesigner,
-  parseCsv,
-} from '@burnmark-io/designer-core';
+import { exportSheet, findSheet, LabelDesigner, parseCsv } from '@burnmark-io/designer-core';
 import { readFile, writeFile } from 'node:fs/promises';
 import { Buffer } from 'node:buffer';
 
@@ -227,10 +217,10 @@ import {
   sheetsNeeded,
 } from '@burnmark-io/designer-core';
 
-labelsPerPage(sheet);               // 21  — total positions across every layout
-sheetsNeeded(sheet, 50);            // 3   — ceil(50 / 21)
-isMultiLayout(sheet);               // false for avery-l7160; true for staggered sheets
-primaryLayout(sheet);               // the first SheetLayout — the common case
+labelsPerPage(sheet); // 21  — total positions across every layout
+sheetsNeeded(sheet, 50); // 3   — ceil(50 / 21)
+isMultiLayout(sheet); // false for avery-l7160; true for staggered sheets
+primaryLayout(sheet); // the first SheetLayout — the common case
 
 positionsFromSheet(sheet);
 // [{ xMm: 7.2, yMm: 15.1 }, { xMm: 73.2, yMm: 15.1 }, …] — sorted top-to-bottom, left-to-right
@@ -291,13 +281,10 @@ assets is rarely what users want. Surface `missing` in your UI.
 you always need one for a bundle to be useful:
 
 ```ts
-import {
-  exportBundled,
-  InMemoryAssetLoader,
-} from '@burnmark-io/designer-core';
+import { exportBundled, InMemoryAssetLoader } from '@burnmark-io/designer-core';
 
 const loader = new InMemoryAssetLoader();
-await loader.store(myImageBytes);   // returns the asset key — use that in the ImageObject
+await loader.store(myImageBytes); // returns the asset key — use that in the ImageObject
 
 // …build the document…
 
@@ -320,7 +307,7 @@ the designer wrappers:
 import { toJSON, fromJSON } from '@burnmark-io/designer-core';
 
 // Serialise a live designer's document:
-const json = toJSON(designer.document);          // or designer.toJSON()
+const json = toJSON(designer.document); // or designer.toJSON()
 await writeFile('my-label.label', json, 'utf-8');
 
 // Load a `.label` file:

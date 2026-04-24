@@ -38,8 +38,8 @@ interface PrinterCapabilities {
 }
 
 interface PrinterColor {
-  name: string;        // plane name — e.g. 'black', 'red'
-  cssMatch: string[];  // exact CSS colour strings, or ['*'] for wildcard
+  name: string; // plane name — e.g. 'black', 'red'
+  cssMatch: string[]; // exact CSS colour strings, or ['*'] for wildcard
 }
 ```
 
@@ -49,17 +49,19 @@ Two presets ship out of the box:
 import { SINGLE_COLOR, TWO_COLOR_BLACK_RED } from '@burnmark-io/designer-core';
 
 // Single-colour thermal (LabelWriter, most Brother QL models):
-SINGLE_COLOR === {
-  colors: [{ name: 'black', cssMatch: ['*'] }],
-};
+SINGLE_COLOR ===
+  {
+    colors: [{ name: 'black', cssMatch: ['*'] }],
+  };
 
 // Two-colour Brother QL black/red (DK-22251 tape):
-TWO_COLOR_BLACK_RED === {
-  colors: [
-    { name: 'black', cssMatch: ['*'] },
-    { name: 'red',   cssMatch: ['#ff0000', '#f00', 'red', '#cc0000', /* … */] },
-  ],
-};
+TWO_COLOR_BLACK_RED ===
+  {
+    colors: [
+      { name: 'black', cssMatch: ['*'] },
+      { name: 'red', cssMatch: ['#ff0000', '#f00', 'red', '#cc0000' /* … */] },
+    ],
+  };
 ```
 
 Matching is **first non-wildcard plane wins**. If nothing non-wildcard
@@ -73,10 +75,10 @@ import { type PrinterCapabilities } from '@burnmark-io/designer-core';
 
 const CMYK_THERMAL: PrinterCapabilities = {
   colors: [
-    { name: 'cyan',    cssMatch: ['#00ffff', 'cyan'] },
+    { name: 'cyan', cssMatch: ['#00ffff', 'cyan'] },
     { name: 'magenta', cssMatch: ['#ff00ff', 'magenta'] },
-    { name: 'yellow',  cssMatch: ['#ffff00', 'yellow'] },
-    { name: 'black',   cssMatch: ['*'] },
+    { name: 'yellow', cssMatch: ['#ffff00', 'yellow'] },
+    { name: 'black', cssMatch: ['*'] },
   ],
 };
 ```
@@ -84,15 +86,12 @@ const CMYK_THERMAL: PrinterCapabilities = {
 ## `flattenForPrinter()` — the flattening step
 
 ```ts
-import {
-  flattenForPrinter,
-  TWO_COLOR_BLACK_RED,
-} from '@burnmark-io/designer-core';
+import { flattenForPrinter, TWO_COLOR_BLACK_RED } from '@burnmark-io/designer-core';
 
 const planes = await flattenForPrinter(designer.document, TWO_COLOR_BLACK_RED);
 // planes is a Map<string, LabelBitmap> — one 1bpp bitmap per plane name.
 const black = planes.get('black');
-const red   = planes.get('red');
+const red = planes.get('red');
 ```
 
 `flattenForPrinter(doc, caps)` is a thin wrapper over `renderPlanes` —
@@ -112,11 +111,7 @@ pixel on top of a black pixel still prints as red, not "both".
 A shipping label with a black address block and a red "FRAGILE" warning:
 
 ```ts
-import {
-  LabelDesigner,
-  flattenForPrinter,
-  TWO_COLOR_BLACK_RED,
-} from '@burnmark-io/designer-core';
+import { LabelDesigner, flattenForPrinter, TWO_COLOR_BLACK_RED } from '@burnmark-io/designer-core';
 
 const designer = new LabelDesigner({
   canvas: { widthDots: 696, heightDots: 400, dpi: 300 },
@@ -124,28 +119,52 @@ const designer = new LabelDesigner({
 
 designer.add({
   type: 'text',
-  x: 20, y: 20, width: 656, height: 200,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 656,
+  height: 200,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: 'Bol.com\nPapendorpseweg 100\n3528 BJ Utrecht',
   fontFamily: 'Burnmark Sans',
-  fontSize: 36, fontWeight: 'normal', fontStyle: 'normal',
-  textAlign: 'left', verticalAlign: 'top',
-  letterSpacing: 0, lineHeight: 1.3,
-  invert: false, wrap: true, autoHeight: false,
+  fontSize: 36,
+  fontWeight: 'normal',
+  fontStyle: 'normal',
+  textAlign: 'left',
+  verticalAlign: 'top',
+  letterSpacing: 0,
+  lineHeight: 1.3,
+  invert: false,
+  wrap: true,
+  autoHeight: false,
 });
 
 designer.add({
   type: 'text',
-  x: 20, y: 260, width: 656, height: 120,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 260,
+  width: 656,
+  height: 120,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#ff0000',
   content: 'FRAGILE',
   fontFamily: 'Burnmark Sans',
-  fontSize: 80, fontWeight: 'bold', fontStyle: 'normal',
-  textAlign: 'center', verticalAlign: 'middle',
-  letterSpacing: 4, lineHeight: 1,
-  invert: false, wrap: false, autoHeight: false,
+  fontSize: 80,
+  fontWeight: 'bold',
+  fontStyle: 'normal',
+  textAlign: 'center',
+  verticalAlign: 'middle',
+  letterSpacing: 4,
+  lineHeight: 1,
+  invert: false,
+  wrap: false,
+  autoHeight: false,
 });
 
 const planes = await flattenForPrinter(designer.document, TWO_COLOR_BLACK_RED);
@@ -170,7 +189,7 @@ dithering to approximate tone with a stipple pattern.
 designer.add({
   type: 'text',
   // …
-  color: '#808080',    // 50% grey
+  color: '#808080', // 50% grey
   content: 'GREY TEXT',
 });
 
@@ -189,7 +208,7 @@ body text at normal font sizes. If you care about legibility, use
 
 ## Opacity → stipple
 
-Opacity is composited in full-colour space *before* the 1bpp conversion.
+Opacity is composited in full-colour space _before_ the 1bpp conversion.
 `opacity: 0.5` on black text means Canvas composites the glyph as 50%
 black over the white background, yielding mid-grey pixels. The bitmap
 step then dithers those mid-grey pixels back to a stipple pattern.
@@ -223,7 +242,7 @@ surprising:
 ```ts
 designer.add({
   type: 'text',
-  color: '#ff6633',       // orange — not matched by TWO_COLOR_BLACK_RED's red plane
+  color: '#ff6633', // orange — not matched by TWO_COLOR_BLACK_RED's red plane
   content: 'SALE',
   // …
 });
@@ -241,10 +260,7 @@ const TWO_COLOR_RED_EXTENDED: PrinterCapabilities = {
     { name: 'black', cssMatch: ['*'] },
     {
       name: 'red',
-      cssMatch: [
-        ...TWO_COLOR_BLACK_RED.colors[1].cssMatch,
-        '#ff6633', 'orange',
-      ],
+      cssMatch: [...TWO_COLOR_BLACK_RED.colors[1].cssMatch, '#ff6633', 'orange'],
     },
   ],
 };
@@ -258,8 +274,8 @@ capabilities, different output.
 ```ts
 import { exportPng, exportPdf } from '@burnmark-io/designer-core';
 
-const blob = await exportPng(designer.document);    // full CSS colour
-const pdf  = await exportPdf(designer.document);    // full CSS colour
+const blob = await exportPng(designer.document); // full CSS colour
+const pdf = await exportPdf(designer.document); // full CSS colour
 ```
 
 These paths never call the flattening step. A `#808080` text object in

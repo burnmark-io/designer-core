@@ -101,7 +101,9 @@ const mockCanvas = {
     fillRect: () => {},
     drawImage: () => {},
     getImageData: () => ({
-      width: 10, height: 10, data: new Uint8ClampedArray(10 * 10 * 4),
+      width: 10,
+      height: 10,
+      data: new Uint8ClampedArray(10 * 10 * 4),
     }),
     putImageData: () => {},
     /* …other 2D context methods as needed by your test scope… */
@@ -109,10 +111,7 @@ const mockCanvas = {
   convertToBlob: async () => new Blob([new Uint8Array()], { type: 'image/png' }),
 };
 
-(globalThis as { OffscreenCanvas?: unknown }).OffscreenCanvas = function (
-  _w: number,
-  _h: number,
-) {
+(globalThis as { OffscreenCanvas?: unknown }).OffscreenCanvas = function (_w: number, _h: number) {
   return mockCanvas;
 };
 ```
@@ -142,12 +141,11 @@ import today; the options are:
 
   // Not every version of skia-canvas exposes OffscreenCanvas — check your edition.
   if (!(globalThis as { OffscreenCanvas?: unknown }).OffscreenCanvas) {
-    (globalThis as { OffscreenCanvas?: unknown }).OffscreenCanvas =
-      class OffscreenCanvasShim {
-        constructor(width: number, height: number) {
-          return new Canvas(width, height);
-        }
-      };
+    (globalThis as { OffscreenCanvas?: unknown }).OffscreenCanvas = class OffscreenCanvasShim {
+      constructor(width: number, height: number) {
+        return new Canvas(width, height);
+      }
+    };
   }
   ```
 

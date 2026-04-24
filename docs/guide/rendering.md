@@ -3,11 +3,11 @@
 designer-core's render pipeline has three public entry points that
 correspond to three different jobs:
 
-| Entry point | Returns | What it's for |
-|---|---|---|
-| `designer.render()` | `RawImageData` (RGBA) | Full-colour preview, PNG/PDF export |
-| `designer.renderToBitmap()` | `LabelBitmap` (1bpp) | Single-colour thermal output |
-| `designer.renderPlanes(caps)` | `Map<string, LabelBitmap>` | Multi-colour thermal output |
+| Entry point                   | Returns                    | What it's for                       |
+| ----------------------------- | -------------------------- | ----------------------------------- |
+| `designer.render()`           | `RawImageData` (RGBA)      | Full-colour preview, PNG/PDF export |
+| `designer.renderToBitmap()`   | `LabelBitmap` (1bpp)       | Single-colour thermal output        |
+| `designer.renderPlanes(caps)` | `Map<string, LabelBitmap>` | Multi-colour thermal output         |
 
 All three accept an optional `variables: Record<string, string>` argument
 for `{{placeholder}}` substitution. All three are async — Canvas setup
@@ -76,12 +76,11 @@ multi-colour path — driver code looks the same either way.
 ## Multi-colour path — `renderPlanes(capabilities)`
 
 ```ts
-import {
-  LabelDesigner,
-  TWO_COLOR_BLACK_RED,
-} from '@burnmark-io/designer-core';
+import { LabelDesigner, TWO_COLOR_BLACK_RED } from '@burnmark-io/designer-core';
 
-const designer = new LabelDesigner({ /* … */ });
+const designer = new LabelDesigner({
+  /* … */
+});
 // …add black and red objects…
 
 const planes = await designer.renderPlanes(TWO_COLOR_BLACK_RED);
@@ -119,8 +118,8 @@ import { LabelDesigner } from '@burnmark-io/designer-core';
 
 const rgba = await designer.render();
 const bitmap = LabelDesigner.toBitmap(rgba, {
-  threshold: 128,  // default
-  dither: true,    // Floyd-Steinberg (default)
+  threshold: 128, // default
+  dither: true, // Floyd-Steinberg (default)
   invert: false,
 });
 ```
@@ -138,13 +137,13 @@ const designer = new LabelDesigner({
   canvas: { widthDots: 696, heightDots: 0, dpi: 300 }, // continuous
 });
 
-designer.add({ type: 'text', /* …short content… */ });
+designer.add({ type: 'text' /* …short content… */ });
 const short = await designer.render();
-console.log(short.height);  // auto-sized — e.g. ~80 dots
+console.log(short.height); // auto-sized — e.g. ~80 dots
 
-designer.add({ type: 'text', /* …long content… */ });
+designer.add({ type: 'text' /* …long content… */ });
 const long = await designer.render();
-console.log(long.height);   // taller
+console.log(long.height); // taller
 ```
 
 The crop uses the `canvas.background` colour as the "empty" definition,
@@ -160,8 +159,8 @@ output:
 designer.add({
   type: 'image',
   // …
-  threshold: 160,    // 0..255 cutoff — higher = more pixels go white
-  dither: false,     // hard threshold instead of Floyd-Steinberg
+  threshold: 160, // 0..255 cutoff — higher = more pixels go white
+  dither: false, // hard threshold instead of Floyd-Steinberg
 });
 ```
 
@@ -194,12 +193,12 @@ Alpine where `@napi-rs/canvas` can't install), see
 Typical render times on a modern laptop (measured against the default
 Node.js + `@napi-rs/canvas` setup):
 
-| Document | Canvas | Time |
-|---|---|---|
-| Address label — 5 text objects | 696 × 300 | ~15 ms |
-| Same, two-colour | 696 × 300 | ~30 ms |
-| Full badge — text + image + QR | 696 × 400 | ~60 ms |
-| Sticker sheet — 21 labels | 2480 × 3508 (A4) | ~900 ms |
+| Document                       | Canvas           | Time    |
+| ------------------------------ | ---------------- | ------- |
+| Address label — 5 text objects | 696 × 300        | ~15 ms  |
+| Same, two-colour               | 696 × 300        | ~30 ms  |
+| Full badge — text + image + QR | 696 × 400        | ~60 ms  |
+| Sticker sheet — 21 labels      | 2480 × 3508 (A4) | ~900 ms |
 
 Barcode rendering dominates for QR and Data Matrix codes (`bwip-js`
 produces an SVG which is decoded as an `ImageBitmap`). Caching the

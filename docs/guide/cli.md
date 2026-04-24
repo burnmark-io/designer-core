@@ -51,14 +51,14 @@ burnmark render --template my-label.label --sheet avery-l7160 --csv skus.csv --o
 
 Flags:
 
-| Flag | Required | Notes |
-|---|---|---|
-| `--template <path>` | yes | `.label` JSON file |
-| `--output <path>` | yes | `.png` or `.pdf` — extension decides the format |
-| `--csv <path>` | no | CSV file. One page per row (PDF) or one label (PNG, row 1 only) |
-| `--var key=value` | no | Static variable; repeatable (`--var name=Piet --var city=Utrecht`) |
-| `--sheet <code>` | no | Sticker-sheet code (`avery-l7160`, etc.); forces PDF output |
-| `--rows <range>` | no | Filter CSV rows: `1-50` or `1,3,7,12` |
+| Flag                | Required | Notes                                                              |
+| ------------------- | -------- | ------------------------------------------------------------------ |
+| `--template <path>` | yes      | `.label` JSON file                                                 |
+| `--output <path>`   | yes      | `.png` or `.pdf` — extension decides the format                    |
+| `--csv <path>`      | no       | CSV file. One page per row (PDF) or one label (PNG, row 1 only)    |
+| `--var key=value`   | no       | Static variable; repeatable (`--var name=Piet --var city=Utrecht`) |
+| `--sheet <code>`    | no       | Sticker-sheet code (`avery-l7160`, etc.); forces PDF output        |
+| `--rows <range>`    | no       | Filter CSV rows: `1-50` or `1,3,7,12`                              |
 
 PNG output is single-label only — `--csv` uses the first row. Use PDF
 for batches.
@@ -95,16 +95,16 @@ burnmark print --template address.label --csv addresses.csv --printer usb://brot
 
 Flags:
 
-| Flag | Required | Notes |
-|---|---|---|
-| `--template <path>` | yes | `.label` JSON file |
-| `--printer <url>` | yes | Transport URL, e.g. `usb://brother-ql`, `tcp://192.168.1.42` |
-| `--csv <path>` | no | Batch mode — one label per CSV row |
-| `--var key=value` | no | Static variable; repeatable |
-| `--rows <range>` | no | Filter CSV rows |
-| `--density <mode>` | no | `light` \| `normal` \| `dark` |
-| `--delay <ms>` | no | Delay between labels in batch. Default `500` |
-| `--dry-run` | no | Render every row; don't open the printer |
+| Flag                | Required | Notes                                                        |
+| ------------------- | -------- | ------------------------------------------------------------ |
+| `--template <path>` | yes      | `.label` JSON file                                           |
+| `--printer <url>`   | yes      | Transport URL, e.g. `usb://brother-ql`, `tcp://192.168.1.42` |
+| `--csv <path>`      | no       | Batch mode — one label per CSV row                           |
+| `--var key=value`   | no       | Static variable; repeatable                                  |
+| `--rows <range>`    | no       | Filter CSV rows                                              |
+| `--density <mode>`  | no       | `light` \| `normal` \| `dark`                                |
+| `--delay <ms>`      | no       | Delay between labels in batch. Default `500`                 |
+| `--dry-run`         | no       | Render every row; don't open the printer                     |
 
 `--dry-run` is the quickest way to verify a big batch renders
 successfully without burning tape. It returns the same `✓ Sent N

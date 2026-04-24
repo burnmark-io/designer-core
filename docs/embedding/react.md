@@ -73,16 +73,16 @@ here is a plain React value. `document`, `bitmap`, and `planes` are
 updated via state setters whenever the underlying designer fires
 `'change'`, and the surrounding component re-renders as a result.
 
-| Value | Type |
-|---|---|
-| `document` | `LabelDocument` |
-| `canUndo` / `canRedo` | `boolean` |
-| `isRendering` | `boolean` |
-| `bitmap` | `LabelBitmap \| null` |
-| `planes` | `Map<string, LabelBitmap> \| null` |
-| `renderWarning` | `RenderWarning \| null` |
-| `renderError` | `Error \| null` |
-| `selection` | `string[]` |
+| Value                 | Type                               |
+| --------------------- | ---------------------------------- |
+| `document`            | `LabelDocument`                    |
+| `canUndo` / `canRedo` | `boolean`                          |
+| `isRendering`         | `boolean`                          |
+| `bitmap`              | `LabelBitmap \| null`              |
+| `planes`              | `Map<string, LabelBitmap> \| null` |
+| `renderWarning`       | `RenderWarning \| null`            |
+| `renderError`         | `Error \| null`                    |
+| `selection`           | `string[]`                         |
 
 Actions are stable (`useCallback`-wrapped, stable across renders), so
 you can pass them to memoised child components without invalidating
@@ -131,7 +131,9 @@ referenced objects are removed:
 ```tsx
 const { selection, select, remove, add } = useLabelDesigner();
 
-const newId = add({ /* …TextObject… */ });
+const newId = add({
+  /* …TextObject… */
+});
 select([newId]);
 // selection is [newId]
 
@@ -153,21 +155,23 @@ Use `render()` (returned from the hook) to force a render immediately:
 async function onFileOpen(file: File) {
   const text = await file.text();
   fromJSON(text);
-  await render();    // bypass debounce — show the loaded file immediately
+  await render(); // bypass debounce — show the loaded file immediately
 }
 ```
 
 ## Error and warning handling
 
 ```tsx
-{renderError && (
-  <div className="error">Render failed: {renderError.message}</div>
-)}
-{renderWarning && (
-  <div className="warning">
-    {renderWarning.code}: {renderWarning.message}
-  </div>
-)}
+{
+  renderError && <div className="error">Render failed: {renderError.message}</div>;
+}
+{
+  renderWarning && (
+    <div className="warning">
+      {renderWarning.code}: {renderWarning.message}
+    </div>
+  );
+}
 ```
 
 - `renderError` holds the last thrown render error. The previous
@@ -232,29 +236,43 @@ export function LabelEditor() {
   const addText = useCallback(() => {
     const id = add({
       type: 'text',
-      x: 20, y: 20, width: 400, height: 60,
-      rotation: 0, opacity: 1, locked: false, visible: true,
+      x: 20,
+      y: 20,
+      width: 400,
+      height: 60,
+      rotation: 0,
+      opacity: 1,
+      locked: false,
+      visible: true,
       color: '#000000',
       content: 'New text',
       fontFamily: 'Burnmark Sans',
-      fontSize: 32, fontWeight: 'normal', fontStyle: 'normal',
-      textAlign: 'left', verticalAlign: 'top',
-      letterSpacing: 0, lineHeight: 1.2,
-      invert: false, wrap: true, autoHeight: false,
+      fontSize: 32,
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+      textAlign: 'left',
+      verticalAlign: 'top',
+      letterSpacing: 0,
+      lineHeight: 1.2,
+      invert: false,
+      wrap: true,
+      autoHeight: false,
     });
     select([id]);
   }, [add, select]);
 
   const selectedId = selection[0];
-  const selected = selectedId
-    ? document.objects.find(o => o.id === selectedId)
-    : undefined;
+  const selected = selectedId ? document.objects.find(o => o.id === selectedId) : undefined;
 
   return (
     <div className="editor">
       <header>
-        <button onClick={undo} disabled={!canUndo}>Undo</button>
-        <button onClick={redo} disabled={!canRedo}>Redo</button>
+        <button onClick={undo} disabled={!canUndo}>
+          Undo
+        </button>
+        <button onClick={redo} disabled={!canRedo}>
+          Redo
+        </button>
         <button onClick={addText}>+ Text</button>
         {isRendering && <span>Rendering…</span>}
         {renderError && <span className="err">Error: {renderError.message}</span>}
@@ -273,14 +291,13 @@ export function LabelEditor() {
         <h3>Objects</h3>
         <ul>
           {document.objects.map(o => (
-            <li
-              key={o.id}
-              className={selection.includes(o.id) ? 'selected' : ''}
-            >
+            <li key={o.id} className={selection.includes(o.id) ? 'selected' : ''}>
               <button onClick={() => select([o.id])}>
                 {o.type} — {o.id}
               </button>
-              <button onClick={() => remove(o.id)} aria-label="Remove">×</button>
+              <button onClick={() => remove(o.id)} aria-label="Remove">
+                ×
+              </button>
             </li>
           ))}
         </ul>

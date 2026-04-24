@@ -32,15 +32,27 @@ no global registrations).
 ```ts
 const textId = designer.add({
   type: 'text',
-  x: 20, y: 20, width: 656, height: 60,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 656,
+  height: 60,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: 'Hello {{name}}',
   fontFamily: 'Burnmark Sans',
-  fontSize: 40, fontWeight: 'bold', fontStyle: 'normal',
-  textAlign: 'left', verticalAlign: 'top',
-  letterSpacing: 0, lineHeight: 1.2,
-  invert: false, wrap: true, autoHeight: false,
+  fontSize: 40,
+  fontWeight: 'bold',
+  fontStyle: 'normal',
+  textAlign: 'left',
+  verticalAlign: 'top',
+  letterSpacing: 0,
+  lineHeight: 1.2,
+  invert: false,
+  wrap: true,
+  autoHeight: false,
 });
 ```
 
@@ -91,9 +103,8 @@ async function drawPreview(canvas: HTMLCanvasElement, variables: Record<string, 
   const image = await designer.render(variables);
   canvas.width = image.width;
   canvas.height = image.height;
-  const data = image.data instanceof Uint8ClampedArray
-    ? image.data
-    : new Uint8ClampedArray(image.data);
+  const data =
+    image.data instanceof Uint8ClampedArray ? image.data : new Uint8ClampedArray(image.data);
   ctx.putImageData(new ImageData(data, image.width, image.height), 0, 0);
 }
 
@@ -139,8 +150,14 @@ async function addImage(file: File) {
 
   designer.add({
     type: 'image',
-    x: 20, y: 20, width: 200, height: 200,
-    rotation: 0, opacity: 1, locked: false, visible: true,
+    x: 20,
+    y: 20,
+    width: 200,
+    height: 200,
+    rotation: 0,
+    opacity: 1,
+    locked: false,
+    visible: true,
     color: '#000000',
     assetKey,
     fit: 'contain',
@@ -164,7 +181,9 @@ The minimum to put a live editor on the page:
 ```html
 <!doctype html>
 <html lang="en">
-  <head><title>Label designer demo</title></head>
+  <head>
+    <title>Label designer demo</title>
+  </head>
   <body>
     <canvas id="preview" style="border:1px solid #ccc; max-width: 100%"></canvas>
     <div>
@@ -187,15 +206,27 @@ const designer = new LabelDesigner({
 
 const textId = designer.add({
   type: 'text',
-  x: 20, y: 20, width: 656, height: 60,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 656,
+  height: 60,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   content: 'Hello {{name}}',
   fontFamily: 'Burnmark Sans',
-  fontSize: 40, fontWeight: 'bold', fontStyle: 'normal',
-  textAlign: 'left', verticalAlign: 'top',
-  letterSpacing: 0, lineHeight: 1.2,
-  invert: false, wrap: true, autoHeight: false,
+  fontSize: 40,
+  fontWeight: 'bold',
+  fontStyle: 'normal',
+  textAlign: 'left',
+  verticalAlign: 'top',
+  letterSpacing: 0,
+  lineHeight: 1.2,
+  invert: false,
+  wrap: true,
+  autoHeight: false,
 });
 
 const preview = document.querySelector<HTMLCanvasElement>('#preview')!;
@@ -208,9 +239,8 @@ async function drawPreview() {
   preview.width = image.width;
   preview.height = image.height;
   const ctx = preview.getContext('2d')!;
-  const data = image.data instanceof Uint8ClampedArray
-    ? image.data
-    : new Uint8ClampedArray(image.data);
+  const data =
+    image.data instanceof Uint8ClampedArray ? image.data : new Uint8ClampedArray(image.data);
   ctx.putImageData(new ImageData(data, image.width, image.height), 0, 0);
 }
 

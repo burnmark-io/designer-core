@@ -57,10 +57,10 @@ const {
   exportBundled,
 } = useLabelDesigner({
   canvas: { widthDots: 696, heightDots: 0, dpi: 300 },
-  capabilities: TWO_COLOR_BLACK_RED,      // optional; omit for single-colour preview
-  renderDebounceMs: 200,                  // default
-  renderOnMount: true,                    // default
-  maxHistoryDepth: 100,                   // forwarded to LabelDesigner
+  capabilities: TWO_COLOR_BLACK_RED, // optional; omit for single-colour preview
+  renderDebounceMs: 200, // default
+  renderOnMount: true, // default
+  maxHistoryDepth: 100, // forwarded to LabelDesigner
 });
 </script>
 ```
@@ -71,46 +71,46 @@ escape-hatch usage — most consumers never need it.
 
 ### Options
 
-| Option | Default | Notes |
-|---|---|---|
-| `canvas` | `undefined` | Partial `CanvasConfig`. Forwarded to `new LabelDesigner()`. |
-| `name` | `undefined` | Document name. Forwarded to constructor. |
-| `designer` | `undefined` | Bring your own `LabelDesigner`. Skips constructor. |
-| `capabilities` | `undefined` | If set, the auto-render uses `renderPlanes(caps)` instead of `renderToBitmap()`. `planes` ref gets populated too. |
-| `renderDebounceMs` | `200` | Debounce window for change-triggered re-renders. |
-| `renderOnMount` | `true` | Render once when the composable mounts, without waiting for a mutation. |
-| `maxHistoryDepth` | `100` | Forwarded to constructor. |
-| `assetLoader` | in-memory | Bring your own `AssetLoader` — shared with exports. |
+| Option             | Default     | Notes                                                                                                             |
+| ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------- |
+| `canvas`           | `undefined` | Partial `CanvasConfig`. Forwarded to `new LabelDesigner()`.                                                       |
+| `name`             | `undefined` | Document name. Forwarded to constructor.                                                                          |
+| `designer`         | `undefined` | Bring your own `LabelDesigner`. Skips constructor.                                                                |
+| `capabilities`     | `undefined` | If set, the auto-render uses `renderPlanes(caps)` instead of `renderToBitmap()`. `planes` ref gets populated too. |
+| `renderDebounceMs` | `200`       | Debounce window for change-triggered re-renders.                                                                  |
+| `renderOnMount`    | `true`      | Render once when the composable mounts, without waiting for a mutation.                                           |
+| `maxHistoryDepth`  | `100`       | Forwarded to constructor.                                                                                         |
+| `assetLoader`      | in-memory   | Bring your own `AssetLoader` — shared with exports.                                                               |
 
 ### Returned state
 
-| Ref | Type | What it is |
-|---|---|---|
-| `document` | `ShallowRef<LabelDocument>` | Swapped identity on `loadDocument`/`newDocument`/`undo`/`redo`; `triggerRef` fires on in-place mutations via `add`/`update`/`remove` so templates react either way. |
-| `canUndo` / `canRedo` | `Ref<boolean>` | Driven by the designer's `historyChange` event. |
-| `isRendering` | `Ref<boolean>` | True while a render is in flight. |
-| `bitmap` | `ShallowRef<LabelBitmap \| null>` | Single-plane output — or the `'black'` plane when multi-colour. |
-| `planes` | `ShallowRef<Map<string, LabelBitmap> \| null>` | Only set when `capabilities` is supplied. |
-| `renderWarning` | `ShallowRef<RenderWarning \| null>` | Last non-fatal warning (missing font, etc.). Cleared at the start of each render. |
-| `renderError` | `ShallowRef<Error \| null>` | Last render exception. Cleared on successful renders. |
-| `selection` | `Ref<string[]>` | Selected object IDs. Auto-pruned when objects are removed — see below. |
+| Ref                   | Type                                           | What it is                                                                                                                                                          |
+| --------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `document`            | `ShallowRef<LabelDocument>`                    | Swapped identity on `loadDocument`/`newDocument`/`undo`/`redo`; `triggerRef` fires on in-place mutations via `add`/`update`/`remove` so templates react either way. |
+| `canUndo` / `canRedo` | `Ref<boolean>`                                 | Driven by the designer's `historyChange` event.                                                                                                                     |
+| `isRendering`         | `Ref<boolean>`                                 | True while a render is in flight.                                                                                                                                   |
+| `bitmap`              | `ShallowRef<LabelBitmap \| null>`              | Single-plane output — or the `'black'` plane when multi-colour.                                                                                                     |
+| `planes`              | `ShallowRef<Map<string, LabelBitmap> \| null>` | Only set when `capabilities` is supplied.                                                                                                                           |
+| `renderWarning`       | `ShallowRef<RenderWarning \| null>`            | Last non-fatal warning (missing font, etc.). Cleared at the start of each render.                                                                                   |
+| `renderError`         | `ShallowRef<Error \| null>`                    | Last render exception. Cleared on successful renders.                                                                                                               |
+| `selection`           | `Ref<string[]>`                                | Selected object IDs. Auto-pruned when objects are removed — see below.                                                                                              |
 
 ### Returned actions
 
-| Action | Signature | Notes |
-|---|---|---|
-| `add` | `(input: LabelObjectInput) => string` | Proxies `designer.add`; returns the new ID. |
-| `update` | `(id, patch) => void` | Proxies `designer.update`. |
-| `remove` | `(id) => void` | Proxies `designer.remove`. |
-| `reorder` | `(id, direction) => void` | Proxies `designer.reorder`. |
-| `setCanvas` | `(patch: Partial<CanvasConfig>) => void` | |
-| `undo` / `redo` / `clearHistory` | `() => void` | |
-| `select` / `deselect` | `(ids[]) => void` / `() => void` | Managed here, not in core. |
-| `getPlaceholders` | `() => string[]` | |
-| `applyVariables` | `(vars) => LabelDocument` | |
-| `render` | `() => Promise<void>` | Force-run the render, bypassing the debounce. |
-| `toJSON` / `fromJSON` / `loadDocument` / `newDocument` | — | |
-| `exportPng` / `exportPdf` / `exportSheet` / `exportBundled` | — | Return `Blob`, or `{ blob, missing }` for bundled. |
+| Action                                                      | Signature                                | Notes                                              |
+| ----------------------------------------------------------- | ---------------------------------------- | -------------------------------------------------- |
+| `add`                                                       | `(input: LabelObjectInput) => string`    | Proxies `designer.add`; returns the new ID.        |
+| `update`                                                    | `(id, patch) => void`                    | Proxies `designer.update`.                         |
+| `remove`                                                    | `(id) => void`                           | Proxies `designer.remove`.                         |
+| `reorder`                                                   | `(id, direction) => void`                | Proxies `designer.reorder`.                        |
+| `setCanvas`                                                 | `(patch: Partial<CanvasConfig>) => void` |                                                    |
+| `undo` / `redo` / `clearHistory`                            | `() => void`                             |                                                    |
+| `select` / `deselect`                                       | `(ids[]) => void` / `() => void`         | Managed here, not in core.                         |
+| `getPlaceholders`                                           | `() => string[]`                         |                                                    |
+| `applyVariables`                                            | `(vars) => LabelDocument`                |                                                    |
+| `render`                                                    | `() => Promise<void>`                    | Force-run the render, bypassing the debounce.      |
+| `toJSON` / `fromJSON` / `loadDocument` / `newDocument`      | —                                        |                                                    |
+| `exportPng` / `exportPdf` / `exportSheet` / `exportBundled` | —                                        | Return `Blob`, or `{ blob, missing }` for bundled. |
 
 ## Selection management
 
@@ -123,13 +123,15 @@ exist in the document:
 <script setup lang="ts">
 const { selection, select, deselect, add, remove } = useLabelDesigner();
 
-const id = add({ /* …TextObject… */ });
+const id = add({
+  /* …TextObject… */
+});
 select([id]);
-console.log(selection.value);  // [id]
+console.log(selection.value); // [id]
 
 remove(id);
 // selection is auto-pruned on the next `change` event.
-console.log(selection.value);  // []
+console.log(selection.value); // []
 </script>
 ```
 
@@ -145,7 +147,7 @@ from a superseded call is discarded — you never see stale bitmaps on
 screen.
 
 `isRendering` goes true when a render starts and false when the
-*latest* generation finishes. In your UI, wire it to a spinner
+_latest_ generation finishes. In your UI, wire it to a spinner
 overlay on the preview.
 
 Force a render immediately (skipping the debounce) when you need a
@@ -171,9 +173,7 @@ Two refs, not one, because they mean different things:
 
 ```vue
 <template>
-  <div v-if="renderError" class="error">
-    Render failed: {{ renderError.message }}
-  </div>
+  <div v-if="renderError" class="error">Render failed: {{ renderError.message }}</div>
   <div v-if="renderWarning" class="warning">
     {{ renderWarning.code }}: {{ renderWarning.message }}
   </div>
@@ -205,30 +205,43 @@ const {
   add,
   update,
   remove,
-  undo, redo, canUndo, canRedo,
+  undo,
+  redo,
+  canUndo,
+  canRedo,
 } = useLabelDesigner({
   canvas: { widthDots: 696, heightDots: 300, dpi: 300 },
   capabilities: TWO_COLOR_BLACK_RED,
 });
 
 const selected = computed(() =>
-  selection.value[0]
-    ? document.value.objects.find(o => o.id === selection.value[0])
-    : undefined,
+  selection.value[0] ? document.value.objects.find(o => o.id === selection.value[0]) : undefined,
 );
 
 function addText() {
   const id = add({
     type: 'text',
-    x: 20, y: 20, width: 400, height: 60,
-    rotation: 0, opacity: 1, locked: false, visible: true,
+    x: 20,
+    y: 20,
+    width: 400,
+    height: 60,
+    rotation: 0,
+    opacity: 1,
+    locked: false,
+    visible: true,
     color: '#000000',
     content: 'New text',
     fontFamily: 'Burnmark Sans',
-    fontSize: 32, fontWeight: 'normal', fontStyle: 'normal',
-    textAlign: 'left', verticalAlign: 'top',
-    letterSpacing: 0, lineHeight: 1.2,
-    invert: false, wrap: true, autoHeight: false,
+    fontSize: 32,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    textAlign: 'left',
+    verticalAlign: 'top',
+    letterSpacing: 0,
+    lineHeight: 1.2,
+    invert: false,
+    wrap: true,
+    autoHeight: false,
   });
   select([id]);
 }
@@ -310,7 +323,7 @@ const { planes } = useLabelDesigner({
     <div v-if="planes">
       Black plane: {{ planes.get('black')?.widthPx }}×{{ planes.get('black')?.heightPx }} px
       <br />
-      Red plane:   {{ planes.get('red')?.widthPx }}×{{ planes.get('red')?.heightPx }} px
+      Red plane: {{ planes.get('red')?.widthPx }}×{{ planes.get('red')?.heightPx }} px
     </div>
   </div>
 </template>

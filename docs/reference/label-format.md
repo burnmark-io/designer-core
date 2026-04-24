@@ -10,23 +10,23 @@ timestamp, which is bumped on load.
 
 ```ts
 interface LabelDocument {
-  id: string;                        // stable ID — survives renames
-  version: number;                   // matches CURRENT_DOCUMENT_VERSION on load
+  id: string; // stable ID — survives renames
+  version: number; // matches CURRENT_DOCUMENT_VERSION on load
   name: string;
   description?: string;
-  createdAt: string;                 // ISO-8601
-  updatedAt: string;                 // ISO-8601 — bumped on every mutation
-  canvas: CanvasConfig;              // see below
-  objects: LabelObject[];            // one of five object types
+  createdAt: string; // ISO-8601
+  updatedAt: string; // ISO-8601 — bumped on every mutation
+  canvas: CanvasConfig; // see below
+  objects: LabelObject[]; // one of five object types
   metadata: Record<string, unknown>; // user-defined; never rendered
 }
 
 interface CanvasConfig {
   widthDots: number;
-  heightDots: number;                // 0 = continuous — auto-crop to content
+  heightDots: number; // 0 = continuous — auto-crop to content
   dpi: number;
   margins: { top: number; right: number; bottom: number; left: number };
-  background: string;                // CSS colour — used for continuous crop
+  background: string; // CSS colour — used for continuous crop
   grid: { enabled: boolean; spacingDots: number };
 }
 ```
@@ -95,29 +95,29 @@ to the docs as the single source of truth. Opening it produces:
 
 Field-by-field annotations:
 
-| Field | Purpose |
-|---|---|
-| `id` | Stable UUID / slug. Survives renames — use it for foreign keys, never `name`. |
-| `version` | Schema version. Equals `CURRENT_DOCUMENT_VERSION` (1 today). Older files are migrated forward on load. |
-| `name` | Human-readable title. Shown in UIs; safe to change. |
-| `description` | Optional long-form summary. Never rendered. |
-| `createdAt` | ISO-8601 creation timestamp. Immutable. |
-| `updatedAt` | ISO-8601 last-mutation timestamp. Bumped on every `add`/`update`/`remove`/`setCanvas` and also on `loadDocument`. |
-| `canvas.widthDots` | Media width in printer dots (696 = 62 mm at 300 dpi). |
-| `canvas.heightDots` | `0` for continuous tape (auto-crop); positive for die-cut labels. |
-| `canvas.dpi` | Matters for PDF export (points per inch); the raster pipeline works in dots. |
-| `canvas.margins` | Visual guide for the UI. Does not clip rendering. |
-| `canvas.background` | CSS colour. Cropped out on continuous labels to find content bounds. |
-| `canvas.grid` | Designer-UI snap hint. Not rendered. |
-| `objects[].id` | Assigned by `designer.add()`. Stable across history snapshots. |
-| `objects[].type` | Discriminator — `text`, `image`, `barcode`, `shape`, `group`. Immutable via `update()`. |
-| `objects[].x,y,width,height` | Top-left bounding box in canvas dots. |
-| `objects[].rotation` | Degrees, clockwise; pivot at bbox centre. |
-| `objects[].opacity` | `0`..`1`. Composited in full-colour space before 1bpp dithering — see [Colour model](/guide/colour-model#opacity-stipple). |
-| `objects[].locked` | UI hint; core does not enforce. |
-| `objects[].visible` | Hidden objects do not render. |
-| `objects[].color` | CSS string. Drives plane routing during `renderPlanes()`. |
-| `metadata` | User-defined dictionary. Never rendered. Use it for categorisation, tags, ownership — anything app-specific. |
+| Field                        | Purpose                                                                                                                    |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `id`                         | Stable UUID / slug. Survives renames — use it for foreign keys, never `name`.                                              |
+| `version`                    | Schema version. Equals `CURRENT_DOCUMENT_VERSION` (1 today). Older files are migrated forward on load.                     |
+| `name`                       | Human-readable title. Shown in UIs; safe to change.                                                                        |
+| `description`                | Optional long-form summary. Never rendered.                                                                                |
+| `createdAt`                  | ISO-8601 creation timestamp. Immutable.                                                                                    |
+| `updatedAt`                  | ISO-8601 last-mutation timestamp. Bumped on every `add`/`update`/`remove`/`setCanvas` and also on `loadDocument`.          |
+| `canvas.widthDots`           | Media width in printer dots (696 = 62 mm at 300 dpi).                                                                      |
+| `canvas.heightDots`          | `0` for continuous tape (auto-crop); positive for die-cut labels.                                                          |
+| `canvas.dpi`                 | Matters for PDF export (points per inch); the raster pipeline works in dots.                                               |
+| `canvas.margins`             | Visual guide for the UI. Does not clip rendering.                                                                          |
+| `canvas.background`          | CSS colour. Cropped out on continuous labels to find content bounds.                                                       |
+| `canvas.grid`                | Designer-UI snap hint. Not rendered.                                                                                       |
+| `objects[].id`               | Assigned by `designer.add()`. Stable across history snapshots.                                                             |
+| `objects[].type`             | Discriminator — `text`, `image`, `barcode`, `shape`, `group`. Immutable via `update()`.                                    |
+| `objects[].x,y,width,height` | Top-left bounding box in canvas dots.                                                                                      |
+| `objects[].rotation`         | Degrees, clockwise; pivot at bbox centre.                                                                                  |
+| `objects[].opacity`          | `0`..`1`. Composited in full-colour space before 1bpp dithering — see [Colour model](/guide/colour-model#opacity-stipple). |
+| `objects[].locked`           | UI hint; core does not enforce.                                                                                            |
+| `objects[].visible`          | Hidden objects do not render.                                                                                              |
+| `objects[].color`            | CSS string. Drives plane routing during `renderPlanes()`.                                                                  |
+| `metadata`                   | User-defined dictionary. Never rendered. Use it for categorisation, tags, ownership — anything app-specific.               |
 
 ## Asset references
 

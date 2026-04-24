@@ -4,11 +4,11 @@ Four `Burnmark *` font families map to open-license typefaces. For a
 publish-ready release, drop WOFF2 subsets into this directory with the
 names below. The DefaultFontLoader will pick them up at runtime.
 
-| Family | Source typeface | File |
-|---|---|---|
-| `Burnmark Sans` | Inter (OFL) | `burnmark-sans.woff2` |
-| `Burnmark Mono` | JetBrains Mono (OFL) | `burnmark-mono.woff2` |
-| `Burnmark Serif` | Bitter (OFL) | `burnmark-serif.woff2` |
+| Family            | Source typeface        | File                    |
+| ----------------- | ---------------------- | ----------------------- |
+| `Burnmark Sans`   | Inter (OFL)            | `burnmark-sans.woff2`   |
+| `Burnmark Mono`   | JetBrains Mono (OFL)   | `burnmark-mono.woff2`   |
+| `Burnmark Serif`  | Bitter (OFL)           | `burnmark-serif.woff2`  |
 | `Burnmark Narrow` | Barlow Condensed (OFL) | `burnmark-narrow.woff2` |
 
 ## Subsetting

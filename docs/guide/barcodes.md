@@ -25,8 +25,14 @@ const designer = new LabelDesigner({
 
 designer.add({
   type: 'barcode',
-  x: 20, y: 20, width: 400, height: 120,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 400,
+  height: 120,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   format: 'code128',
   data: 'SHIP-2026-000042',
@@ -36,11 +42,11 @@ designer.add({
 
 The full field list:
 
-| Field | Type | Notes |
-|---|---|---|
-| `format` | `BarcodeFormat` | See [Barcode Formats](/reference/barcode-formats) |
-| `data` | `string` | Payload — supports `{{placeholder}}` |
-| `options` | `BarcodeOptions` | Format-specific knobs; passed through to bwip-js |
+| Field     | Type             | Notes                                             |
+| --------- | ---------------- | ------------------------------------------------- |
+| `format`  | `BarcodeFormat`  | See [Barcode Formats](/reference/barcode-formats) |
+| `data`    | `string`         | Payload — supports `{{placeholder}}`              |
+| `options` | `BarcodeOptions` | Format-specific knobs; passed through to bwip-js  |
 
 `BarcodeOptions` is intentionally narrow — the fields that most label
 designers need — but anything not covered is still reachable by editing
@@ -54,10 +60,10 @@ interface BarcodeOptions {
   includetext?: boolean;
   textsize?: number;
   textyoffset?: number;
-  eclevel?: 'L' | 'M' | 'Q' | 'H';   // QR, Aztec, GS1 QR
-  version?: number;                   // QR, Data Matrix
-  rows?: number;                      // PDF417, Data Matrix
-  columns?: number;                   // PDF417, Data Matrix
+  eclevel?: 'L' | 'M' | 'Q' | 'H'; // QR, Aztec, GS1 QR
+  version?: number; // QR, Data Matrix
+  rows?: number; // PDF417, Data Matrix
+  columns?: number; // PDF417, Data Matrix
 }
 ```
 
@@ -68,13 +74,19 @@ interface BarcodeOptions {
 ```ts
 designer.add({
   type: 'barcode',
-  x: 20, y: 20, width: 400, height: 80,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 400,
+  height: 80,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   format: 'code128',
   data: 'SHIP-{{order_id}}',
   options: {
-    includetext: true,     // print the human-readable text below the bars
+    includetext: true, // print the human-readable text below the bars
     textsize: 12,
   },
 });
@@ -90,8 +102,14 @@ choose the optimal subset.
 ```ts
 designer.add({
   type: 'barcode',
-  x: 20, y: 20, width: 180, height: 180,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 180,
+  height: 180,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   format: 'qrcode',
   data: 'https://example.com/orders/{{order_id}}',
@@ -113,8 +131,14 @@ patterns.
 ```ts
 designer.add({
   type: 'barcode',
-  x: 20, y: 20, width: 500, height: 80,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 500,
+  height: 80,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   format: 'gs1_128',
   data: '(01)03012345678900(17)260401(10)BATCH42',
@@ -131,8 +155,14 @@ best-before date (YYMMDD), `(10)` = lot number.
 ```ts
 designer.add({
   type: 'barcode',
-  x: 20, y: 20, width: 360, height: 40,
-  rotation: 0, opacity: 1, locked: false, visible: true,
+  x: 20,
+  y: 20,
+  width: 360,
+  height: 40,
+  rotation: 0,
+  opacity: 1,
+  locked: false,
+  visible: true,
   color: '#000000',
   format: 'kix',
   data: '3528BJ100',

@@ -15,8 +15,14 @@
     "url": "https://github.com/burnmark-io/designer-core/issues"
   },
   "funding": [
-    { "type": "github", "url": "https://github.com/sponsors/mannes" },
-    { "type": "ko-fi",  "url": "https://ko-fi.com/mannes" }
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mannes"
+    },
+    {
+      "type": "ko-fi",
+      "url": "https://ko-fi.com/mannes"
+    }
   ],
   "keywords": [
     "label",
@@ -30,9 +36,16 @@
     "zebra",
     "headless"
   ],
-  "files": ["dist", "README.md"],
-  "engines": { "node": ">=24.0.0" },
-  "publishConfig": { "access": "public" },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": false,
   "types": "./src/index.ts",
   "exports": {
@@ -58,7 +71,9 @@
     "@napi-rs/canvas": "^0.1.0"
   },
   "peerDependenciesMeta": {
-    "@napi-rs/canvas": { "optional": true }
+    "@napi-rs/canvas": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@mbtech-nl/tsconfig": "^1.0.0",

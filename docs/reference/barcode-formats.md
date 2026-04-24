@@ -15,53 +15,53 @@ the serialised `.label` JSON.
 
 ## 1D (linear) barcodes
 
-| Format | Category | Typical use |
-|---|---|---|
-| `code128` | 1D | General-purpose shipping, asset tagging. Auto-selects the most efficient subset. |
-| `code128a` | 1D | Code 128 forced to subset A (uppercase + control chars). |
-| `code128b` | 1D | Code 128 forced to subset B (uppercase + lowercase + digits). |
-| `code128c` | 1D | Code 128 forced to subset C (pairs of digits). |
-| `code39` | 1D | Older industrial; uppercase letters, digits, `-. $/+%` only. |
-| `code39ext` | 1D | Code 39 Extended — escape sequences for lowercase + ASCII punctuation. |
-| `code93` | 1D | Denser than Code 39. Mixed case and more symbols. |
-| `code11` | 1D | Telephony; digits + dash. Two checksums. |
-| `codabar` | 1D | Library systems, blood banks. |
-| `ean13` | 1D | Retail EAN-13 — GTIN encoding. Always 13 digits. |
-| `ean8` | 1D | Short EAN-8 — small retail items. |
-| `upca` | 1D | US UPC-A — 12-digit retail. |
-| `upce` | 1D | Compressed UPC-E — 8-digit. |
-| `itf14` | 1D | Shipping carton ITF-14 — outer-pack GTIN. |
-| `interleaved2of5` | 1D | Warehousing, cardboard labelling. Even digit count required. |
-| `pharmacode` | 1D | Pharma package verification. |
-| `msi` | 1D | Shelf-edge retail labels. |
+| Format            | Category | Typical use                                                                      |
+| ----------------- | -------- | -------------------------------------------------------------------------------- |
+| `code128`         | 1D       | General-purpose shipping, asset tagging. Auto-selects the most efficient subset. |
+| `code128a`        | 1D       | Code 128 forced to subset A (uppercase + control chars).                         |
+| `code128b`        | 1D       | Code 128 forced to subset B (uppercase + lowercase + digits).                    |
+| `code128c`        | 1D       | Code 128 forced to subset C (pairs of digits).                                   |
+| `code39`          | 1D       | Older industrial; uppercase letters, digits, `-. $/+%` only.                     |
+| `code39ext`       | 1D       | Code 39 Extended — escape sequences for lowercase + ASCII punctuation.           |
+| `code93`          | 1D       | Denser than Code 39. Mixed case and more symbols.                                |
+| `code11`          | 1D       | Telephony; digits + dash. Two checksums.                                         |
+| `codabar`         | 1D       | Library systems, blood banks.                                                    |
+| `ean13`           | 1D       | Retail EAN-13 — GTIN encoding. Always 13 digits.                                 |
+| `ean8`            | 1D       | Short EAN-8 — small retail items.                                                |
+| `upca`            | 1D       | US UPC-A — 12-digit retail.                                                      |
+| `upce`            | 1D       | Compressed UPC-E — 8-digit.                                                      |
+| `itf14`           | 1D       | Shipping carton ITF-14 — outer-pack GTIN.                                        |
+| `interleaved2of5` | 1D       | Warehousing, cardboard labelling. Even digit count required.                     |
+| `pharmacode`      | 1D       | Pharma package verification.                                                     |
+| `msi`             | 1D       | Shelf-edge retail labels.                                                        |
 
 ## 2D barcodes
 
-| Format | Category | Typical use |
-|---|---|---|
-| `qrcode` | 2D | URLs, Wi-Fi, contacts, ticketing. See `QRContent`. |
-| `microqr` | 2D | Small-payload QR variant — fits in ~10 × 10 modules. |
-| `datamatrix` | 2D | Industrial marking, small parts. Square default. |
-| `datamatrixrectangular` | 2D | Same algorithm, rectangular symbol shapes. |
-| `pdf417` | 2D | Boarding passes, ID cards, dense alphanumeric payloads. |
-| `micropdf417` | 2D | Compact PDF417 variant. |
-| `azteccode` | 2D | Transport ticketing (SNCF, Deutsche Bahn), boarding passes. |
-| `aztecrune` | 2D | Aztec Rune — short fixed-length 2D code. |
-| `maxicode` | 2D | UPS shipping labels. Fixed module pattern. |
-| `dotcode` | 2D | Direct-part marking on cylindrical items. |
-| `hanxin` | 2D | Chinese Han Xin code — denser Chinese-character support. |
-| `hibccode128` | 2D | HIBC (healthcare industry barcode) on Code 128. |
+| Format                  | Category | Typical use                                                 |
+| ----------------------- | -------- | ----------------------------------------------------------- |
+| `qrcode`                | 2D       | URLs, Wi-Fi, contacts, ticketing. See `QRContent`.          |
+| `microqr`               | 2D       | Small-payload QR variant — fits in ~10 × 10 modules.        |
+| `datamatrix`            | 2D       | Industrial marking, small parts. Square default.            |
+| `datamatrixrectangular` | 2D       | Same algorithm, rectangular symbol shapes.                  |
+| `pdf417`                | 2D       | Boarding passes, ID cards, dense alphanumeric payloads.     |
+| `micropdf417`           | 2D       | Compact PDF417 variant.                                     |
+| `azteccode`             | 2D       | Transport ticketing (SNCF, Deutsche Bahn), boarding passes. |
+| `aztecrune`             | 2D       | Aztec Rune — short fixed-length 2D code.                    |
+| `maxicode`              | 2D       | UPS shipping labels. Fixed module pattern.                  |
+| `dotcode`               | 2D       | Direct-part marking on cylindrical items.                   |
+| `hanxin`                | 2D       | Chinese Han Xin code — denser Chinese-character support.    |
+| `hibccode128`           | 2D       | HIBC (healthcare industry barcode) on Code 128.             |
 
 ## GS1 family
 
-| Format | Category | Typical use |
-|---|---|---|
-| `gs1_128` | GS1 / 1D | FNC1-led Code 128 with application identifiers. Shipping, logistics. |
-| `databar` | GS1 / 1D | GS1 DataBar Omnidirectional. |
-| `databarexpanded` | GS1 / 1D | GS1 DataBar Expanded — longer alphanumeric payloads. |
-| `gs1qrcode` | GS1 / 2D | QR with GS1 FNC1 structure — pharma, medical. |
-| `gs1datamatrix` | GS1 / 2D | Data Matrix with GS1 FNC1 structure. |
-| `gs1_cc` | GS1 / 2D | GS1 Composite Component — two-stacked combinations. |
+| Format            | Category | Typical use                                                          |
+| ----------------- | -------- | -------------------------------------------------------------------- |
+| `gs1_128`         | GS1 / 1D | FNC1-led Code 128 with application identifiers. Shipping, logistics. |
+| `databar`         | GS1 / 1D | GS1 DataBar Omnidirectional.                                         |
+| `databarexpanded` | GS1 / 1D | GS1 DataBar Expanded — longer alphanumeric payloads.                 |
+| `gs1qrcode`       | GS1 / 2D | QR with GS1 FNC1 structure — pharma, medical.                        |
+| `gs1datamatrix`   | GS1 / 2D | Data Matrix with GS1 FNC1 structure.                                 |
+| `gs1_cc`          | GS1 / 2D | GS1 Composite Component — two-stacked combinations.                  |
 
 GS1 formats accept application identifiers written in parentheses:
 `(01)03012345678900(17)260401(10)BATCH42`. Core passes them through to
@@ -69,23 +69,23 @@ bwip-js, which expands them to the FNC1-separated wire format.
 
 ## Postal barcodes
 
-| Format | Category | Typical use |
-|---|---|---|
-| `postnet` | Postal | USPS POSTNET — legacy 5/9/11-digit ZIP. |
-| `royalmail` | Postal | UK Royal Mail 4-state customer code. |
-| `kix` | Postal | PostNL KIX — Dutch delivery sorting. Alphanumeric postcode + house number. |
-| `onecode` | Postal | USPS Intelligent Mail Barcode (IMB). |
-| `auspost` | Postal | Australia Post 4-state. |
-| `japanpost` | Postal | Japan Post Customer Code. |
-| `leitcode` | Postal | Deutsche Post Leitcode — routing. |
-| `identcode` | Postal | Deutsche Post Identcode — tracking. |
+| Format      | Category | Typical use                                                                |
+| ----------- | -------- | -------------------------------------------------------------------------- |
+| `postnet`   | Postal   | USPS POSTNET — legacy 5/9/11-digit ZIP.                                    |
+| `royalmail` | Postal   | UK Royal Mail 4-state customer code.                                       |
+| `kix`       | Postal   | PostNL KIX — Dutch delivery sorting. Alphanumeric postcode + house number. |
+| `onecode`   | Postal   | USPS Intelligent Mail Barcode (IMB).                                       |
+| `auspost`   | Postal   | Australia Post 4-state.                                                    |
+| `japanpost` | Postal   | Japan Post Customer Code.                                                  |
+| `leitcode`  | Postal   | Deutsche Post Leitcode — routing.                                          |
+| `identcode` | Postal   | Deutsche Post Identcode — tracking.                                        |
 
 ## Specialised
 
-| Format | Category | Typical use |
-|---|---|---|
-| `isbt128` | Medical | ISBT 128 — blood and tissue labelling. |
-| `pzn` | Medical | Pharmazentralnummer — German pharmaceutical identifier. |
+| Format    | Category | Typical use                                             |
+| --------- | -------- | ------------------------------------------------------- |
+| `isbt128` | Medical  | ISBT 128 — blood and tissue labelling.                  |
+| `pzn`     | Medical  | Pharmazentralnummer — German pharmaceutical identifier. |
 
 ## `BarcodeOptions`
 
