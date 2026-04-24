@@ -12,6 +12,12 @@ docs/.vitepress/dist/
 docs/reference/api/
 *.tgz
 .turbo/
+
+# Local CLI scratch output
+/test.csv
+/test.pdf
+/preview.png
+/preview.pdf
 .idea/
 .vscode/
 !.vscode/extensions.json

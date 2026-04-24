@@ -249,7 +249,22 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
       (see D26)
 - [x] Gate: `pnpm docs:build` passes
 
-## Docs Amendment Step 6: Reference pages 📋
+## Docs Amendment Step 6: Reference pages ✅
+
+- [x] `reference/label-format.md` — full schema, field-by-field table,
+      uses `docs/assets/christmas-card.label` as the annotated example
+      (doesn't duplicate the JSON body), asset references, metadata,
+      version/migration, forward-compatibility guidance
+- [x] `reference/printer-adapter.md` — interface shape, capabilities,
+      status, options, per-plane contract, implementation recipe,
+      pointer to `@thermal-label/*` reference drivers
+- [x] `reference/barcode-formats.md` — all 44 formats grouped by
+      category (1D / 2D / GS1 / postal / specialised), `BarcodeOptions`
+      per field, colour routing guidance
+- [x] `reference/faq.md` — every symptom from the plan plus a couple
+      extras (`Cannot find module '@napi-rs/canvas'`, small QR codes
+      scanning unreliably)
+- [x] Gate: `pnpm docs:build` passes
 
 ## Docs Amendment Step 7: Embedding pages 📋
 
