@@ -176,3 +176,34 @@ Per `designer-core-amendment-bindings.md` section 6. Each step is a commit.
 - [x] `pnpm changeset status` confirms vue + react queued at minor
 - [x] Bindings are intentionally NOT linked to core/cli in
       `.changeset/config.json` so they can iterate independently
+
+## Docs Amendment Step 0: Pre-flight ✅
+
+- [x] Verified workspace package names: `@burnmark-io/designer-core`,
+      `@burnmark-io/designer-vue`, `@burnmark-io/designer-react`, `burnmark-cli`
+- [x] `pnpm docs:api` generates into `docs/reference/api/` (typedoc already configured)
+- [x] `pnpm docs:build` passes on the existing minimal docs
+
+## Docs Amendment Step 1: VitePress config ✅
+
+- [x] Full nav, sidebar (Guide / Embedding / Reference / API), footer
+- [x] Preserved existing `socialLinks` and `search`; added `editLink`,
+      `lastUpdated`, `cleanUrls`
+- [x] Copyright: 2025–2026
+- [x] Gate: `pnpm docs:build` passes
+
+## Docs Amendment Step 2: Landing page + getting started 📋
+
+## Docs Amendment Step 3: Guide — core concepts + generated images 📋
+
+## Docs Amendment Step 4: Guide — features (template/barcodes/fonts) 📋
+
+## Docs Amendment Step 5: Guide — output (export/cli) 📋
+
+## Docs Amendment Step 6: Reference pages 📋
+
+## Docs Amendment Step 7: Embedding pages 📋
+
+## Docs Amendment Step 8: API reference regen + sidebar wiring 📋
+
+## Docs Amendment Step 9: Final review + deploy 📋
