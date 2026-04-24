@@ -1,4 +1,4 @@
-import { type PrinterAdapter } from '@burnmark-io/designer-core';
+import { type PrinterAdapter } from '@thermal-label/contracts';
 
 /**
  * A lightweight driver registry. Each `@thermal-label/*` package is an

@@ -59,6 +59,9 @@ importers:
       '@thermal-label/brother-ql-node':
         specifier: '>=0.0.1'
         version: 0.0.1
+      '@thermal-label/contracts':
+        specifier: ^0.1.2
+        version: 0.1.2
       '@thermal-label/labelmanager-node':
         specifier: '>=0.0.1'
         version: 0.0.1
@@ -949,6 +952,9 @@ packages:
   '@thermal-label/brother-ql-node@0.0.1':
     resolution: {integrity: sha512-+1a6GADju2bUCN4BFnli2tu1lrkShu+UipC+91fU452LJ9MiniI/rVMJEcISH2aFebGXiXkMLCfMYsi2GEZDPg==}
     engines: {node: '>=24.0.0'}
+
+  '@thermal-label/contracts@0.1.2':
+    resolution: {integrity: sha512-p3Fj9PjGrTdCtNoMHcQNbCSfVffFd0E42okIAjIyoCNRsTM+L2qR7AAVIL6EX33EFxV7A7F5ziGpNZxz9yNU7w==}
 
   '@thermal-label/labelmanager-core@0.0.1':
     resolution: {integrity: sha512-NfFQcV3mq3EGsEP4rQC7/sZsOz/Xm5Ta1/M3eLgvTjbKIqLK4UmloaF/gZ385hJhcB0lBQMMo89AUxnhV0OaTQ==}
@@ -3669,6 +3675,10 @@ snapshots:
       usb: 2.17.0
     optionalDependencies:
       '@napi-rs/canvas': 0.1.99
+
+  '@thermal-label/contracts@0.1.2':
+    dependencies:
+      '@mbtech-nl/bitmap': 1.0.1
 
   '@thermal-label/labelmanager-core@0.0.1':
     dependencies:
