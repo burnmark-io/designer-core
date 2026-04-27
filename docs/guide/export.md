@@ -57,6 +57,13 @@ Options:
 - **`onWarning?: (w: RenderWarning) => void`** — callback for
   non-fatal render warnings (missing fonts, invalid barcode data,
   etc.). Wire this to your logger or swallow silently.
+- **`respectOrientation?: boolean`** — defaults to `true`. When the
+  document's `canvas.orientation === 'horizontal'`, the bitmap is
+  rotated 90° clockwise before encoding so a horizontal label exports
+  as a landscape PNG with no caller-side rotation. Pass `false` to
+  always emit the canvas at its canonical
+  `widthDots × heightDots`. The same flag is honoured by `exportPdf`
+  and `exportSheet`.
 
 Node.js → disk:
 

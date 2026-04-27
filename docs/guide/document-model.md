@@ -50,6 +50,7 @@ interface CanvasConfig {
   margins: Margins; // drawn as a guide, not clipped
   background: string; // CSS colour — cropped out of continuous labels
   grid: { enabled: boolean; spacingDots: number };
+  orientation: 'vertical' | 'horizontal'; // display only — render is canonical
 }
 ```
 
@@ -63,6 +64,14 @@ interface CanvasConfig {
   rectangle, clipped to that height regardless of content.
 - **`dpi`** matters for PDF export (points per inch); the raster pipeline
   works in dots directly.
+- **`orientation`** is a display-only hint. `renderFull` is
+  orientation-agnostic — the canonical bitmap is always
+  `widthDots × heightDots`. Exporters rotate by default when
+  `orientation === 'horizontal'` (see `respectOrientation` in
+  [Export](./export.md)); UI bindings expose `displayWidthDots` /
+  `displayHeightDots` that swap axes for on-screen layout. Use
+  `designer.setOrientation('horizontal')` as a shortcut for
+  `setCanvas({ orientation: 'horizontal' })`.
 
 Defaults live in `DEFAULT_CANVAS` and `DEFAULT_MARGINS`:
 

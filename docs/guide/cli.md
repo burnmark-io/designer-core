@@ -59,9 +59,14 @@ Flags:
 | `--var key=value`   | no       | Static variable; repeatable (`--var name=Piet --var city=Utrecht`) |
 | `--sheet <code>`    | no       | Sticker-sheet code (`avery-l7160`, etc.); forces PDF output        |
 | `--rows <range>`    | no       | Filter CSV rows: `1-50` or `1,3,7,12`                              |
+| `--no-rotate`       | no       | Ignore `canvas.orientation`; export at canonical `widthDots × heightDots` |
 
 PNG output is single-label only — `--csv` uses the first row. Use PDF
 for batches.
+
+By default a label whose `canvas.orientation === 'horizontal'` exports
+rotated 90° clockwise so the output is landscape. Pass `--no-rotate` to
+emit the canonical bitmap regardless of orientation.
 
 ### `burnmark render --sheet`
 
