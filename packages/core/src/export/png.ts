@@ -1,6 +1,17 @@
 import { type RawImageData } from '../types.js';
 import { type LabelDocument } from '../document.js';
 import { renderFull, type RenderOptions } from '../render/pipeline.js';
+import { rotate90 } from '../render/rotate.js';
+
+export interface PngExportOptions extends RenderOptions {
+  scale?: number;
+  /**
+   * Rotate the bitmap 90° clockwise when `doc.canvas.orientation === 'horizontal'`.
+   * Defaults to `true` so a horizontal-orientation label exports as a
+   * landscape PNG with no extra work for the caller.
+   */
+  respectOrientation?: boolean;
+}
 
 /**
  * Export a full-colour PNG. Returns a Blob that can be saved to disk or
@@ -9,11 +20,13 @@ import { renderFull, type RenderOptions } from '../render/pipeline.js';
  * On Node.js this goes via `@napi-rs/canvas`'s `toBuffer('image/png')`.
  * In browsers, `OffscreenCanvas.convertToBlob({ type: 'image/png' })`.
  */
-export async function exportPng(
-  doc: LabelDocument,
-  options: RenderOptions & { scale?: number } = {},
-): Promise<Blob> {
-  const image = await renderFull(doc, options);
+export async function exportPng(doc: LabelDocument, options: PngExportOptions = {}): Promise<Blob> {
+  const respectOrientation = options.respectOrientation !== false;
+  const rendered = await renderFull(doc, options);
+  // Rotate before scale so the scaled canvas dimensions follow the rotated
+  // axes, not the canonical render axes.
+  const image =
+    respectOrientation && doc.canvas.orientation === 'horizontal' ? rotate90(rendered) : rendered;
   const scale = options.scale ?? 1;
   if (scale === 1) {
     return await rgbaToPng(image);

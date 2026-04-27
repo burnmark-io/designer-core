@@ -1,6 +1,16 @@
 import { type LabelDocument } from '../document.js';
 import { renderFull, type RenderOptions } from '../render/pipeline.js';
+import { rotate90 } from '../render/rotate.js';
 import { exportPng } from './png.js';
+
+export interface PdfExportOptions extends RenderOptions {
+  /**
+   * Rotate the bitmap 90° clockwise when `doc.canvas.orientation === 'horizontal'`,
+   * producing a landscape PDF page with the same aspect ratio. Defaults
+   * to `true`.
+   */
+  respectOrientation?: boolean;
+}
 
 /**
  * Export a full-colour PDF. One page per document (or per CSV row if
@@ -10,7 +20,7 @@ import { exportPng } from './png.js';
 export async function exportPdf(
   doc: LabelDocument,
   rows?: Record<string, string>[],
-  options: RenderOptions = {},
+  options: PdfExportOptions = {},
 ): Promise<Blob> {
   const { jsPDF } = (await import('jspdf')) as unknown as {
     jsPDF: new (opts: {
@@ -62,9 +72,14 @@ interface JsPdf {
 async function renderOne(
   doc: LabelDocument,
   variables: Record<string, string>,
-  options: RenderOptions,
+  options: PdfExportOptions,
 ): Promise<{ width: number; height: number; dataUrl: string }> {
-  const image = await renderFull(doc, { ...options, variables });
+  const respectOrientation = options.respectOrientation !== false;
+  const rendered = await renderFull(doc, { ...options, variables });
+  // Mirror exportPng's rotation so the page-size derivation matches the
+  // PNG embedded into the PDF.
+  const image =
+    respectOrientation && doc.canvas.orientation === 'horizontal' ? rotate90(rendered) : rendered;
   const blob = await exportPng(doc, { ...options, variables });
   const dataUrl = await blobToDataUrl(blob);
   return { width: image.width, height: image.height, dataUrl };

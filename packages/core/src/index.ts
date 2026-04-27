@@ -60,6 +60,7 @@ export type { CsvData, CsvInput } from './csv.js';
 
 // Render pipeline
 export { renderFull, toBitmap, type RenderOptions } from './render/pipeline.js';
+export { rotate90 } from './render/rotate.js';
 export { BarcodeEngine } from './render/barcode.js';
 export { QRContent } from './qr-content.js';
 export type { VCardContact } from './qr-content.js';

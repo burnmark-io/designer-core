@@ -7,6 +7,13 @@ import { exportBundled } from '../export/bundle.js';
 import { BUILTIN_SHEETS, findSheet, listSheets } from '../export/sheet-registry.js';
 import { type ImageObject, type LabelObjectInput, type ShapeObject } from '../objects.js';
 
+/** Read width and height from the PNG header (IHDR is at bytes 16..23). */
+async function pngDimensions(blob: Blob): Promise<{ width: number; height: number }> {
+  const buf = new Uint8Array(await blob.arrayBuffer());
+  const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  return { width: dv.getUint32(16), height: dv.getUint32(20) };
+}
+
 const shape = (overrides: Partial<ShapeObject> = {}): LabelObjectInput<ShapeObject> => ({
   type: 'shape',
   x: 10,
@@ -41,6 +48,26 @@ describe('exportPng', () => {
     const a = await exportPng(d.document, { scale: 1 });
     const b = await exportPng(d.document, { scale: 2 });
     expect(b.size).toBeGreaterThan(a.size);
+  });
+
+  it('rotates a horizontal-orientation document by default (axes swapped)', async () => {
+    const d = new LabelDesigner({
+      canvas: { widthDots: 100, heightDots: 50, orientation: 'horizontal' },
+    });
+    d.add(shape({ width: 30, height: 30 }));
+    const blob = await exportPng(d.document);
+    const dims = await pngDimensions(blob);
+    expect(dims).toEqual({ width: 50, height: 100 });
+  });
+
+  it('respectOrientation: false produces unrotated PNG', async () => {
+    const d = new LabelDesigner({
+      canvas: { widthDots: 100, heightDots: 50, orientation: 'horizontal' },
+    });
+    d.add(shape({ width: 30, height: 30 }));
+    const blob = await exportPng(d.document, { respectOrientation: false });
+    const dims = await pngDimensions(blob);
+    expect(dims).toEqual({ width: 100, height: 50 });
   });
 });
 

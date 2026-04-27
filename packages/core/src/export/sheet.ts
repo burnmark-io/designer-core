@@ -1,6 +1,6 @@
 import { type LabelDocument } from '../document.js';
 import { renderFull, type RenderOptions } from '../render/pipeline.js';
-import { exportPng } from './png.js';
+import { exportPng, type PngExportOptions } from './png.js';
 
 /**
  * A single rectangular grid of label positions on a sheet.
@@ -115,11 +115,22 @@ export function isMultiLayout(sheet: SheetTemplate): boolean {
  * each row becomes a unique label; otherwise every position is filled
  * with the same label. Extra rows paginate onto new sheets.
  */
+export interface SheetExportOptions extends RenderOptions {
+  /**
+   * Forwarded to the per-label PNG renderer. Defaults to `true` so a
+   * horizontal-orientation document tiles as rotated PNGs. Sheet slots
+   * are sized in mm by the template, so rotation only affects the
+   * embedded image's intrinsic aspect ratio — the on-paper geometry is
+   * always determined by the sheet template.
+   */
+  respectOrientation?: boolean;
+}
+
 export async function exportSheet(
   doc: LabelDocument,
   sheet: SheetTemplate,
   rows?: Record<string, string>[],
-  options: RenderOptions = {},
+  options: SheetExportOptions = {},
 ): Promise<Blob> {
   const { jsPDF } = (await import('jspdf')) as unknown as {
     jsPDF: new (opts: {
@@ -166,14 +177,15 @@ export async function exportSheet(
 async function getDataUrl(
   doc: LabelDocument,
   row: Record<string, string>,
-  options: RenderOptions,
+  options: SheetExportOptions,
   cache: Map<string, string>,
 ): Promise<string> {
   const key = JSON.stringify(row);
   const cached = cache.get(key);
   if (cached !== undefined) return cached;
 
-  const blob = await exportPng(doc, { ...options, variables: row });
+  const pngOpts: PngExportOptions = { ...options, variables: row };
+  const blob = await exportPng(doc, pngOpts);
   const dataUrl = await blobToDataUrl(blob);
   cache.set(key, dataUrl);
   return dataUrl;
