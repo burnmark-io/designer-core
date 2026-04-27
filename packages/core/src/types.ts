@@ -18,6 +18,12 @@ export interface CanvasConfig {
   margins: Margins;
   background: string;
   grid: { enabled: boolean; spacingDots: number };
+  /**
+   * Display orientation. `renderFull` is orientation-agnostic — the canonical
+   * bitmap is always `widthDots × heightDots`. Exporters (and downstream
+   * display helpers) may swap axes when set to `'horizontal'`.
+   */
+  orientation: 'vertical' | 'horizontal';
 }
 
 export interface ValidationResult {

@@ -129,6 +129,23 @@ describe('LabelDesigner', () => {
     expect(d.document.canvas.dpi).toBe(300); // unchanged
   });
 
+  it('createDocument defaults orientation to "vertical"', () => {
+    const d = new LabelDesigner();
+    expect(d.document.canvas.orientation).toBe('vertical');
+  });
+
+  it('setCanvas preserves orientation when not patched', () => {
+    const d = new LabelDesigner({ canvas: { orientation: 'horizontal' } });
+    d.setCanvas({ widthDots: 100 });
+    expect(d.document.canvas.orientation).toBe('horizontal');
+  });
+
+  it('setCanvas accepts orientation patches', () => {
+    const d = new LabelDesigner();
+    d.setCanvas({ orientation: 'horizontal' });
+    expect(d.document.canvas.orientation).toBe('horizontal');
+  });
+
   it('toJSON → fromJSON round-trip', () => {
     const d = new LabelDesigner({ name: 'Round Trip' });
     d.add(textInput({ content: 'Hello' }));

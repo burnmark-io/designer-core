@@ -59,7 +59,21 @@ export function migrateDocument(input: unknown): LabelDocument {
 
   const out = current as LabelDocument;
   out.version = CURRENT_DOCUMENT_VERSION;
+  backfillCanvasDefaults(out);
   return out;
+}
+
+/**
+ * Defaults for canvas fields added in non-breaking ways since the v1 schema
+ * shipped. Loaded `.label` files predating these fields get the default so
+ * downstream code can read them unconditionally.
+ */
+function backfillCanvasDefaults(doc: LabelDocument): void {
+  const canvas = doc.canvas as Partial<LabelDocument['canvas']> | undefined;
+  if (!canvas || typeof canvas !== 'object') return;
+  if (canvas.orientation !== 'vertical' && canvas.orientation !== 'horizontal') {
+    canvas.orientation = 'vertical';
+  }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

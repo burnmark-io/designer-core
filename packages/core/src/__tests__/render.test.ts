@@ -99,6 +99,18 @@ describe('renderToBitmap', () => {
   });
 });
 
+describe('orientation', () => {
+  it('renders at canonical canvas dimensions regardless of orientation', async () => {
+    const d = new LabelDesigner({
+      canvas: { widthDots: 100, heightDots: 50, orientation: 'horizontal' },
+    });
+    const image = await d.render();
+    // Renderer is orientation-agnostic — exporters are responsible for any rotation.
+    expect(image.width).toBe(100);
+    expect(image.height).toBe(50);
+  });
+});
+
 describe('continuous labels', () => {
   it('auto-crops height for heightDots === 0', async () => {
     const d = new LabelDesigner({ canvas: { widthDots: 200, heightDots: 0 } });

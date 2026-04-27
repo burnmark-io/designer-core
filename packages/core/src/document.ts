@@ -22,6 +22,7 @@ export const DEFAULT_CANVAS: CanvasConfig = {
   margins: { ...DEFAULT_MARGINS },
   background: '#ffffff',
   grid: { enabled: false, spacingDots: 10 },
+  orientation: 'vertical',
 };
 
 export function createDocument(
@@ -50,5 +51,6 @@ export function mergeCanvas(base: CanvasConfig, patch: Partial<CanvasConfig>): C
     margins: patch.margins ? { ...base.margins, ...patch.margins } : { ...base.margins },
     background: patch.background ?? base.background,
     grid: patch.grid ? { ...base.grid, ...patch.grid } : { ...base.grid },
+    orientation: patch.orientation ?? base.orientation ?? 'vertical',
   };
 }

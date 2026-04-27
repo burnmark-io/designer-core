@@ -23,4 +23,18 @@ describe('serialisation', () => {
   it('fromJSON throws on invalid JSON', () => {
     expect(() => fromJSON('{not valid}')).toThrow(/Invalid .label JSON/);
   });
+
+  it('round-trips canvas.orientation = "horizontal"', () => {
+    const doc = createDocument('o', { orientation: 'horizontal' });
+    const parsed = fromJSON(toJSON(doc));
+    expect(parsed.canvas.orientation).toBe('horizontal');
+  });
+
+  it('backfills missing canvas.orientation as "vertical" on load', () => {
+    // Synthesise an "old" .label file that pre-dates the orientation field.
+    const old = createDocument('legacy');
+    delete (old.canvas as Partial<typeof old.canvas>).orientation;
+    const parsed = fromJSON(JSON.stringify(old));
+    expect(parsed.canvas.orientation).toBe('vertical');
+  });
 });
