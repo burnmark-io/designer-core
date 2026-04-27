@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@burnmark-io/designer-core": "workspace:*",
-    "@mbtech-nl/tsconfig": "^1.0.0",
+    "@mbtech-nl/tsconfig": "^1.0.1",
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^2.0.0",
     "@vue/test-utils": "^2.4.0",

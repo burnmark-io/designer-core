@@ -61,7 +61,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@mbtech-nl/bitmap": "^1.0.0",
+    "@mbtech-nl/bitmap": "^1.2.2",
     "bwip-js": "^4.0.0",
     "jspdf": "^3.0.0",
     "jszip": "^3.10.0",
@@ -76,7 +76,7 @@
     }
   },
   "devDependencies": {
-    "@mbtech-nl/tsconfig": "^1.0.0",
+    "@mbtech-nl/tsconfig": "^1.0.1",
     "@napi-rs/canvas": "^0.1.0",
     "@types/node": "^22.0.0",
     "@types/papaparse": "^5.3.0",

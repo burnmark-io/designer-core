@@ -63,7 +63,7 @@
   },
   "devDependencies": {
     "@burnmark-io/designer-core": "workspace:*",
-    "@mbtech-nl/tsconfig": "^1.0.0",
+    "@mbtech-nl/tsconfig": "^1.0.1",
     "@testing-library/react": "^16.0.0",
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.0",
