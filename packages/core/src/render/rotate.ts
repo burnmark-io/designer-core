@@ -25,10 +25,7 @@ export function rotate90(image: RawImageData): RawImageData {
       const dstX = height - 1 - sy;
       const dstY = sx;
       const dstIdx = (dstY * newWidth + dstX) * 4;
-      out[dstIdx] = src[srcIdx]!;
-      out[dstIdx + 1] = src[srcIdx + 1]!;
-      out[dstIdx + 2] = src[srcIdx + 2]!;
-      out[dstIdx + 3] = src[srcIdx + 3]!;
+      out.set(src.subarray(srcIdx, srcIdx + 4), dstIdx);
     }
   }
 

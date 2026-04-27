@@ -51,14 +51,14 @@ burnmark render --template my-label.label --sheet avery-l7160 --csv skus.csv --o
 
 Flags:
 
-| Flag                | Required | Notes                                                              |
-| ------------------- | -------- | ------------------------------------------------------------------ |
-| `--template <path>` | yes      | `.label` JSON file                                                 |
-| `--output <path>`   | yes      | `.png` or `.pdf` — extension decides the format                    |
-| `--csv <path>`      | no       | CSV file. One page per row (PDF) or one label (PNG, row 1 only)    |
-| `--var key=value`   | no       | Static variable; repeatable (`--var name=Piet --var city=Utrecht`) |
-| `--sheet <code>`    | no       | Sticker-sheet code (`avery-l7160`, etc.); forces PDF output        |
-| `--rows <range>`    | no       | Filter CSV rows: `1-50` or `1,3,7,12`                              |
+| Flag                | Required | Notes                                                                     |
+| ------------------- | -------- | ------------------------------------------------------------------------- |
+| `--template <path>` | yes      | `.label` JSON file                                                        |
+| `--output <path>`   | yes      | `.png` or `.pdf` — extension decides the format                           |
+| `--csv <path>`      | no       | CSV file. One page per row (PDF) or one label (PNG, row 1 only)           |
+| `--var key=value`   | no       | Static variable; repeatable (`--var name=Piet --var city=Utrecht`)        |
+| `--sheet <code>`    | no       | Sticker-sheet code (`avery-l7160`, etc.); forces PDF output               |
+| `--rows <range>`    | no       | Filter CSV rows: `1-50` or `1,3,7,12`                                     |
 | `--no-rotate`       | no       | Ignore `canvas.orientation`; export at canonical `widthDots × heightDots` |
 
 PNG output is single-label only — `--csv` uses the first row. Use PDF

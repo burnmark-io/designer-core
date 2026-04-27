@@ -51,6 +51,6 @@ export function mergeCanvas(base: CanvasConfig, patch: Partial<CanvasConfig>): C
     margins: patch.margins ? { ...base.margins, ...patch.margins } : { ...base.margins },
     background: patch.background ?? base.background,
     grid: patch.grid ? { ...base.grid, ...patch.grid } : { ...base.grid },
-    orientation: patch.orientation ?? base.orientation ?? 'vertical',
+    orientation: patch.orientation ?? base.orientation,
   };
 }

@@ -1,4 +1,13 @@
-import { computed, onScopeDispose, ref, shallowRef, triggerRef, type ComputedRef, type Ref, type ShallowRef } from 'vue';
+import {
+  computed,
+  onScopeDispose,
+  ref,
+  shallowRef,
+  triggerRef,
+  type ComputedRef,
+  type Ref,
+  type ShallowRef,
+} from 'vue';
 import {
   LabelDesigner,
   exportBundled as exportBundledCore,
@@ -145,7 +154,9 @@ export function useLabelDesigner(
   const renderError = shallowRef<Error | null>(null);
   const selection = ref<string[]>([]);
 
-  const displayWidthDots = computed(() => displayDimensions(document.value.canvas).displayWidthDots);
+  const displayWidthDots = computed(
+    () => displayDimensions(document.value.canvas).displayWidthDots,
+  );
   const displayHeightDots = computed(
     () => displayDimensions(document.value.canvas).displayHeightDots,
   );

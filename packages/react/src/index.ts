@@ -329,10 +329,12 @@ export function useLabelDesigner(options: DesignerHookOptions = {}): DesignerHoo
 
   const displayDims = useMemo(
     () => displayDimensions(designer.document.canvas),
-    // Recompute whenever the document mutates (bump triggers a re-render
-    // and the underlying document mutates in place).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [designer, designer.document.canvas.widthDots, designer.document.canvas.heightDots, designer.document.canvas.orientation],
+    [
+      designer,
+      designer.document.canvas.widthDots,
+      designer.document.canvas.heightDots,
+      designer.document.canvas.orientation,
+    ],
   );
 
   return {
