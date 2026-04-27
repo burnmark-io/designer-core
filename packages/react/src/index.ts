@@ -16,6 +16,26 @@ import {
   type SheetTemplate,
 } from '@burnmark-io/designer-core';
 
+/**
+ * Pure helper: derive on-screen display dimensions from a canvas config.
+ * When orientation is `'horizontal'`, axes are swapped so a UI can render
+ * the label "the right side up" without altering the underlying document.
+ *
+ * Continuous canvases (`heightDots === 0`) keep the unbounded axis
+ * sentinel intact: when horizontal, `displayHeightDots` reads `widthDots`
+ * and `displayWidthDots` is `0` (the unbounded growth axis after swap).
+ */
+export function displayDimensions(canvas: {
+  widthDots: number;
+  heightDots: number;
+  orientation?: 'vertical' | 'horizontal';
+}): { displayWidthDots: number; displayHeightDots: number } {
+  if (canvas.orientation !== 'horizontal') {
+    return { displayWidthDots: canvas.widthDots, displayHeightDots: canvas.heightDots };
+  }
+  return { displayWidthDots: canvas.heightDots, displayHeightDots: canvas.widthDots };
+}
+
 export interface DesignerHookOptions {
   canvas?: Partial<CanvasConfig>;
   name?: string;
@@ -38,6 +58,16 @@ export interface DesignerHookReturn {
   bitmap: LabelBitmap | null;
   renderWarning: RenderWarning | null;
   renderError: Error | null;
+
+  /**
+   * On-screen width of the label in dots, axes-swapped when
+   * `document.canvas.orientation === 'horizontal'`. Use this in place of
+   * `document.canvas.widthDots` for canvas/viewport sizing so the user
+   * can flip orientation without changing the underlying document.
+   */
+  displayWidthDots: number;
+  /** On-screen height of the label in dots, axes-swapped when horizontal. */
+  displayHeightDots: number;
 
   selection: string[];
   select: (ids: string[]) => void;
@@ -297,6 +327,14 @@ export function useLabelDesigner(options: DesignerHookOptions = {}): DesignerHoo
     [designer],
   );
 
+  const displayDims = useMemo(
+    () => displayDimensions(designer.document.canvas),
+    // Recompute whenever the document mutates (bump triggers a re-render
+    // and the underlying document mutates in place).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [designer, designer.document.canvas.widthDots, designer.document.canvas.heightDots, designer.document.canvas.orientation],
+  );
+
   return {
     designer,
     document: designer.document,
@@ -306,6 +344,8 @@ export function useLabelDesigner(options: DesignerHookOptions = {}): DesignerHoo
     bitmap,
     renderWarning,
     renderError,
+    displayWidthDots: displayDims.displayWidthDots,
+    displayHeightDots: displayDims.displayHeightDots,
     selection,
     select,
     deselect,

@@ -7,7 +7,7 @@ import {
   type LabelObjectInput,
   type TextObject,
 } from '@burnmark-io/designer-core';
-import { useLabelDesigner, type DesignerHookOptions } from '../index.js';
+import { displayDimensions, useLabelDesigner, type DesignerHookOptions } from '../index.js';
 
 function textInput(
   overrides: Partial<LabelObjectInput<TextObject>> = {},
@@ -411,5 +411,40 @@ describe('useLabelDesigner (react)', () => {
     expect(typeof result.current.exportSheet).toBe('function');
     expect(typeof result.current.exportBundled).toBe('function');
     unmount();
+  });
+
+  it('displayWidthDots / displayHeightDots swap when orientation is horizontal', () => {
+    const designer = new LabelDesigner({ canvas: { widthDots: 600, heightDots: 300 } });
+    const { result, unmount } = renderHook(() =>
+      useLabelDesigner({ designer, renderOnMount: false }),
+    );
+    expect(result.current.displayWidthDots).toBe(600);
+    expect(result.current.displayHeightDots).toBe(300);
+    act(() => {
+      designer.setOrientation('horizontal');
+    });
+    expect(result.current.displayWidthDots).toBe(300);
+    expect(result.current.displayHeightDots).toBe(600);
+    unmount();
+  });
+});
+
+describe('displayDimensions', () => {
+  it('returns canonical dims for vertical', () => {
+    expect(displayDimensions({ widthDots: 300, heightDots: 600, orientation: 'vertical' })).toEqual(
+      { displayWidthDots: 300, displayHeightDots: 600 },
+    );
+  });
+
+  it('swaps axes for horizontal', () => {
+    expect(
+      displayDimensions({ widthDots: 300, heightDots: 600, orientation: 'horizontal' }),
+    ).toEqual({ displayWidthDots: 600, displayHeightDots: 300 });
+  });
+
+  it('preserves the unbounded sentinel for continuous + horizontal', () => {
+    expect(displayDimensions({ widthDots: 300, heightDots: 0, orientation: 'horizontal' })).toEqual(
+      { displayWidthDots: 0, displayHeightDots: 300 },
+    );
   });
 });

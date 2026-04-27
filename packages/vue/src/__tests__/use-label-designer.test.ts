@@ -6,7 +6,7 @@ import {
   type LabelObjectInput,
   type TextObject,
 } from '@burnmark-io/designer-core';
-import { useLabelDesigner, type DesignerComposableReturn } from '../index.js';
+import { displayDimensions, useLabelDesigner, type DesignerComposableReturn } from '../index.js';
 
 function textInput(
   overrides: Partial<LabelObjectInput<TextObject>> = {},
@@ -322,5 +322,49 @@ describe('useLabelDesigner (vue)', () => {
     expect(typeof api.exportSheet).toBe('function');
     expect(typeof api.exportBundled).toBe('function');
     dispose();
+  });
+
+  it('displayWidthDots / displayHeightDots swap when orientation is horizontal', () => {
+    const designer = new LabelDesigner({
+      canvas: { widthDots: 600, heightDots: 300 },
+    });
+    const { result, dispose } = withScope(() =>
+      useLabelDesigner({ designer, renderOnMount: false }),
+    );
+    expect(result.displayWidthDots.value).toBe(600);
+    expect(result.displayHeightDots.value).toBe(300);
+    designer.setOrientation('horizontal');
+    expect(result.displayWidthDots.value).toBe(300);
+    expect(result.displayHeightDots.value).toBe(600);
+    dispose();
+  });
+});
+
+describe('displayDimensions', () => {
+  it('returns canonical dims for vertical', () => {
+    expect(displayDimensions({ widthDots: 300, heightDots: 600, orientation: 'vertical' })).toEqual(
+      { displayWidthDots: 300, displayHeightDots: 600 },
+    );
+  });
+
+  it('swaps axes for horizontal', () => {
+    expect(
+      displayDimensions({ widthDots: 300, heightDots: 600, orientation: 'horizontal' }),
+    ).toEqual({ displayWidthDots: 600, displayHeightDots: 300 });
+  });
+
+  it('preserves the unbounded sentinel for continuous + horizontal', () => {
+    // Continuous label: heightDots === 0 means "growth axis is unbounded".
+    // After swap, the unbounded axis becomes the displayed width.
+    expect(displayDimensions({ widthDots: 300, heightDots: 0, orientation: 'horizontal' })).toEqual(
+      { displayWidthDots: 0, displayHeightDots: 300 },
+    );
+  });
+
+  it('treats missing orientation as vertical', () => {
+    expect(displayDimensions({ widthDots: 100, heightDots: 200 })).toEqual({
+      displayWidthDots: 100,
+      displayHeightDots: 200,
+    });
   });
 });

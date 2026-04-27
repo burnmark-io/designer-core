@@ -1,4 +1,4 @@
-import { onScopeDispose, ref, shallowRef, type Ref, type ShallowRef } from 'vue';
+import { computed, onScopeDispose, ref, shallowRef, triggerRef, type ComputedRef, type Ref, type ShallowRef } from 'vue';
 import {
   LabelDesigner,
   exportBundled as exportBundledCore,
@@ -15,6 +15,28 @@ import {
   type ReorderDirection,
   type SheetTemplate,
 } from '@burnmark-io/designer-core';
+
+/**
+ * Pure helper: derive the on-screen display dimensions from a canvas
+ * config. When orientation is `'horizontal'`, axes are swapped so a
+ * UI laying out the canvas can render the label "the right side up"
+ * without altering the underlying document.
+ *
+ * Continuous canvases (`heightDots === 0`) keep the unbounded axis
+ * sentinel intact — `displayHeightDots` reads `widthDots` (the across-
+ * feed dimension) and `displayWidthDots` is `0` (the unbounded growth
+ * axis, after swap).
+ */
+export function displayDimensions(canvas: {
+  widthDots: number;
+  heightDots: number;
+  orientation?: 'vertical' | 'horizontal';
+}): { displayWidthDots: number; displayHeightDots: number } {
+  if (canvas.orientation !== 'horizontal') {
+    return { displayWidthDots: canvas.widthDots, displayHeightDots: canvas.heightDots };
+  }
+  return { displayWidthDots: canvas.heightDots, displayHeightDots: canvas.widthDots };
+}
 
 export interface DesignerComposableOptions {
   canvas?: Partial<CanvasConfig>;
@@ -39,6 +61,16 @@ export interface DesignerComposableReturn {
   bitmap: ShallowRef<LabelBitmap | null>;
   renderWarning: ShallowRef<RenderWarning | null>;
   renderError: ShallowRef<Error | null>;
+
+  /**
+   * On-screen width of the label in dots, axes-swapped when
+   * `document.canvas.orientation === 'horizontal'`. Use this in place of
+   * `document.canvas.widthDots` for canvas/viewport sizing so the user
+   * can flip orientation without changing the underlying document.
+   */
+  displayWidthDots: ComputedRef<number>;
+  /** On-screen height of the label in dots, axes-swapped when horizontal. */
+  displayHeightDots: ComputedRef<number>;
 
   selection: Ref<string[]>;
   select: (ids: string[]) => void;
@@ -113,6 +145,11 @@ export function useLabelDesigner(
   const renderError = shallowRef<Error | null>(null);
   const selection = ref<string[]>([]);
 
+  const displayWidthDots = computed(() => displayDimensions(document.value.canvas).displayWidthDots);
+  const displayHeightDots = computed(
+    () => displayDimensions(document.value.canvas).displayHeightDots,
+  );
+
   // Generation counter discards results from superseded renders.
   let generation = 0;
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -148,9 +185,12 @@ export function useLabelDesigner(
   }
 
   // Replace the document ref (core swaps identity on load/new/undo/redo) and
-  // always fire triggerRef so Vue picks up in-place mutations too.
+  // always fire triggerRef so dependent computeds (e.g. `displayWidthDots`)
+  // pick up in-place canvas mutations even when the document identity is
+  // preserved.
   const offChange = designer.on('change', () => {
     document.value = designer.document;
+    triggerRef(document);
     // Auto-prune selection: drop IDs that no longer exist.
     if (selection.value.length > 0) {
       const validIds = new Set<string>();
@@ -206,6 +246,8 @@ export function useLabelDesigner(
     bitmap,
     renderWarning,
     renderError,
+    displayWidthDots,
+    displayHeightDots,
     selection,
     select: (ids: string[]): void => {
       selection.value = [...ids];
