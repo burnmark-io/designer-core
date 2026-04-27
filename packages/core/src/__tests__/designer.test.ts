@@ -146,6 +146,15 @@ describe('LabelDesigner', () => {
     expect(d.document.canvas.orientation).toBe('horizontal');
   });
 
+  it('setOrientation flips canvas.orientation through setCanvas', () => {
+    const d = new LabelDesigner();
+    expect(d.document.canvas.orientation).toBe('vertical');
+    d.setOrientation('horizontal');
+    expect(d.document.canvas.orientation).toBe('horizontal');
+    d.setOrientation('vertical');
+    expect(d.document.canvas.orientation).toBe('vertical');
+  });
+
   it('toJSON → fromJSON round-trip', () => {
     const d = new LabelDesigner({ name: 'Round Trip' });
     d.add(textInput({ content: 'Hello' }));

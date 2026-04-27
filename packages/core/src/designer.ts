@@ -167,6 +167,16 @@ export class LabelDesigner {
     });
   }
 
+  /**
+   * Convenience wrapper around `setCanvas({ orientation })`. Display
+   * orientation only — `render` always produces a canonical
+   * `widthDots × heightDots` bitmap; downstream exporters and display
+   * helpers may swap axes when set to `'horizontal'`.
+   */
+  setOrientation(orientation: 'vertical' | 'horizontal'): void {
+    this.setCanvas({ orientation });
+  }
+
   // --- History ---
 
   undo(): void {
