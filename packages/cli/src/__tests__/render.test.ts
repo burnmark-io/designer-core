@@ -14,8 +14,13 @@ async function withTempDir<T>(fn: (dir: string) => Promise<T>): Promise<T> {
   }
 }
 
-function sampleDoc(): string {
-  const doc = createDocument('s', { widthDots: 100, heightDots: 50, dpi: 300 });
+function sampleDoc(canvas: { orientation?: 'vertical' | 'horizontal' } = {}): string {
+  const doc = createDocument('s', {
+    widthDots: 100,
+    heightDots: 50,
+    dpi: 300,
+    ...canvas,
+  });
   doc.objects.push({
     id: 'r',
     type: 'shape',
@@ -34,6 +39,11 @@ function sampleDoc(): string {
     invert: false,
   });
   return toJSON(doc);
+}
+
+function pngDims(buf: Uint8Array): { width: number; height: number } {
+  const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  return { width: dv.getUint32(16), height: dv.getUint32(20) };
 }
 
 describe('renderCommand', () => {
@@ -86,6 +96,28 @@ describe('renderCommand', () => {
       const template = join(dir, 'label.label');
       await writeFile(template, sampleDoc(), 'utf-8');
       await expect(renderCommand({ template })).rejects.toThrow(/--output/);
+    });
+  });
+
+  it('rotates a horizontal-orientation PNG by default', async () => {
+    await withTempDir(async dir => {
+      const template = join(dir, 'label.label');
+      const output = join(dir, 'out.png');
+      await writeFile(template, sampleDoc({ orientation: 'horizontal' }), 'utf-8');
+      await renderCommand({ template, output });
+      const bytes = await readFile(output);
+      expect(pngDims(bytes)).toEqual({ width: 50, height: 100 });
+    });
+  });
+
+  it('--no-rotate (rotate: false) keeps canonical PNG dimensions', async () => {
+    await withTempDir(async dir => {
+      const template = join(dir, 'label.label');
+      const output = join(dir, 'out.png');
+      await writeFile(template, sampleDoc({ orientation: 'horizontal' }), 'utf-8');
+      await renderCommand({ template, output, rotate: false });
+      const bytes = await readFile(output);
+      expect(pngDims(bytes)).toEqual({ width: 100, height: 50 });
     });
   });
 });

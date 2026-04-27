@@ -17,6 +17,13 @@ export interface RenderArgs {
   var?: string[];
   sheet?: string;
   rows?: string;
+  /**
+   * Honour `canvas.orientation` when exporting. Defaults to `true`; the
+   * `--no-rotate` CLI flag flips this to `false` so exports render at
+   * the document's canonical `widthDots × heightDots`. Commander populates
+   * this field via its `--no-X` convention.
+   */
+  rotate?: boolean;
 }
 
 export async function renderCommand(args: RenderArgs): Promise<void> {
@@ -36,6 +43,8 @@ export async function renderCommand(args: RenderArgs): Promise<void> {
   const output = args.output;
   const ext = extname(output).toLowerCase();
 
+  const respectOrientation = args.rotate !== false;
+
   if (args.sheet) {
     const sheet = resolveSheet(args.sheet);
     if (!sheet) {
@@ -43,13 +52,13 @@ export async function renderCommand(args: RenderArgs): Promise<void> {
         `Unknown sheet code: ${args.sheet}. Run \`burnmark list-sheets --brand <name>\` to find it.`,
       );
     }
-    const blob = await exportSheet(designer.document, sheet, csvRows);
+    const blob = await exportSheet(designer.document, sheet, csvRows, { respectOrientation });
     await writeBlobFile(output, blob);
     return;
   }
 
   if (ext === '.pdf') {
-    const blob = await exportPdf(designer.document, csvRows);
+    const blob = await exportPdf(designer.document, csvRows, { respectOrientation });
     await writeBlobFile(output, blob);
     return;
   }
@@ -59,7 +68,7 @@ export async function renderCommand(args: RenderArgs): Promise<void> {
       throw new Error('render: PNG output supports only a single label. Use PDF for batch.');
     }
     const rowVars = { ...vars, ...(csvRows?.[0] ?? {}) };
-    const blob = await exportPng(designer.document, { variables: rowVars });
+    const blob = await exportPng(designer.document, { variables: rowVars, respectOrientation });
     await writeBlobFile(output, blob);
     return;
   }

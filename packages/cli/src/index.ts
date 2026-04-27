@@ -22,6 +22,7 @@ export async function run(argv: string[]): Promise<void> {
     .option('--var <kv...>', 'single variable, key=value (repeatable)')
     .option('--sheet <code>', 'sheet template code for sticker sheet export')
     .option('--rows <range>', 'e.g. 1-50 or 1,3,7 for partial batch')
+    .option('--no-rotate', 'ignore canvas.orientation; export at canonical dimensions')
     .action(async (opts: RenderArgs) => {
       await renderCommand(opts);
       console.log(chalk.green(`✓ Rendered to ${String(opts.output)}`));
