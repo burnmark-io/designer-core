@@ -53,6 +53,25 @@ export const BUNDLED_FONTS: Record<BundledFontFamily, BundledFontEntry> = {
   },
 };
 
+const BUNDLED_FONT_URLS: Record<BundledFontFamily, { regular: string; bold: string }> = {
+  'Burnmark Sans': {
+    regular: new URL('./fonts/bundled/burnmark-sans.woff2', import.meta.url).href,
+    bold: new URL('./fonts/bundled/burnmark-sans-bold.woff2', import.meta.url).href,
+  },
+  'Burnmark Mono': {
+    regular: new URL('./fonts/bundled/burnmark-mono.woff2', import.meta.url).href,
+    bold: new URL('./fonts/bundled/burnmark-mono-bold.woff2', import.meta.url).href,
+  },
+  'Burnmark Serif': {
+    regular: new URL('./fonts/bundled/burnmark-serif.woff2', import.meta.url).href,
+    bold: new URL('./fonts/bundled/burnmark-serif-bold.woff2', import.meta.url).href,
+  },
+  'Burnmark Narrow': {
+    regular: new URL('./fonts/bundled/burnmark-narrow.woff2', import.meta.url).href,
+    bold: new URL('./fonts/bundled/burnmark-narrow-bold.woff2', import.meta.url).href,
+  },
+};
+
 export interface FontLoader {
   load(family: string): Promise<void>;
   register(family: string, source: ArrayBuffer | Uint8Array | string): Promise<void>;
@@ -132,7 +151,7 @@ function bundledDir(): string {
   return resolve(dirname(fileURLToPath(import.meta.url)), 'fonts', 'bundled');
 }
 
-async function loadBundledFont(family: string, entry: BundledFontEntry): Promise<void> {
+async function loadBundledFont(family: BundledFontFamily, entry: BundledFontEntry): Promise<void> {
   const gb = globalThis as unknown as {
     FontFace?: typeof FontFace;
     fonts?: { add: (f: FontFace) => void };
@@ -144,10 +163,10 @@ async function loadBundledFont(family: string, entry: BundledFontEntry): Promise
     // Applications that need a different URL scheme should call
     // `registerFont(family, ArrayBuffer)` themselves before the first
     // render.
-    const base = new URL('./fonts/bundled/', import.meta.url);
+    const urls = BUNDLED_FONT_URLS[family];
     await Promise.all([
-      loadFontFace(family, new URL(entry.files.regular, base).href, 'normal'),
-      loadFontFace(family, new URL(entry.files.bold, base).href, 'bold'),
+      loadFontFace(family, urls.regular, 'normal'),
+      loadFontFace(family, urls.bold, 'bold'),
     ]);
     return;
   }
