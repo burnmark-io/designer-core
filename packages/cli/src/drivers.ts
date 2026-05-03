@@ -5,9 +5,9 @@ import { type PrinterAdapter, type PrinterDiscovery } from '@thermal-label/contr
  * optional peer dependency — we try to import them dynamically and only
  * list the ones present. Missing drivers are silently ignored.
  *
- * Retrofitted drivers (v0.2+) export a `discovery: PrinterDiscovery`
- * singleton. If a driver is present but doesn't export `discovery`, it is
- * flagged at discovery-time and ignored by `openPrinter`.
+ * Drivers (v0.4+) export a `discovery: PrinterDiscovery` singleton.
+ * If a driver is present but doesn't export `discovery`, it is flagged
+ * at discovery-time and ignored by `openPrinter`.
  */
 
 export interface DriverModule {
@@ -87,7 +87,7 @@ export async function openPrinter(url: string): Promise<PrinterAdapter> {
     }
     throw new Error(
       `Installed drivers do not export a \`discovery\` singleton. ` +
-        `Upgrade to @thermal-label/*-node@^0.2.0 or later.`,
+        `Upgrade to @thermal-label/*-node@^0.5.0 or later.`,
     );
   }
 

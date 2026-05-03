@@ -1,6 +1,6 @@
 {
   "name": "burnmark-cli",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "description": "Command-line interface for the burnmark label design engine — render, print, validate, CSV batch, sheet export",
   "type": "module",
   "author": "Mannes Brak",
@@ -64,16 +64,16 @@
     "@burnmark-io/designer-core": "workspace:*",
     "@burnmark-io/sheet-templates": "^0.1.0",
     "@napi-rs/canvas": "^0.1.0",
-    "@thermal-label/contracts": "^0.2.0",
+    "@thermal-label/contracts": "^0.5.0",
     "chalk": "^5.0.0",
     "commander": "^12.0.0",
     "ora": "^8.0.0",
     "serialport": "^13.0.0"
   },
   "peerDependencies": {
-    "@thermal-label/brother-ql-node": ">=0.3.0",
-    "@thermal-label/labelmanager-node": ">=0.3.0",
-    "@thermal-label/labelwriter-node": ">=0.3.0"
+    "@thermal-label/brother-ql-node": ">=0.5.0",
+    "@thermal-label/labelmanager-node": ">=0.5.0",
+    "@thermal-label/labelwriter-node": ">=0.5.0"
   },
   "peerDependenciesMeta": {
     "@thermal-label/brother-ql-node": {
