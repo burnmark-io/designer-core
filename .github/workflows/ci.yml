@@ -25,6 +25,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Build must run first: downstream workspace packages (cli) import
+      # @burnmark-io/designer-core, which resolves through `exports` to
+      # dist/index.{js,d.ts} — both `typecheck` (TS6059 on the .d.ts) and
+      # `test:coverage` (Vite loader) need those artifacts to exist.
+      - name: Build
+        run: pnpm build
+
       - name: Typecheck
         run: pnpm typecheck
 
@@ -33,13 +40,6 @@ jobs:
 
       - name: Format check
         run: pnpm prettier --check "packages/**/*.ts"
-
-      # Build must run before tests: downstream workspace packages (cli)
-      # import @burnmark-io/designer-core, which resolves through `exports`
-      # to dist/index.js. Vitest/Vite needs that file to exist to load the
-      # CLI test suite.
-      - name: Build
-        run: pnpm build
 
       - name: Test with coverage
         run: pnpm test:coverage
