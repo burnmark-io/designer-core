@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { BUNDLED_FONTS, DefaultFontLoader } from '../fonts.js';
 
 describe('BUNDLED_FONTS', () => {
@@ -27,6 +27,69 @@ describe('DefaultFontLoader', () => {
     await loader.load('Burnmark Sans');
     expect(loader.isLoaded('Burnmark Sans')).toBe(true);
     expect(warnings).toEqual([]);
+  });
+
+  it('loads bundled browser fonts from explicit font file URLs', async () => {
+    const globalWithFonts = globalThis as typeof globalThis & {
+      FontFace?: typeof FontFace;
+      fonts?: { add: (font: FontFace) => void };
+    };
+    const hadFontFace = 'FontFace' in globalWithFonts;
+    const originalFontFace = globalWithFonts.FontFace;
+    const hadFonts = 'fonts' in globalWithFonts;
+    const originalFonts = globalWithFonts.fonts;
+    const sources: string[] = [];
+
+    class MockFontFace {
+      constructor(_family: string, source: string) {
+        sources.push(source);
+      }
+
+      load(): Promise<FontFace> {
+        return Promise.resolve(this as unknown as FontFace);
+      }
+    }
+
+    Object.defineProperty(globalWithFonts, 'FontFace', {
+      configurable: true,
+      value: MockFontFace,
+    });
+    Object.defineProperty(globalWithFonts, 'fonts', {
+      configurable: true,
+      value: { add: vi.fn() },
+    });
+
+    try {
+      const loader = new DefaultFontLoader();
+      await loader.load('Burnmark Sans');
+
+      expect(sources).toHaveLength(2);
+      expect(sources).toEqual(
+        expect.arrayContaining([
+          expect.stringMatching(/burnmark-sans\.woff2/),
+          expect.stringMatching(/burnmark-sans-bold\.woff2/),
+        ]),
+      );
+      expect(sources.every(source => !source.endsWith('/fonts/bundled/'))).toBe(true);
+    } finally {
+      if (hadFontFace) {
+        Object.defineProperty(globalWithFonts, 'FontFace', {
+          configurable: true,
+          value: originalFontFace,
+        });
+      } else {
+        Reflect.deleteProperty(globalWithFonts, 'FontFace');
+      }
+
+      if (hadFonts) {
+        Object.defineProperty(globalWithFonts, 'fonts', {
+          configurable: true,
+          value: originalFonts,
+        });
+      } else {
+        Reflect.deleteProperty(globalWithFonts, 'fonts');
+      }
+    }
   });
 
   it('warns and marks as loaded for unknown system fonts', async () => {
