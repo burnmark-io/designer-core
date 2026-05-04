@@ -1,6 +1,6 @@
 {
   "name": "@burnmark-io/designer-react",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "React hook for the burnmark label design engine",
   "type": "module",
   "author": "Mannes Brak",

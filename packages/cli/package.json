@@ -1,6 +1,6 @@
 {
   "name": "burnmark-cli",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Command-line interface for the burnmark label design engine — render, print, validate, CSV batch, sheet export",
   "type": "module",
   "author": "Mannes Brak",

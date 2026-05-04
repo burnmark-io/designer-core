@@ -1,6 +1,6 @@
 {
   "name": "@burnmark-io/designer-core",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Headless label design engine — document model, render pipeline, multi-colour flattening, templates, CSV batch",
   "type": "module",
   "author": "Mannes Brak",
