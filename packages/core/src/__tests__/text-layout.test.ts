@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { createCanvas } from '@napi-rs/canvas';
 import { type CanvasContextLike } from '../render/canvas.js';
 import {
@@ -10,6 +10,7 @@ import {
   setMeasurementContext,
 } from '../render/text.js';
 import { LabelDesigner } from '../designer.js';
+import { DefaultFontLoader } from '../fonts.js';
 import { type TextObject } from '../objects.js';
 
 const W = 240;
@@ -28,7 +29,7 @@ const textObj = (overrides: Partial<TextObject> = {}): TextObject => ({
   visible: true,
   color: '#000000',
   content: 'Hello, world! This is a long line to force wrapping when width is tight.',
-  fontFamily: 'sans-serif',
+  fontFamily: 'Burnmark Sans',
   fontSize: 16,
   fontWeight: 'normal',
   fontStyle: 'normal',
@@ -93,6 +94,11 @@ function paint(fn: (ctx: CanvasContextLike, obj: TextObject) => void, obj: TextO
   return Buffer.from(ctx.getImageData(0, 0, W, H).data);
 }
 
+// Use a bundled font: CI runners have no system fonts to fall back on.
+beforeAll(async () => {
+  await new DefaultFontLoader().load('Burnmark Sans');
+});
+
 const ALIGNS = ['left', 'center', 'right'] as const;
 const VALIGNS = ['top', 'middle', 'bottom'] as const;
 
@@ -108,7 +114,7 @@ for (const textAlign of ALIGNS) {
 }
 fixtures.push(
   ['invert', { invert: true, content: 'inverted text', textAlign: 'center' }],
-  ['large font overflowing box', { fontSize: 50, content: 'Big overflowing text here' }],
+  ['large font overflowing box', { fontSize: 50, content: 'Big text that runs on and on' }],
   ['bold italic', { fontWeight: 'bold', fontStyle: 'italic', textAlign: 'right' }],
   ['empty', { content: '' }],
   ['tall lineHeight', { lineHeight: 2, verticalAlign: 'middle' }],
@@ -168,8 +174,8 @@ describe('layoutText — wrap policy', () => {
 
   it('drops whitespace at a wrap point', () => {
     const word = layoutText(ctx, textObj({ content: 'aaaa', wrap: false })).lines[0]!.width;
-    const lines = texts({ content: 'aaaa      bbbb', width: word + 2 });
-    expect(lines).toEqual(['aaaa', 'bbbb']);
+    const lines = texts({ content: 'aaaa      aaaa', width: word + 2 });
+    expect(lines).toEqual(['aaaa', 'aaaa']);
   });
 
   it('lets trailing whitespace hang (no effect on right alignment)', () => {
@@ -188,8 +194,13 @@ describe('layoutText — wrap policy', () => {
   });
 
   it('continues after a broken word on the same line when it fits', () => {
-    const lines = texts({ content: 'abcdefghijklmnopqrstuvwxyz a', width: 60 });
-    expect(lines.at(-1)?.endsWith(' a')).toBe(true);
+    // Box fits 'abcdef'; the word breaks to 'abcdef' / 'abcdef' / 'ab', and ' a' joins 'ab'.
+    const width = layoutText(ctx, textObj({ content: 'abcdef', wrap: false })).lines[0]!.width;
+    expect(texts({ content: 'abcdefabcdefab a', width: width + 1 })).toEqual([
+      'abcdef',
+      'abcdef',
+      'ab a',
+    ]);
   });
 
   it('keeps at least one character per line in a very narrow box', () => {
