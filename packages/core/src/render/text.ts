@@ -331,7 +331,7 @@ function breakWord(measure: Measurer, word: string, maxWidth: number): string[] 
 }
 
 const segmenter =
-  typeof Intl !== 'undefined' && 'Segmenter' in Intl
+  typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function'
     ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
     : null;
 
