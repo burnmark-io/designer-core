@@ -64,8 +64,16 @@ import {
   type PrinterStatus,
   type PrintOptions,
 
+  // Text layout (shared by print and editors)
+  layoutText,
+  paintText,
+  measureText,
+  measureTextObject,
+  setMeasurementContext,
+
   // Fonts
   registerFont,
+  ensureFontsLoaded,
   listFonts,
   isFontLoaded,
 

@@ -125,16 +125,17 @@ designer.add({
   fontStyle: 'normal', // 'normal' | 'italic'
   textAlign: 'left', // 'left' | 'center' | 'right'
   verticalAlign: 'top', // 'top' | 'middle' | 'bottom'
-  letterSpacing: 0,
-  lineHeight: 1.2,
-  invert: false, // invert final raster in this object's bbox
-  wrap: true, // word-wrap to width
-  autoHeight: false, // expand height to fit wrapped text
+  letterSpacing: 0, // extra dots between glyphs (may be negative)
+  lineHeight: 1.2, // multiple of fontSize
+  invert: false, // fill the box with `color`, draw the text white
+  wrap: true, // wrap to width (see Text layout)
+  autoHeight: false, // box height = laid-out text height; `height` is ignored
 });
 ```
 
 Text supports `{{placeholder}}` substitution from `applyVariables()` — see
-[Template engine](/guide/template-engine).
+[Template engine](/guide/template-engine). How lines break and where they
+sit is described under [Text layout](/guide/rendering#text-layout).
 
 ### `ImageObject`
 

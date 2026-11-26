@@ -10,7 +10,7 @@ import {
 } from '../objects.js';
 import { type AssetLoader } from '../assets.js';
 import { type CanvasContextLike } from './canvas.js';
-import { renderText } from './text.js';
+import { layoutText, renderText } from './text.js';
 import { renderShape } from './shape.js';
 import { renderImage, loadAsset } from './image.js';
 import { renderBarcode, type BarcodeEngine } from './barcode.js';
@@ -48,17 +48,21 @@ async function renderOne(obj: LabelObject, rc: RenderContext): Promise<void> {
     );
   }
 
+  // Lay out text first: autoHeight takes its box height (and rotation pivot) from the layout.
+  const textLayout = isTextObject(obj) ? layoutText(ctx, obj) : undefined;
+  const boxHeight = textLayout?.boxHeight ?? obj.height;
+
   ctx.save();
   ctx.translate(obj.x, obj.y);
   if (obj.rotation !== 0) {
-    ctx.translate(obj.width / 2, obj.height / 2);
+    ctx.translate(obj.width / 2, boxHeight / 2);
     ctx.rotate((obj.rotation * Math.PI) / 180);
-    ctx.translate(-obj.width / 2, -obj.height / 2);
+    ctx.translate(-obj.width / 2, -boxHeight / 2);
   }
   ctx.globalAlpha = obj.opacity;
 
   try {
-    if (isTextObject(obj)) renderText(ctx, obj);
+    if (isTextObject(obj)) renderText(ctx, obj, textLayout);
     else if (isShapeObject(obj)) renderShape(ctx, obj);
     else if (isImageObject(obj)) await renderImageObject(obj, rc);
     else if (isBarcodeObject(obj)) await renderBarcode(ctx, obj, rc.barcodeEngine);

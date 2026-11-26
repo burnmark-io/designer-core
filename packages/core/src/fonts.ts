@@ -185,13 +185,19 @@ async function loadBundledFont(family: BundledFontFamily, entry: BundledFontEntr
 }
 
 async function loadFontFace(family: string, url: string, weight: 'normal' | 'bold'): Promise<void> {
-  const gb = globalThis as unknown as {
-    FontFace: typeof FontFace;
-    fonts?: { add: (f: FontFace) => void };
-  };
+  const gb = globalThis as unknown as { FontFace: typeof FontFace };
   const ff = new gb.FontFace(family, `url(${url})`, { weight });
   await ff.load();
-  gb.fonts?.add(ff);
+  fontFaceSet()?.add(ff);
+}
+
+/** `document.fonts` in a page, `self.fonts` in a worker. */
+function fontFaceSet(): { add: (f: FontFace) => void } | undefined {
+  const gb = globalThis as unknown as {
+    document?: { fonts?: { add: (f: FontFace) => void } };
+    fonts?: { add: (f: FontFace) => void };
+  };
+  return gb.document?.fonts ?? gb.fonts;
 }
 
 async function registerBytes(
@@ -206,7 +212,7 @@ async function registerBytes(
   if (typeof gb.FontFace === 'function') {
     const ff = new gb.FontFace(family, coerceBrowserSource(source), { weight });
     await ff.load();
-    gb.fonts?.add(ff);
+    fontFaceSet()?.add(ff);
     return;
   }
 
