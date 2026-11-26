@@ -60,6 +60,22 @@ export type { CsvData, CsvInput } from './csv.js';
 
 // Render pipeline
 export { renderFull, toBitmap, type RenderOptions } from './render/pipeline.js';
+export { ensureFontsLoaded } from './render/fonts.js';
+export {
+  layoutText,
+  paintText,
+  renderText,
+  measureText,
+  measureTextObject,
+  setMeasurementContext,
+  getMeasurementContext,
+  type LaidOutLine,
+  type TextLayout,
+  type TextLayoutInput,
+  type TextPaintInput,
+  type TextMeasurement,
+  type MeasureTextOptions,
+} from './render/text.js';
 export { rotate90 } from './render/rotate.js';
 export { BarcodeEngine } from './render/barcode.js';
 export { QRContent } from './qr-content.js';

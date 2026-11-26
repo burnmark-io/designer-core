@@ -27,6 +27,8 @@ export interface CanvasContextLike {
   font: string;
   textAlign: CanvasTextAlign;
   textBaseline: CanvasTextBaseline;
+  /** CSS length, e.g. `"2px"`. Absent on contexts without support. */
+  letterSpacing?: string;
 
   save(): void;
   restore(): void;
