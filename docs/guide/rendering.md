@@ -168,6 +168,61 @@ These are per-object because photographs and logos usually want different
 treatment. A grayscale photo looks best with `dither: true`; a high-contrast
 logo usually wants `dither: false, threshold: 128` for crisp edges.
 
+## Text layout
+
+Every text decision is made by one function, `layoutText(ctx, obj)`, which
+returns positioned lines; `paintText(ctx, obj, layout)` draws them. The
+renderer uses exactly this pair, so anything else that paints the same
+layout (for example an interactive editor) matches print.
+
+Layout rules:
+
+- Hard newlines always break.
+- With `wrap: true` and `width > 0`, lines wrap at whitespace. Runs of
+  spaces inside a line are kept; whitespace at a wrap point is dropped, and
+  trailing whitespace doesn't count towards alignment.
+- No-break spaces (U+00A0, U+2007, U+202F) never wrap: `10\u00A0kg` stays
+  together.
+- A word wider than the box breaks between characters.
+- `letterSpacing` adds space between glyphs, not after the last one, so
+  centred and right-aligned text stays aligned.
+- The first baseline sits `fontSize` below the top of the box for
+  `verticalAlign: 'top'`; each further line is `fontSize × lineHeight`
+  lower. Text taller than the box is drawn in full, never clipped.
+- With `autoHeight: true` the box height is the laid-out text height
+  (`layout.boxHeight`), which also drives vertical alignment, the
+  `invert` fill and the rotation pivot.
+
+### Drawing text in an editor
+
+```ts
+import {
+  applyTemplate,
+  ensureFontsLoaded,
+  layoutText,
+  paintText,
+} from '@burnmark-io/designer-core';
+
+await ensureFontsLoaded(doc); // measure with the real fonts, not a fallback
+
+const layout = layoutText(ctx, { ...obj, content: applyTemplate(obj.content, vars) });
+ctx.save();
+ctx.translate(obj.x, obj.y); // plus rotation about (width / 2, layout.boxHeight / 2)
+paintText(ctx, obj, layout);
+ctx.restore();
+```
+
+Layout depends on font metrics: lay out again once fonts finish loading.
+`layoutText` uses `content` as-is, so resolve placeholders first.
+
+### Measuring without drawing
+
+`measureText(options)` and `measureTextObject(obj)` return `{ lines,
+lineCount, height }` from the same layout, for example to size a box
+before rendering. They measure on an `OffscreenCanvas` (or a detached
+`<canvas>`); in Node.js inject one first with
+`setMeasurementContext(ctx)`.
+
 ## Canvas abstraction
 
 Rendering uses `OffscreenCanvas` in browsers and `@napi-rs/canvas` in
