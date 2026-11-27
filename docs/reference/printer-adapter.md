@@ -228,12 +228,12 @@ names. To participate, your package should:
 
 The `@thermal-label/*` packages ship as the canonical reference:
 
-- [`@thermal-label/brother-ql-node`](https://github.com/mannes-brak/thermal-label/tree/main/packages/brother-ql-node)
+- [`@thermal-label/brother-ql-node`](https://github.com/thermal-label/brother-ql/tree/main/packages/node)
   — USB (via `node-hid`) and TCP; single- and two-colour QL models;
   continuous and DK die-cut media.
-- [`@thermal-label/labelwriter-node`](https://github.com/mannes-brak/thermal-label/tree/main/packages/labelwriter-node)
+- [`@thermal-label/labelwriter-node`](https://github.com/thermal-label/labelwriter/tree/main/packages/node)
   — DYMO LabelWriter over USB. Single colour, fixed media widths.
-- [`@thermal-label/labelmanager-node`](https://github.com/mannes-brak/thermal-label/tree/main/packages/labelmanager-node)
+- [`@thermal-label/labelmanager-node`](https://github.com/thermal-label/labelmanager/tree/main/packages/node)
   — DYMO LabelManager via the legacy serial protocol.
 
 Start by reading the brother-ql-node adapter if you're implementing a

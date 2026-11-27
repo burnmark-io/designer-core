@@ -150,7 +150,7 @@ import { QRContent } from '@burnmark-io/designer-core';
 
 QRContent.wifi('MyNetwork', 'hunter2');
 QRContent.url('https://example.com');
-QRContent.vcard({ firstName: 'Piet', lastName: 'Brak', ... });
+QRContent.vcard({ firstName: 'Piet', lastName: 'Jansen', ... });
 ```
 
 ## Template engine
@@ -176,4 +176,4 @@ For a production deployment, drop WOFF2 subsets into `src/fonts/bundled/`
 
 ## License
 
-MIT © Mannes Brak
+MIT © MBTech

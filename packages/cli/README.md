@@ -61,4 +61,4 @@ burnmark validate --template invoice.label --csv orders.csv
 
 ## License
 
-MIT © Mannes Brak
+MIT © MBTech

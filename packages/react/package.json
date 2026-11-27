@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "React hook for the burnmark label design engine",
   "type": "module",
-  "author": "Mannes Brak",
+  "author": "MBTech",
   "license": "MIT",
   "homepage": "https://burnmark-io.github.io/designer-core/",
   "repository": {

@@ -34,15 +34,15 @@ describe('QRContent', () => {
 
   it('vcard produces a well-formed vCard', () => {
     const v = QRContent.vcard({
-      firstName: 'Mannes',
-      lastName: 'Brak',
+      firstName: 'Jan',
+      lastName: 'Jansen',
       email: 'a@b.com',
       phone: '+31612345678',
     });
     expect(v).toContain('BEGIN:VCARD');
     expect(v).toContain('VERSION:3.0');
-    expect(v).toContain('N:Brak;Mannes;;;');
-    expect(v).toContain('FN:Mannes Brak');
+    expect(v).toContain('N:Jansen;Jan;;;');
+    expect(v).toContain('FN:Jan Jansen');
     expect(v).toContain('EMAIL:a@b.com');
     expect(v).toContain('TEL:+31612345678');
     expect(v).toContain('END:VCARD');

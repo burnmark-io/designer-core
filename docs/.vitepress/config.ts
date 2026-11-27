@@ -67,7 +67,7 @@ export default defineConfig({
     },
     footer: {
       message: 'Not affiliated with Dymo, Brother, Avery, or any hardware vendor.',
-      copyright: 'MIT License © 2025–2026 Mannes Brak',
+      copyright: 'MIT License © 2025–2026 MBTech',
     },
   },
 });

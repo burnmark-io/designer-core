@@ -74,7 +74,7 @@ designer-core/
 
 ### 3.2 `LICENSE`
 
-MIT license, copyright Mannes Brak, current year.
+MIT license, copyright MBTech, current year.
 
 ### 3.3 `.github/FUNDING.yml`
 
@@ -147,7 +147,7 @@ export default [...mbtech];
 {
   "version": "0.0.0",
   "type": "module",
-  "author": "Mannes Brak",
+  "author": "MBTech",
   "license": "MIT",
   "homepage": "https://burnmark-io.github.io/designer-core/",
   "repository": {

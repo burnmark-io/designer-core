@@ -126,4 +126,4 @@ pnpm lint
 
 ## License
 
-MIT © Mannes Brak
+MIT © MBTech

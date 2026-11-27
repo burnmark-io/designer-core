@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "Headless label design engine — document model, render pipeline, multi-colour flattening, templates, CSV batch",
   "type": "module",
-  "author": "Mannes Brak",
+  "author": "MBTech",
   "license": "MIT",
   "homepage": "https://burnmark-io.github.io/designer-core/",
   "repository": {
